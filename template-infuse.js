@@ -1,8 +1,12 @@
 let idCounter = 0;
 
-const ATTRIBUTE_INFUSERS = {};
+let useDREV1CaveatWorkaround = false;
 
-const TEXT_CONTENT_INFUSERS = {};
+const BOOLEAN_ATTRIBUTES = {};
+
+const ATTRIBUTE_FUNCTIONS = {};
+
+const TEXT_CONTENT_FUNCTIONS = {};
 
 const isString = value => typeof value === 'string';
 
@@ -76,7 +80,7 @@ function extend( object, ...args ) {
 		each( obj || {}, ( value, key ) => object[ key ] = value );
 	}
 	return object;
-};
+}
 
 function attributesWithExpressions( el ) {
 	let head = [], tail = [];
@@ -88,28 +92,8 @@ function attributesWithExpressions( el ) {
 	return new Map( head.concat( tail ) );
 }
 
-function infuserToObject() {
-	let obj = { src: this.src };
-	if ( this.isBoolean ) {
-		obj.isBoolean = this.isBoolean;
-	}
-	return obj;
-}
-
-function objectToInfuser( obj ) {
-	let fn = new Function( 'host', 'data', 'event', obj.src );
-
-	fn.src = obj.src;
-	fn.toJSON = infuserToObject;
-	if ( obj.isBoolean === true ) {
-		fn.isBoolean = true;
-	}
-
-	return fn;
-}
-
-function expressionToFunction( expression, isBoolean ) {
-	let src;
+function expressionToFunction( expression ) {
+	let src, fn;
 
 	if ( isExpression( expression ) ) {
 		src = 'return ' + stripExpression( expression ) + ';';
@@ -120,40 +104,45 @@ function expressionToFunction( expression, isBoolean ) {
 		src = 'return ' + src.join( '+' ) + ';';
 	}
 
-	return objectToInfuser({ src: src, isBoolean });
+	fn = new Function( 'host', 'data', 'event', src );
+	fn.src = src;
+
+	return fn;
 }
 
 function loadInfuseFunctions( el, infuseIdPrefix = 'i' ) {
 	let attributes = {},
-		textContent = null,
-		map = attributesWithExpressions( el );
+		textContentFn = null,
+		booleanAttributes = {},
+		map = attributesWithExpressions( el ),
+		id;
 
 	for ( let [ name, val ] of map ) {
-		let fn = expressionToFunction( val, name.substr( -1 ) === '?' );
-
 		el.removeAttribute( name );
 
-		if ( fn.isBoolean ) {
+		if ( name.substr( -1 ) === '?' ) {
 			name = name.substring( 0, name.length - 1 );
+			booleanAttributes[ name ] = true;
 		}
 
-		attributes[ name ] = fn;
+		attributes[ name ] = expressionToFunction( val );
 	}
 
 	if ( el.children.length === 0 && containsExpression( el.textContent ) ) {
-		textContent = expressionToFunction( el.textContent );
+		textContentFn = expressionToFunction( el.textContent );
 		el.textContent = '';
 	}
 
-	if ( map.size || textContent ) {
-		let id = uniqueId( infuseIdPrefix );
+	if ( map.size || textContentFn ) {
+		id = uniqueId( infuseIdPrefix );
 		el.dataset.infuseId = id;
 
 		if ( map.size ) {
-			ATTRIBUTE_INFUSERS[ id ] = attributes;
+			ATTRIBUTE_FUNCTIONS[ id ] = attributes;
+			BOOLEAN_ATTRIBUTES[ id ] = booleanAttributes;
 		}
-		if ( textContent ) {
-			TEXT_CONTENT_INFUSERS[ id ] = textContent;
+		if ( textContentFn ) {
+			TEXT_CONTENT_FUNCTIONS[ id ] = textContentFn;
 		}
 	}
 }
@@ -221,28 +210,24 @@ function onAttributesMap( el ) {
 }
 
 export default class TemplateInfuse {
-	static get attributeInfusers() {
-		return ATTRIBUTE_INFUSERS;
+	static get dreV1Caveat() {
+		return useDREV1CaveatWorkaround;
 	}
 
-	static get textContentInfusers() {
-		return TEXT_CONTENT_INFUSERS;
+	static set dreV1Caveat( value ) {
+		useDREV1CaveatWorkaround = value;
 	}
 
-	static loadAttributeInfusers( object ) {
-		each( object, ( attributeInfuserObjects, id ) => {
-			let attributes = {};
-
-			each( attributeInfuserObjects, ( obj, name ) => {
-				attributes[ name ] = objectToInfuser( obj );
-			});
-
-			ATTRIBUTE_INFUSERS[ id ] = attributes;
-		});
+	static get BOOLEAN_ATTRIBUTES() {
+		return BOOLEAN_ATTRIBUTES;
 	}
 
-	static loadTextContentInfusers( object ) {
-		each( object, ( obj, id ) => TEXT_CONTENT_INFUSERS[ id ] = objectToInfuser( obj ) );
+	static get ATTRIBUTE_FUNCTIONS() {
+		return ATTRIBUTE_FUNCTIONS;
+	}
+
+	static get TEXT_CONTENT_FUNCTIONS() {
+		return TEXT_CONTENT_FUNCTIONS;
 	}
 
 	static loadTemplate( templateEl, options = {} ) {
@@ -295,9 +280,9 @@ export default class TemplateInfuse {
 		TemplateInfuse.loadTemplate( el );
 
 		let id = el.dataset.infuseId,
-			attrs = TemplateInfuse.attributeInfusers[ id ] || {},
-			ifFn = attrs[ 'data-if' ],
-			collection = attrs[ 'data-repeat' ] || attrs[ 'data-repeat-it' ],
+			attrFunctions = ATTRIBUTE_FUNCTIONS[ id ] || {},
+			ifFn = attrFunctions[ 'data-if' ],
+			collection = attrFunctions[ 'data-repeat' ] || attrFunctions[ 'data-repeat-it' ],
 			fragment, key, value, entry, clone;
 
 		if ( ifFn ) {
@@ -319,7 +304,7 @@ export default class TemplateInfuse {
 
 			clone = additionalData => {
 				let d = extend( {}, data, additionalData ),
-					frag = this.infuseFragment( el.content.cloneNode( true ), d, event );
+					frag = this._infuseFragment( el.content.cloneNode( true ), d, event );
 
 				for ( let nestedTemplate of frag.querySelectorAll( 'template' ) ) {
 					this.cloneTemplate( nestedTemplate, d, event, true );
@@ -329,9 +314,9 @@ export default class TemplateInfuse {
 			};
 		}
 
-		if ( attrs[ 'data-repeat' ] ) {
+		if ( attrFunctions[ 'data-repeat' ] ) {
 			each( collection, ( v, k ) => clone({ [ key ]: k, [ value ]: v }) );
-		} else if ( attrs[ 'data-repeat-it' ] ) {
+		} else if ( attrFunctions[ 'data-repeat-it' ] ) {
 			if ( el.dataset.key || el.dataset.value ) {
 				for ( let [ k, v ] of collection ) {
 					clone({ [ key ]: k, [ value ]: v });
@@ -342,7 +327,7 @@ export default class TemplateInfuse {
 				}
 			}
 		} else {
-			fragment = this.infuseFragment( el.content.cloneNode( true ), data, event );
+			fragment = this._infuseFragment( el.content.cloneNode( true ), data, event );
 
 			for ( let nestedTemplate of fragment.querySelectorAll( 'template' ) ) {
 				this.cloneTemplate( nestedTemplate, data, event, true );
@@ -359,20 +344,108 @@ export default class TemplateInfuse {
 		return fragment;
 	}
 
-	isProperty( el, name ) {
-		if ( typeof this.host.isProperty === 'function' ) {
-			return this.host.isProperty( el, name );
+	_infuseFragment( fragment, data, event ) {
+		for ( let el of fragment.querySelectorAll( '[data-infuse]' ) ) {
+			el.dataset.infuseHostId = this.hostId;
+			this.infuseElement( el, data, event );
+
+			for ( let [ eventName, selector ] of eventMap( el ) ) {
+				let listener = ev => {
+					if ( !selector || ev.target.matches( selector ) ) {
+						this.infuseElement( el, {}, ev );
+					}
+				};
+				this.on( eventName, listener );
+			}
 		}
 
-		return el.nodeName === 'INPUT' && ( name === 'value' || name === 'checked' );
+		return fragment;
 	}
 
-	_infuseAttribute( el, name, infuser, data, event ) {
-		let value = infuser.call( el, this.host, data, event ),
-			attributeValue = '' + value,
-			setAttribute = true;
+	infuseElements( elements, data, event ) {
+		isString( elements ) && ( elements = this.host.querySelectorAll( elements ) );
 
-		if ( infuser.isBoolean ) {
+		for ( let el of elements ) {
+			this.infuseElement( el, data, event );
+		}
+	}
+
+	infuseElement( el, data, event ) {
+		let id, textContentFn, selector;
+
+		if ( isString( el ) ) {
+			selector = el;
+			el = this.host.querySelector( selector );
+
+			if ( !el ) {
+				throw new Error(
+					'Cannot infuse element. The host element doesn\'t have a ' +
+					'descendant element that matches the selector "' + selector + '".'
+				);
+			}
+		}
+
+		id = el ? el.dataset.infuseId : false;
+
+		if ( !id ) {
+			throw new Error(
+				'Cannot infuse element. The first argument must be a string (a valid selector) ' +
+				'or an element that has the attribute "data-infuse" or the attribute "i".'
+			);
+		}
+
+		each( ATTRIBUTE_FUNCTIONS[ id ], ( fn, name ) => {
+			this._infuseAttribute( el, name, fn, data, event );
+		});
+
+		textContentFn = TEXT_CONTENT_FUNCTIONS[ id ];
+
+		if ( textContentFn ) {
+			this._infuseTextContent( el, textContentFn, data, event );
+		}
+	}
+
+	infuseAttribute( el, name, data, event ) {
+		let id, functions, selector;
+
+		if ( isString( el ) ) {
+			selector = el;
+			el = this.host.querySelector( selector );
+
+			if ( !el ) {
+				throw new Error(
+					'Cannot infuse attribute "' + name + '". The host element doesn\'t have a ' +
+					'descendant element that matches the selector "' + selector + '".'
+				);
+			}
+		}
+
+		id = el ? el.dataset.infuseId : false;
+
+		if ( !id ) {
+			throw new Error(
+				'Cannot infuse attribute "' + name + '". The first argument must be a string (a ' +
+				'valid selector) or an element that has the attribute "data-infuse" or the ' +
+				'attribute "i".'
+			);
+		}
+
+		functions = ATTRIBUTE_FUNCTIONS[ id ];
+
+		if ( !functions || !functions[ name ] ) {
+			throw new Error( 'The attribute "' + name + '" does not contain an expression.' );
+		}
+
+		this._infuseAttribute( el, name, functions[ name ], data, event );
+	}
+
+	_infuseAttribute( el, name, attributeFunction, data, event ) {
+		let setAttribute = true,
+			id = el.dataset.infuseId,
+			value = attributeFunction.call( el, this.host, data, event ),
+			attributeValue = '' + value;
+
+		if ( BOOLEAN_ATTRIBUTES[ id ] && BOOLEAN_ATTRIBUTES[ id ][ name ] ) {
 			if ( !value ) {
 				setAttribute = false;
 				if ( el.hasAttribute( name ) ) {
@@ -392,74 +465,56 @@ export default class TemplateInfuse {
 		}
 	}
 
-	infuseElement( el, data, event ) {
-		isString( el ) && ( el = this.host.querySelector( el ) );
-
-		let id = el.dataset.infuseId,
-			text = TemplateInfuse.textContentInfusers[ id ];
-
-		each( TemplateInfuse.attributeInfusers[ id ], ( infuser, name ) => {
-			this._infuseAttribute( el, name, infuser, data, event );
-		});
-
-		if ( text ) {
-			text = text.call( el, this.host, data, event );
-			if ( el.textContent !== text ) {
-				el.textContent = text;
-			}
-		}
-	}
-
-	infuseElements( elements, data, event ) {
-		isString( elements ) && ( elements = this.host.querySelectorAll( elements ) );
-
-		for ( let el of elements ) {
-			this.infuseElement( el, data, event );
-		}
-	}
-
-	infuseAttribute( el, name, data, event ) {
-		isString( el ) && ( el = this.host.querySelector( el ) );
-
-		let id = el.dataset.infuseId,
-			infusers = TemplateInfuse.attributeInfusers[ id ];
-
-		if ( !infusers || !infusers[ name ] ) {
-			throw new Error( 'The attribute "' + name + '" does not contain an expression.' );
+	isProperty( el, name ) {
+		if ( typeof this.host.isProperty === 'function' ) {
+			return this.host.isProperty( el, name );
 		}
 
-		this._infuseAttribute( el, name, infusers[ name ], data, event );
+		return el.nodeName === 'INPUT' && ( name === 'value' || name === 'checked' );
 	}
 
 	infuseTextContent( el, data, event ) {
-		isString( el ) && ( el = this.host.querySelector( el ) );
+		let id, textContentFn, selector;
 
-		let id = el.dataset.infuseId,
-			text = TemplateInfuse.textContentInfusers[ id ];
+		if ( isString( el ) ) {
+			selector = el;
+			el = this.host.querySelector( selector );
 
-		if ( !text ) {
-			throw new Error( 'The specified element does not contain an expression.' );
-		}
-
-		el.textContent = text.call( el, this.host, data, event );
-	}
-
-	infuseFragment( fragment, data, event ) {
-		for ( let el of fragment.querySelectorAll( '[data-infuse]' ) ) {
-			el.dataset.infuseHostId = this.hostId;
-			this.infuseElement( el, data, event );
-
-			for ( let [ eventName, selector ] of eventMap( el ) ) {
-				let listener = ev => {
-					if ( !selector || ev.target.matches( selector ) ) {
-						this.infuseElement( el, {}, ev );
-					}
-				};
-				this.on( eventName, listener );
+			if ( !el ) {
+				throw new Error(
+					'Cannot infuse textContent. The host element doesn\'t have a ' +
+					'descendant element that matches the selector "' + selector + '".'
+				);
 			}
 		}
 
-		return fragment;
+		id = el ? el.dataset.infuseId : false;
+
+		if ( !id ) {
+			throw new Error(
+				'Cannot infuse textContent. The first argument must be a string (a ' +
+				'valid selector) or an element that has the attribute "data-infuse" or the ' +
+				'attribute "i".'
+			);
+		}
+
+		textContentFn = TEXT_CONTENT_FUNCTIONS[ id ];
+
+		if ( !textContentFn ) {
+			throw new Error(
+				'Cannot infuse textContent. The specified element does not contain an expression.'
+			);
+		}
+
+		this._infuseTextContent( el, textContentFn, data, event );
+	}
+
+	_infuseTextContent( el, fn, data, event ) {
+		const textContent = fn.call( el, this.host, data, event );
+
+		if ( textContent !== el.textContent ) {
+			el.textContent = textContent;
+		}
 	}
 
 	on( eventName, listener ) {
@@ -474,8 +529,6 @@ export default class TemplateInfuse {
 	}
 }
 
-TemplateInfuse.dreV1Caveat = false;
-
 TemplateInfuse.Mixin = function( Base, ownerDocument ) {
 	let Class;
 
@@ -483,7 +536,7 @@ TemplateInfuse.Mixin = function( Base, ownerDocument ) {
 		ownerDocument = ( document._currentScript || document.currentScript ).ownerDocument;
 	}
 
-	if ( TemplateInfuse.dreV1Caveat ) {
+	if ( useDREV1CaveatWorkaround ) {
 		Class = class extends ( Base || HTMLElement ) {
 			constructor( self ) {
 				self = super( self );
