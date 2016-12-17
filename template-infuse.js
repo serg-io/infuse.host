@@ -399,26 +399,30 @@ function splitTemplateLiteral( str ) {
 }
 
 /**
- * Uses the "data-infuse" attribute of the given element to create a `Map` of events where the keys
- * represent event names and the values represent selectors. `false` is used as the value if there
- * is no selector for an event name.
+ * Creates an array of objects based on the "data-infuse" attribute of the given element. Each
+ * object in the array represents an event that must infuse the element. Event listeners for these
+ * event are added to the host element by the `TemplateInfuse.infuseFragment` method. Each object
+ * in the array contains two properties:
  *
- * @function eventMap
- * @param {Element} el
- * @returns {Map.<string, (string|boolean)>}
+ *     1. `name`: The name of the event.
+ *     2. `selector`: This selector indicates that the element must only be infused if the event's
+ *        target (the element that dispatched the event) matches this selector. This property is
+ *        `false` if no selector is specified for an event in the "data-infuse" attribute.
+ *
+ * @function infuseEvents
+ * @param {Element} element
+ * @returns {object[]}
  */
-function eventMap( el ) {
-	let events = el.dataset.infuse ? el.dataset.infuse.trim().split( ';' ) : [];
+function infuseEvents( element ) {
+	let events = element.dataset.infuse ? element.dataset.infuse.trim().split( ';' ) : [];
 
-	events = events.map( e => e.trim() ).map( e => {
+	return events.map( e => e.trim() ).map( e => {
 		let i = e.indexOf( ' ' ),
 			name = i === -1 ? e : e.substring( 0, i ),
 			selector = i === -1 ? false : e.substr( i + 1 ).trim();
 
-		return [ name, selector ];
+		return { name, selector };
 	});
-
-	return new Map( events );
 }
 
 /**
@@ -680,19 +684,21 @@ export default class TemplateInfuse {
 	 * @returns {DocumentFragment} The infused document fragment.
 	 */
 	infuseFragment( fragment, data, event ) {
-		for ( let el of fragment.querySelectorAll( '[data-infuse]' ) ) {
+		const elements = Array.prototype.slice.call( fragment.querySelectorAll( '[data-infuse]' ) );
+
+		elements.forEach( el => {
 			el.dataset.infuseHostId = this.hostId;
 			this.infuseElement( el, data, event );
 
-			for ( let [ eventName, selector ] of eventMap( el ) ) {
+			infuseEvents( el ).forEach( ({ name, selector }) => {
 				let listener = ev => {
 					if ( !selector || ev.target.matches( selector ) ) {
 						this.infuseElement( el, {}, ev );
 					}
 				};
-				this.on( eventName, listener );
-			}
-		}
+				this.on( name, listener );
+			});
+		});
 
 		return fragment;
 	}
