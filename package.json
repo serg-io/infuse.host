@@ -2,7 +2,7 @@
   "name": "template-infuse",
   "version": "0.0.1",
   "description": "",
-  "main": "template-infuse.js",
+  "main": "src/template-infuse.js",
   "repository": {
     "type": "git",
     "url": "https://github.com/serg-io/template-infuse.git"
