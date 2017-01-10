@@ -2,14 +2,14 @@ template-infuse
 ===============
 
 `template-infuse` is a template engine that uses `<template>` elements and mimics the use of
-expressions in [ES2016 template literals]
+expressions in [ES2015 template literals]
 (https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Template_literals) to generate
 dynamic HTML content.
 
 With `template-infuse` you can:
 
 * Clone the contents of a `<template>` element.
-* Use expressions (similar to how expressions are used in ES2016 template literals) inside
+* Use expressions (similar to how expressions are used in ES2015 template literals) inside
   `<template>` elements to inject values when a template is cloned.
 * Conditionally include a fragment of HTML in the cloned HTML content. In other words, use `if`
   statements in your templates.
@@ -18,7 +18,7 @@ With `template-infuse` you can:
 * Explicitly declare when expressions in a given element must be re-evaluated and the resulting
   values must be injected again.
 
-For a demo application that uses `template-infuse` (combined with custom elements, ES2016, and
+For a demo application that uses `template-infuse` (combined with custom elements, ES2015, and
 webpack) go to [todo.alcantara.io](http://todo.alcantara.io/) (the source code is available at
 [github.com/serg-io/todo](https://github.com/serg-io/todo)).
 
@@ -33,7 +33,7 @@ inserted/appended to the host element.
 ## Expressions ##
 
 To inject values in the content cloned by `template-infuse` you can use expressions the same way
-you would in [ES2016 template literals]
+you would in [ES2015 template literals]
 (https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Template_literals). There are
 four variables that are available within these expressions:
 
@@ -46,8 +46,8 @@ four variables that are available within these expressions:
 
 ## `data-infuse` ###
 
-The `data-infuse` attribute must added to elements containing expressions. This attribute is used
-by `template-infuse` as a CSS selector to find elements with expressions. As a shorthand
+The `data-infuse` attribute must be added to elements containing expressions. This attribute is
+used by `template-infuse` as a CSS selector to find elements with expressions. As a shorthand
 alternative, you can simply use the boolean `i` attribute. The following two template elements are
 equivalent:
 
@@ -60,7 +60,7 @@ equivalent:
 
 An optional value can be given to the `data-infuse` attribute. Its value must be a string composed
 of one or more events and optional CSS selector(s). Event names must be separated from the selectors
-with a single space. Multiple events must be separate by a semi-colon. For instance:
+with a single space. Multiple events must be separated by a semi-colon. For instance:
 
 	<!--
 		This element is infused when a "change" event (**ANY** "change" event) reaches its
@@ -161,7 +161,7 @@ triggered by the `<input>` element.
 	</body>
 	</html>
 
-Warning: `template-infuse` is written as an ES2016 module, which is not currently supported by any
+Warning: `template-infuse` is written as an ES2015 module, which is not currently supported by any
 browser. You must remove `export default` and `export` from lines 457 and 979 respectively for
 these examples to work. You can currently use `template-infuse` with
 [webpack](https://webpack.js.org/). A build script will be added in a future version to provide an
