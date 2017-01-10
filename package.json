@@ -1,7 +1,16 @@
 {
   "name": "template-infuse",
-  "version": "0.0.1",
-  "description": "",
+  "version": "0.1.0",
+  "description": "A template engine for browsers that clones and infuses HTML <template> elements.",
+  "keywords": [
+    "HTML template engine",
+    "template engine",
+    "template element",
+    "template",
+    "clone template",
+    "infuse",
+    "template literals"
+  ],
   "main": "src/template-infuse.js",
   "repository": {
     "type": "git",
