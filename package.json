@@ -1,25 +1,48 @@
 {
-  "name": "template-infuse",
-  "version": "0.1.0",
-  "description": "A template engine for browsers that clones and infuses HTML <template> elements.",
-  "keywords": [
-    "HTML template engine",
-    "template engine",
-    "template element",
-    "template",
-    "clone template",
-    "infuse",
-    "template literals"
-  ],
-  "main": "src/template-infuse.js",
+  "name": "infuse.host",
+  "version": "0.0.1",
+  "description": "",
+  "license": "MIT",
+  "author": "Sergio Alcantara <iserg9@gmail.com> (https://github.com/serg-io)",
+  "homepage": "https://github.com/serg-io/infuse.host#readme",
   "repository": {
     "type": "git",
-    "url": "https://github.com/serg-io/template-infuse.git"
+    "url": "git+https://github.com/serg-io/infuse.host.git"
   },
-  "author": "Sergio Alcantara <iserg9@gmail.com> (https://github.com/serg-io)",
-  "license": "MIT",
+  "keywords": [
+    "infuse",
+    "HTML",
+    "template",
+    "engine"
+  ],
   "bugs": {
-    "url": "https://github.com/serg-io/template-infuse/issues"
+    "url": "https://github.com/serg-io/infuse.host/issues"
   },
-  "homepage": "https://github.com/serg-io/template-infuse#readme"
+  "main": "index.js",
+  "scripts": {
+    "test": "jest"
+  },
+  "jest": {
+    "verbose": true,
+    "testEnvironment": "node",
+    "moduleFileExtensions": [
+      "js",
+      "mjs"
+    ],
+    "testRegex": "test\\/.+\\.test\\.m?js",
+    "transform": {
+      "^.+\\.m?js$": "babel-jest"
+    }
+  },
+  "dependencies": {
+    "domino": "^2.0.2"
+  },
+  "devDependencies": {
+    "babel-jest": "^22.4.4",
+    "babel-preset-env": "^1.7.0",
+    "eslint": "^4.19.1",
+    "eslint-config-airbnb-base": "^12.1.0",
+    "eslint-plugin-import": "^2.12.0",
+    "jest": "^22.4.4"
+  }
 }
