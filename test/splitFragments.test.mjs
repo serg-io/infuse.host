@@ -156,8 +156,8 @@ describe('joinFragments', () => {
 
 	it('should join fragments into an event callback if the second argument is `true`', () => {
 		const fragments = splitFragments('${ event ? event.target.value : "" }');
-		const source = joinFragments(fragments, true);
+		const source = joinFragments(fragments, {}, true);
 
-		expect(source).toBe('(e, event) => (event ? event.target.value : "")');
+		expect(source).toBe('(event) => (event ? event.target.value : "")');
 	});
 });

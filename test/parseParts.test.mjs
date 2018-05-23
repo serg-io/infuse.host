@@ -102,25 +102,25 @@ describe('parseParts', () => {
 	it('should parse "attributes parts"', () => {
 		const { parts } = parse('<input type="text" value="${ host.firstName }">');
 
-		expect(parts.get('value')).toBe('(e, event) => (host.firstName)');
+		expect(parts.get('value')).toBe('(event) => (host.firstName)');
 	});
 
 	it('should parse "boolean attribute parts"', () => {
 		const { parts } = parse('<input type="text" disabled?="${ host.foo }">');
 
-		expect(parts.get('disabled?')).toBe('(e, event) => (host.foo)');
+		expect(parts.get('disabled?')).toBe('(event) => (host.foo)');
 	});
 
 	it('should parse "property parts"', () => {
 		const { parts } = parse('<input type="text" .value="${ host.foo }">');
 
-		expect(parts.get('.value')).toBe('(e, event) => (host.foo)');
+		expect(parts.get('.value')).toBe('(event) => (host.foo)');
 	});
 
 	it('should convert hyphenated property parts into camel case', () => {
 		const { parts } = parse('<input type="date" .value-as-date="${ host.date }">');
 
-		expect(parts.get('.valueAsDate')).toBe('(e, event) => (host.date)');
+		expect(parts.get('.valueAsDate')).toBe('(event) => (host.date)');
 	});
 
 	it('should return an object with an array of parsed attributes names', () => {
@@ -135,8 +135,8 @@ describe('parseParts', () => {
 
 		expect(parts.size).toBe(2);
 		expect(parsedChildNodes).toEqual([0, 2]);
-		expect(parts.get(0)).toBe('(e, event) => (host.foo)');
-		expect(parts.get(2)).toBe('(e, event) => (host.bar)');
+		expect(parts.get(0)).toBe('(event) => (host.foo)');
+		expect(parts.get(2)).toBe('(event) => (host.bar)');
 	});
 
 	describe('when parsing iterationConstants of a template using the "for" attribute', () => {
@@ -179,7 +179,7 @@ describe('contextSourceCode', () => {
 	const SOURCE_CODE = `	const [host, data, tags] = arguments;
 
 	return {
-		parts: new Map([["class", (e, event) => "btn btn-" + (host.btnClass)]])
+		parts: new Map([["class", (event) => "btn btn-" + (host.btnClass)]])
 	};`;
 
 	function contextSrc(html, options = {}) {
