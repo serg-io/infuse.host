@@ -1,19 +1,19 @@
 /* eslint-disable no-template-curly-in-string */
-import splitFragments, { joinFragments, tagOptions } from '../lib/splitFragments.mjs';
+import splitFragments, { joinFragments, createTagSettings } from '../lib/splitFragments.mjs';
 
-describe('tagOptions', () => {
+describe('createTagSettings', () => {
 	it('should throw an exception when called with invalid arguments', () => {
-		expect(() => tagOptions()).toThrow();
-		expect(() => tagOptions(0)).toThrow();
-		expect(() => tagOptions([])).toThrow();
-		expect(() => tagOptions(true)).toThrow();
+		expect(() => createTagSettings()).toThrow();
+		expect(() => createTagSettings(0)).toThrow();
+		expect(() => createTagSettings([])).toThrow();
+		expect(() => createTagSettings(true)).toThrow();
 	});
 
 	it('should return a valid tag options object', () => {
 		const tags = ['i18n', 'date', 'currency'];
 		const longest = tags.reduce((max, tag) => (tag.length > max ? tag.length : max), 0);
 		const shortest = tags.reduce((min, tag) => (tag.length < min ? tag.length : min), longest);
-		const options = tagOptions(tags);
+		const options = createTagSettings(tags);
 
 		expect(options.tagsExp).toBeInstanceOf(RegExp);
 		expect(options.longestTagLength).toBe(longest);
@@ -116,7 +116,7 @@ describe('splitFragments', () => {
 	});
 
 	it('should parse tagged template literals correctly', () => {
-		const options = tagOptions(['i18n']);
+		const options = createTagSettings(['i18n']);
 		const fragments = splitFragments('i18n`total`', options);
 
 		expect(fragments).toEqual([{
@@ -127,7 +127,7 @@ describe('splitFragments', () => {
 	});
 
 	it('should parse a string with expressions and template literals correctly', () => {
-		const options = tagOptions(['i18n']);
+		const options = createTagSettings(['i18n']);
 		const fragments = splitFragments('i18n`total`: $${ order.total }', options);
 
 		expect(fragments).toEqual([
@@ -147,7 +147,7 @@ describe('splitFragments', () => {
 
 describe('joinFragments', () => {
 	it('should join together multiple fragments into a single line of source code', () => {
-		const options = tagOptions(['i18n']);
+		const options = createTagSettings(['i18n']);
 		const fragments = splitFragments('i18n`total`: $${ order.total }', options);
 		const source = joinFragments(fragments);
 

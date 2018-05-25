@@ -64,7 +64,7 @@ describe('uniqueIdFn', () => {
 
 		it('should return an ID that ends with the first n characters of the hash', () => {
 			const n = 10;
-			const fn = uniqueIdFn(HASH, n);
+			const fn = uniqueIdFn(HASH, { hashLength: n });
 			const id = fn('div');
 
 			expect(id.substr(id.length - n)).toBe(HASH.substr(0, n));

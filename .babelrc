@@ -1,9 +1,10 @@
 {
+  "plugins": ["syntax-object-rest-spread"],
   "presets": [[
     "env",
     {
       "targets": {
-        "node": "8"
+        "node": "current"
       }
     }
   ]]
