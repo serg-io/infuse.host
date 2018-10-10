@@ -1,21 +1,28 @@
 /* eslint-disable no-template-curly-in-string */
 import domino, { impl as window } from 'domino';
 import parseParts, {
-	camelCase,
+	searchName,
 	contextSourceCode,
 	createContextFunction,
 } from '../lib/parseParts.mjs';
 
 const AsyncFunction = Object.getPrototypeOf(async () => {}).constructor;
 
-describe('camelCase', () => {
-	it('should turn hyphenated strings into camelCase', () => {
-		expect(camelCase('variable-name')).toBe('variableName');
-		expect(camelCase('date-of-birth')).toBe('dateOfBirth');
+describe('searchName', () => {
+	it('should find a "name" using a string prefix', () => {
+		expect(searchName('c-foo', 'c-')).toBe('foo');
+		expect(searchName('const-foo', 'const-')).toBe('foo');
 	});
 
-	it('should return the same string if it\'s not hyphenated', () => {
-		expect(camelCase('user')).toBe('user');
+	it('should find a "name" using a regular expression', () => {
+		expect(searchName('const-foo', /const-(\w+)/)).toBe('foo');
+		expect(searchName('foo-const', /(\w+)-const/)).toBe('foo');
+		expect(searchName('var-foo-const', /var-(\w+)-const/)).toBe('foo');
+	});
+
+	it('should return null if no "name" was found', () => {
+		expect(searchName('const-', 'const-')).toBeNull();
+		expect(searchName('constfoo', 'const-')).toBeNull();
 	});
 });
 
@@ -42,26 +49,26 @@ describe('parseParts', () => {
 		expect(constants.foo).toBe('"foo-" + (host.bar)');
 	});
 
-	it('should parse events that have a string as their value', () => {
-		const { events } = parse('<div host-events="click .btn"></div>');
-		expect(events.host).toBe('"click .btn"');
+	it('should parse watches that have a string as their value', () => {
+		const { watches } = parse('<div watch-host="click .btn"></div>');
+		expect(watches.get('host')).toBe('"click .btn"');
 	});
 
-	it('should parse events that have an array as their value', () => {
-		const { events } = parse('<div host-events="[[\'disabled?\', \'change select\']]"></div>');
-		expect(events.host).toBe('[[\'disabled?\', \'change select\']]');
+	it('should parse watches that have an array as their value', () => {
+		const { watches } = parse('<div watch-host="[[\'disabled?\', \'change select\']]"></div>');
+		expect(watches.get('host')).toBe('[[\'disabled?\', \'change select\']]');
 	});
 
-	it('should parse events that have an expression as their value', () => {
-		const { events } = parse('<div host-events="${ this.updateEventsMap }"></div>');
-		expect(events.host).toBe('(this.updateEventsMap)');
+	it('should parse watches that have an expression as their value', () => {
+		const { watches } = parse('<div watch-host="${ this.updateEventsMap }"></div>');
+		expect(watches.get('host')).toBe('(this.updateEventsMap)');
 	});
 
 	it('should detect if a context function should be async', () => {
 		const resultA = parse('<div const-foo="${ host.bar }"></div>');
 		const resultB = parse('<div const-foo="${ await host.bar() }"></div>');
-		const resultC = parse('<div host-events="${ host.bar }"></div>');
-		const resultD = parse('<div host-events="${ await host.bar() }"></div>');
+		const resultC = parse('<div watch-host="${ host.bar }"></div>');
+		const resultD = parse('<div watch-host="${ await host.bar() }"></div>');
 
 		expect(resultA.isAsync).toBe(false);
 		expect(resultB.isAsync).toBe(true);
@@ -179,6 +186,7 @@ describe('contextSourceCode', () => {
 	const SOURCE_CODE = `	const [host, data, tags] = arguments;
 
 	return {
+		constants: { host, data },
 		parts: new Map([["class", (event) => "btn btn-" + (host.btnClass)]])
 	};`;
 
@@ -275,8 +283,9 @@ describe('createContextFunction', () => {
 	});
 
 	it('should define constant variables', () => {
-		const fn = contextFn('<p const-total="${ host.total }">Total: ${ total }</p>');
-		const host = { total: 10 };
+		const foo = 10;
+		const fn = contextFn('<p const-total="${ host.foo }">Total: ${ total }</p>');
+		const host = { foo };
 		const ctx = fn(host);
 		const callback = ctx.parts.get(0);
 
@@ -285,6 +294,6 @@ describe('createContextFunction', () => {
 
 		expect(ctx.parts.size).toBe(1);
 		expect(callback()).toBe('Total: 10');
-		expect(ctx.constants).toEqual({ total: 10 });
+		expect(ctx.constants.total).toBe(foo);
 	});
 });

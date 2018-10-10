@@ -1,4 +1,15 @@
-import { uniqueId } from '../lib/core.mjs';
+import { camelCase, uniqueId } from '../lib/core.mjs';
+
+describe('camelCase', () => {
+	it('should turn hyphenated strings into camelCase', () => {
+		expect(camelCase('variable-name')).toBe('variableName');
+		expect(camelCase('date-of-birth')).toBe('dateOfBirth');
+	});
+
+	it('should return the same string if it\'s not hyphenated', () => {
+		expect(camelCase('user')).toBe('user');
+	});
+});
 
 describe('uniqueId', () => {
 	it('should return an unique id using the given prefix', () => {

@@ -5,8 +5,12 @@ describe('createTagSettings', () => {
 	it('should throw an exception when called with invalid arguments', () => {
 		expect(() => createTagSettings()).toThrow();
 		expect(() => createTagSettings(0)).toThrow();
-		expect(() => createTagSettings([])).toThrow();
 		expect(() => createTagSettings(true)).toThrow();
+	});
+
+	it('should return null when using an empty array or object', () => {
+		expect(createTagSettings([])).toBeNull();
+		expect(createTagSettings({})).toBeNull();
 	});
 
 	it('should return a valid tag options object', () => {
@@ -116,7 +120,7 @@ describe('splitFragments', () => {
 	});
 
 	it('should parse tagged template literals correctly', () => {
-		const options = createTagSettings(['i18n']);
+		const options = { tags: ['i18n'] };
 		const fragments = splitFragments('i18n`total`', options);
 
 		expect(fragments).toEqual([{
@@ -127,7 +131,7 @@ describe('splitFragments', () => {
 	});
 
 	it('should parse a string with expressions and template literals correctly', () => {
-		const options = createTagSettings(['i18n']);
+		const options = { tags: ['i18n'] };
 		const fragments = splitFragments('i18n`total`: $${ order.total }', options);
 
 		expect(fragments).toEqual([
@@ -147,7 +151,7 @@ describe('splitFragments', () => {
 
 describe('joinFragments', () => {
 	it('should join together multiple fragments into a single line of source code', () => {
-		const options = createTagSettings(['i18n']);
+		const options = { tags: ['i18n'] };
 		const fragments = splitFragments('i18n`total`: $${ order.total }', options);
 		const source = joinFragments(fragments);
 

@@ -28,7 +28,7 @@ describe('parseElement', () => {
 	});
 
 	it('should add a custom context id attribute to the parsed element', () => {
-		parseElement(element, { ...OPTIONS, contextFnId: 'ctx-id' });
+		parseElement(element, { ...OPTIONS, dataCid: 'ctx-id' });
 		expect(element.hasAttribute('ctx-id')).toBe(true);
 	});
 
@@ -41,7 +41,7 @@ describe('parseElement', () => {
 
 	it('should use the custom context id attribute if the element has one', () => {
 		element = parseHTMLElement('<p ctx-id="fancyParagraph2">${ host.foo }</p>');
-		parseElement(element, { ...OPTIONS, contextFnId: 'ctx-id' });
+		parseElement(element, { ...OPTIONS, dataCid: 'ctx-id' });
 
 		expect(contextFunctions.has('fancyParagraph2')).toBe(true);
 	});
@@ -89,7 +89,7 @@ describe('parseTemplate', () => {
 		});
 
 		it('should add a custom template id attribute to the template', () => {
-			parseTemplate(template, { ...OPTIONS, templateId: 'id' });
+			parseTemplate(template, { ...OPTIONS, dataTid: 'id' });
 
 			expect(template.hasAttribute('id')).toBe(true);
 		});
@@ -103,7 +103,7 @@ describe('parseTemplate', () => {
 
 		it('should use a custom template id attribute if the template has one', () => {
 			template = parseHTMLElement('<template id="fancyTemplate2"></template>');
-			parseTemplate(template, { ...OPTIONS, templateId: 'id' });
+			parseTemplate(template, { ...OPTIONS, dataTid: 'id' });
 
 			expect(parsedTemplates.has('fancyTemplate2')).toBe(true);
 		});
@@ -129,7 +129,7 @@ describe('parseTemplate', () => {
 		const before = parsedTemplates.size;
 		const outerTemplate = parseHTMLElement(htmlBefore);
 		const innerTemplate = outerTemplate.content.firstChild;
-		const options = { ...OPTIONS, templateId: 'id', placeholderId: 'pid' };
+		const options = { ...OPTIONS, dataTid: 'id', dataPid: 'pid' };
 
 		parseTemplate(outerTemplate, options);
 
