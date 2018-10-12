@@ -18,7 +18,7 @@
   "bugs": {
     "url": "https://github.com/serg-io/infuse.host/issues"
   },
-  "main": "lib/index.mjs",
+  "main": "lib/infuse.mjs",
   "scripts": {
     "test": "jest"
   },
