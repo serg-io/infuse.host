@@ -18,7 +18,7 @@
   "bugs": {
     "url": "https://github.com/serg-io/infuse.host/issues"
   },
-  "main": "lib/infuse.mjs",
+  "main": "src/infuse.js",
   "scripts": {
     "test": "jest"
   },
@@ -35,15 +35,16 @@
     }
   },
   "dependencies": {
-    "domino": "^2.0.2"
+    "domino": "^2.1.0"
   },
   "devDependencies": {
+    "babel-cli": "^6.26.0",
     "babel-jest": "^22.4.4",
     "babel-plugin-syntax-object-rest-spread": "^6.13.0",
     "babel-preset-env": "^1.7.0",
     "eslint": "^4.19.1",
     "eslint-config-airbnb-base": "^12.1.0",
-    "eslint-plugin-import": "^2.12.0",
+    "eslint-plugin-import": "^2.14.0",
     "jest": "^22.4.4"
   }
 }

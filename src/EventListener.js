@@ -1,4 +1,4 @@
-import { config } from './core.mjs';
+import { config } from './core.js';
 
 // Attribute name that indicates an element has event listeners.
 const DATA_LISTENER = config(null, 'dataListener');

@@ -1,4 +1,4 @@
-import { config } from './core.mjs';
+import { config } from './core.js';
 
 /**
  * Takes an array of tag function names and returns a settings object that can be used to find tag
@@ -90,7 +90,7 @@ export function createTagSettings(tags) {
  * The last example contains a tagged template literal. In order to identify tags, a tag settings
  * object must be created using the `createTagSettings` function. For instance:
  *
- *     import splitFragments, { createTagSettings } from 'path/to/splitFragments.mjs';
+ *     import splitFragments, { createTagSettings } from 'path/to/splitFragments.js';
  *     // Pass all tag names that could be found in the string.
  *     const settings = createTagSettings(['i18n', 'currency', 'date']);
  *     // Template literals can be tagged using any tag name given to `createTagSettings`.

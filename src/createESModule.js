@@ -1,6 +1,6 @@
-import parseDocument from './parseDocument.mjs';
-import parseTemplate from './parseTemplate.mjs';
-import { config, contextFunctions, parsedTemplates } from './core.mjs';
+import parseDocument from './parseDocument.js';
+import parseTemplate from './parseTemplate.js';
+import { config, contextFunctions, parsedTemplates } from './core.js';
 
 /**
  * Generates a function that can be used to create unique IDs. The returned function is meant to be
@@ -44,7 +44,7 @@ export const uniqueIdFn = function createUniqueIdFunction(fullHash, options) {
  * @param {Object} [configOptions] Configuration options object.
  * @param {number} [configOptions.hashLength=7] The length of the hash to use when generating unique
  *     element IDs. The hash is used to avoid collisions with IDs of elements in other documents.
- * @param {string} [configOptions.infuseCorePath='infuse.host/lib/core.mjs'] Path to the infuse.host
+ * @param {string} [configOptions.infuseCorePath='infuse.host/src/core.js'] Path to the infuse.host
  *     core module to use in the generated ES module.
  * @returns {string} The source code of the generated ES module.
  */
