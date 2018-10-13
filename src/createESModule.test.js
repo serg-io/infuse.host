@@ -1,6 +1,6 @@
 /* eslint-disable no-template-curly-in-string */
 import domino from 'domino';
-import createESModule, { uniqueIdFn } from '../lib/createESModule.mjs';
+import createESModule, { uniqueIdFn } from './createESModule';
 
 /**
  * Simulates the DOMParser class available in the browser. Uses domino to parse HTML.

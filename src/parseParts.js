@@ -1,5 +1,5 @@
-import { camelCase, config } from './core.js';
-import splitFragments, { joinFragments } from './splitFragments.js';
+import { camelCase, config } from './core';
+import splitFragments, { joinFragments } from './splitFragments';
 
 const ITERATION_CONSTANT_TYPES = ['value', 'key', 'collection'];
 

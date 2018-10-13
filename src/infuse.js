@@ -1,5 +1,5 @@
-import EventListener from './EventListener.js';
-import { camelCase, config, contextFunctions, loadConfigs } from './core.js';
+import EventListener from './EventListener';
+import { camelCase, config, contextFunctions, loadConfigs } from './core';
 
 export { loadConfigs };
 

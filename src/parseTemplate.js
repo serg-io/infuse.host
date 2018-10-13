@@ -1,5 +1,5 @@
-import { config, contextFunctions, parsedTemplates } from './core.js';
-import parseParts, { createContextFunction } from './parseParts.js';
+import { config, contextFunctions, parsedTemplates } from './core';
+import parseParts, { createContextFunction } from './parseParts';
 
 /**
  * Finds and parses all the expressions and template literals in all attributes and text child

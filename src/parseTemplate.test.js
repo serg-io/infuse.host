@@ -1,7 +1,7 @@
 /* eslint-disable no-template-curly-in-string */
 import domino, { impl as window } from 'domino';
-import { contextFunctions, parsedTemplates } from '../lib/core.mjs';
-import parseTemplate, { parseElement } from '../lib/parseTemplate.mjs';
+import { contextFunctions, parsedTemplates } from './core';
+import parseTemplate, { parseElement } from './parseTemplate';
 
 const OPTIONS = { window };
 

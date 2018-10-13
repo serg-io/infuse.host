@@ -1,5 +1,5 @@
 /* eslint-disable no-template-curly-in-string */
-import splitFragments, { joinFragments, createTagSettings } from '../lib/splitFragments.mjs';
+import splitFragments, { joinFragments, createTagSettings } from './splitFragments';
 
 describe('createTagSettings', () => {
 	it('should throw an exception when called with invalid arguments', () => {

@@ -1,4 +1,4 @@
-import { camelCase, uniqueId } from '../lib/core.mjs';
+import { camelCase, uniqueId } from './core';
 
 describe('camelCase', () => {
 	it('should turn hyphenated strings into camelCase', () => {

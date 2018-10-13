@@ -79,7 +79,7 @@ export const DEFAULTS = {
 	/**
 	 * Path to the "core" module to use in generated ES modules.
 	 */
-	infuseCorePath: 'infuse.host/src/core.js',
+	infuseCorePath: 'infuse.host/src/core',
 	/**
 	 * An object that will contain all possible tag functions to be used with template literals.
 	 * During parsing this can be an array of all possible tag function names. However, at run

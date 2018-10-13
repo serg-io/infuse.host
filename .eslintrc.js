@@ -1,6 +1,7 @@
 module.exports = {
 	env: {
 		browser: true,
+		jest: true,
 	},
 	/**
 	 * Extend the Airbnb style guide.
