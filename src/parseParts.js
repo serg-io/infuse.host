@@ -34,7 +34,9 @@ export function searchName(str, exp) {
 
 	if (exp instanceof RegExp && (result = exp.exec(str)) !== null) {
 		return result[1] || null;
-	} else if (typeof exp === 'string' && str.length > exp.length && str.startsWith(exp)) {
+	}
+
+	if (typeof exp === 'string' && str.length > exp.length && str.startsWith(exp)) {
 		return str.substr(exp.length);
 	}
 

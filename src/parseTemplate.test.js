@@ -119,12 +119,8 @@ describe('parseTemplate', () => {
 	});
 
 	it('should parse nested templates', () => {
-		const htmlBefore = '<template id="outerTempl">' +
-			'<template id="innerTempl"><p>${ host.foo }</p></template>' +
-		'</template>';
-		const htmlAfter = '<template id="outerTempl">' +
-			'<template pid="innerTempl"></template>' +
-		'</template>';
+		const htmlBefore = '<template id="outerTempl"><template id="innerTempl"><p>${ host.foo }</p></template></template>';
+		const htmlAfter = '<template id="outerTempl"><template pid="innerTempl"></template></template>';
 
 		const before = parsedTemplates.size;
 		const outerTemplate = parseHTMLElement(htmlBefore);
