@@ -21,6 +21,9 @@
   "main": "src/infuse.js",
   "scripts": {
     "lint": "eslint src/*",
+    "postinstall": "babel src --out-dir lib --ignore *.test.js",
+    "postversion": "git push && git push --tags",
+    "preversion": "npm run lint && npm run test",
     "test": "jest"
   },
   "jest": {
