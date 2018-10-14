@@ -182,6 +182,25 @@ export default function infuse(host, template, data = {}, options = {}) {
 	return fragment;
 }
 
+/**
+ * Clears contexts and event listeners created for the given element and its descendants.
+ *
+ * @param {Element} element
+ * @param {Object} [options={}] Optional configuration options object.
+ */
+export function clear(element, options) {
+	const dataCid = config(options, 'dataCid');
+	const selector = `[${ dataCid }]`;
+	const elements = Array.from(element.querySelectorAll(selector));
+
+	if (element.matches(selector)) {
+		elements.push(element);
+	}
+
+	EventListener.clear(element);
+	elements.forEach(el => context.delete(el));
+}
+
 export class Host extends HTMLElement {
 	constructor() {
 		super();
@@ -196,6 +215,6 @@ export class Host extends HTMLElement {
 	}
 
 	disconnectedCallback() {
-		EventListener.clear(this);
+		clear(this);
 	}
 }
