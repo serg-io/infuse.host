@@ -198,7 +198,7 @@ export function clear(element, options) {
 	}
 
 	EventListener.clear(element);
-	elements.forEach(el => context.delete(el));
+	elements.forEach(el => contexts.delete(el));
 }
 
 export class Host extends HTMLElement {
