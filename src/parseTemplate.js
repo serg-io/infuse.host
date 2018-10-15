@@ -103,7 +103,7 @@ export default function parseTemplate(template, configOptions) {
 		];
 
 		if (constants.length > 0) {
-			options.dataConstants = new Set([...options.dataConstants, ...constants]);
+			options.dataConstants = new Set([...(options.dataConstants || []), ...constants]);
 		}
 	}
 
