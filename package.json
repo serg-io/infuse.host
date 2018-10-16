@@ -22,7 +22,8 @@
   "scripts": {
     "lint": "eslint src/*",
     "postversion": "git push && git push --tags",
-    "prepare": "rm -rf lib && npm run transpile",
+    "prepare": "echo prepare",
+    "prepack": "rm -rf lib && npm run transpile",
     "preversion": "npm run lint && npm run test",
     "test": "jest",
     "transpile": "babel src --out-dir lib --ignore *.test.js"
