@@ -22,6 +22,7 @@
   "scripts": {
     "lint": "eslint src/*",
     "postversion": "git push && git push --tags",
+    "prepare": "echo prepare",
     "prepack": "rm -rf lib && npm run transpile",
     "preversion": "npm run lint && npm run test",
     "test": "jest",
