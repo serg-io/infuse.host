@@ -19,11 +19,15 @@
     "url": "https://github.com/serg-io/infuse.host/issues"
   },
   "main": "src/infuse.js",
+  "files": [
+    ".babelrc",
+    "/lib",
+    "/src"
+  ],
   "scripts": {
     "lint": "eslint src/*",
     "postversion": "git push && git push --tags",
-    "prepare": "echo prepare",
-    "prepack": "rm -rf lib && npm run transpile",
+    "prepare": "rm -rf lib && npm run transpile",
     "preversion": "npm run lint && npm run test",
     "test": "jest",
     "transpile": "babel src --out-dir lib --ignore *.test.js"
