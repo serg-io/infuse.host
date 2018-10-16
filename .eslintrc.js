@@ -11,6 +11,10 @@ module.exports = {
 	extends: 'airbnb-base',
 	rules: {
 		/**
+		 * Turn off requirement for new line at the end of the files.
+		 */
+		'eol-last': 'off',
+		/**
 		 * Use tabs for indentation instead of spaces.
 		 * https://github.com/airbnb/javascript#whitespace--spaces
 		 * https://eslint.org/docs/rules/indent
