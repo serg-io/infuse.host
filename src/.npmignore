@@ -1,2 +1,5 @@
+# Ignore this file.
+.npmignore
+
 # Ignore all test files.
 *.test.js
