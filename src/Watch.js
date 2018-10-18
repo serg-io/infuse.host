@@ -1,4 +1,5 @@
 import * as janitor from './janitor';
+import infuseElement from './infuseElement';
 
 /**
  * Stores all the watches. The keys are the elements being "watched" and the values are "watch maps"
@@ -6,13 +7,11 @@ import * as janitor from './janitor';
  */
 export const watches = new WeakMap();
 
-let infuseElement;
-
 /**
  * This class is meant to "watch" for the given `eventName` on the `element` specified on the
  * constructor.
  */
-class Watch {
+export default class Watch {
 	/**
 	 * `Watch` constructor.
 	 *
@@ -109,33 +108,23 @@ class Watch {
 		// Add the given `options` to the `optionsSet`.
 		optionsSet.add(options);
 	}
-}
 
-/**
- * If it exists, returns the `Watch` instance "watching" for the specified `eventName` on the given
- * `element`. If it doesn't exists, a new `Watch` is created and returned.
- *
- * @function watchFor
- * @param {Element} element The element to watch.
- * @param {string} eventName the name of the event.
- * @returns {Watch}
- */
-export default function watchFor(element, eventName) {
-	const watchMap = watches.get(element);
+	/**
+	 * If it exists, returns the `Watch` instance "watching" for the specified `eventName` on the
+	 * given `element`. If it doesn't exists, a new `Watch` is created and returned.
+	 *
+	 * @function watchFor
+	 * @param {Element} element The element to watch.
+	 * @param {string} eventName the name of the event.
+	 * @returns {Watch}
+	 */
+	static for(element, eventName) {
+		const watchMap = watches.get(element);
 
-	if (!watchMap || !watchMap.has(eventName)) {
-		return new Watch(element, eventName);
+		if (!watchMap || !watchMap.has(eventName)) {
+			return new Watch(element, eventName);
+		}
+
+		return watchMap.get(eventName);
 	}
-
-	return watchMap.get(eventName);
-}
-
-/**
- * Assigns the given function to `infuseElement`.
- *
- * @function setInfuseElementFunction
- * @param {Function} fn The function to assign to `infuseElement`.
- */
-export function setInfuseElementFunction(fn) {
-	infuseElement = fn;
 }
