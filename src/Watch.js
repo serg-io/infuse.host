@@ -1,5 +1,5 @@
-import * as janitor from './janitor';
 import infuseElement from './infuseElement';
+import { addCleanupFunction } from './sweep';
 
 /**
  * Stores all the watches. The keys are the elements being "watched" and the values are "watch maps"
@@ -27,6 +27,15 @@ export default class Watch {
 		if (!watchMap) {
 			watchMap = new Map();
 			watches.set(element, watchMap);
+
+			/**
+			 * Add a function to clear the `watchMap` and delete the element's `watches` when the
+			 * `element` is removed from the DOM.
+			 */
+			addCleanupFunction(element, () => {
+				watchMap.clear();
+				watches.delete(element);
+			});
 		}
 
 		// Add `this` watch to the watch map.
@@ -61,13 +70,11 @@ export default class Watch {
 		element.addEventListener(eventName, callback, false);
 
 		/**
-		 * Have the `janitor` remove all the watch data associated with the `element` when the
+		 * Add a function to clear `this.watchers` and remove the event listener when the
 		 * `element` is removed from the DOM.
 		 */
-		janitor.add(element, () => {
-			watchMap.clear();
+		addCleanupFunction(element, () => {
 			this.watchers.clear();
-			watches.delete(element);
 			element.removeEventListener(eventName, callback, false);
 		});
 	}
@@ -96,10 +103,10 @@ export default class Watch {
 			this.watchers.set(watcher, optionsSet);
 
 			/**
-			 * Have the `janitor` remove data associated with the `watcher` when the `watcher` is
-			 * removed from the DOM.
+			 * Add a function to clear the `optionsSet` and delete the `watcher` from
+			 * `this.watchers` when the `watcher` element is removed from the DOM.
 			 */
-			janitor.add(watcher, () => {
+			addCleanupFunction(watcher, () => {
 				optionsSet.clear();
 				this.watchers.delete(watcher);
 			});

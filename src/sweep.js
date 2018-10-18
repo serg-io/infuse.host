@@ -18,7 +18,7 @@ const SELECTOR = `[${ FLAG_ATTRIBUTE }]`;
  * @param {Element} element The element.
  * @param {Function} callback A function that cleans up some data associated with the `element`.
  */
-export function add(element, callback) {
+export function addCleanupFunction(element, callback) {
 	// Get the `stack` of callbacks for the given `element`.
 	let stack = stacks.get(element);
 
