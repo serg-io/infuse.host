@@ -1,4 +1,4 @@
-import { config } from './core';
+import configs from './configs';
 
 /**
  * Takes an array of tag function names and returns a settings object that can be used to find tag
@@ -17,7 +17,7 @@ import { config } from './core';
  */
 export function createTagSettings(tags) {
 	if (!Array.isArray(tags) && typeof tags !== 'object') {
-		throw new Error('The option `tags` must be an array of strings or an object.');
+		throw new TypeError('The option `tags` must be an array of strings or an object.');
 	}
 
 	const sorted = [];
@@ -87,28 +87,27 @@ export function createTagSettings(tags) {
  * ║                                         ║ ]                                               ║
  * ╚═════════════════════════════════════════╩═════════════════════════════════════════════════╝
  *
- * The last example contains a tagged template literal. In order to identify tags, a tag settings
- * object must be created using the `createTagSettings` function. For instance:
+ * The last example contains a tagged template literal. In order to identify tags, the "tags"
+ * configuration object must be set first. For instance:
  *
+ *     import { setConfigs } from 'path/to/configs';
  *     import splitFragments, { createTagSettings } from 'path/to/splitFragments';
  *     // Pass all tag names that could be found in the string.
- *     const settings = createTagSettings(['i18n', 'currency', 'date']);
- *     // Template literals can be tagged using any tag name given to `createTagSettings`.
+ *     setConfigs({ tags: ['i18n', 'currency', 'date'] });
+ *     // Template literals can be tagged using any tag name in the "tags" configuration.
  *     const input = 'i18n`price`: $${ this.dataset.price }';
- *     // The same `settings ` object can also be used in subsequent calls to `splitFragments`.
- *     const result = splitFragments(input, settings );
+ *     const result = splitFragments(input);
  *     console.log(result); // Logs the result array shown in the last example above.
  *
  * @function splitFragments
  * @param {string} input A string that may or may not contain expressions and/or template literals.
- * @param {Object} [options] Configuration options object.
  * @returns {Array} An array of fragments or `null` if the input string doesn't contain any
  *     expressions or template literals.
  */
-export default function splitFragments(input, options) {
+export default function splitFragments(input) {
 	// Container for all fragments.
 	const fragments = [];
-	const tags = config(options, 'tags');
+	const tags = configs.get('tags');
 	const settings = createTagSettings(tags);
 
 	/**
@@ -312,17 +311,14 @@ export default function splitFragments(input, options) {
  *
  * @function joinFragments
  * @param {string[]} fragments The parsed fragments.
- * @param {Object} [options] An options object to overwrite the names of the "event" and "tags"
- *     variables.
- * param {string} [options.tagsName='tags'] Name of the "tags" variable.
- * param {string} [options.eventName='event'] Name of the "event" variable.
  * @param {boolean} [isEventCallback=false] If `true`, the returned expression will be an arrow
  *     function that takes an `event` argument.
  * @returns {string}
  */
-export function joinFragments(fragments, options, isEventCallback = false) {
+export function joinFragments(fragments, isEventCallback = false) {
 	let isAsync = false;
-	const { eventName: event, tagsName: tags } = config(options, 'eventName', 'tagsName');
+	const tagsName = configs.get('tagsName');
+	const eventName = configs.get('eventName');
 
 	let src = fragments.map((fragment) => {
 		if (typeof fragment === 'string') {
@@ -337,7 +333,14 @@ export function joinFragments(fragments, options, isEventCallback = false) {
 			return `(${ fragment.expression })`;
 		}
 
-		const template = (fragment.tag ? `${ tags }.${ fragment.tag }` : '') + fragment.template;
+		// The fragment is a template literal.
+		let { template } = fragment;
+
+		// If the fragment had a tag function, add it before the template literal.
+		if (fragment.tag) {
+			template = `${ tagsName }.${ fragment.tag }${ template }`;
+		}
+
 		return fragment.hasAwait ? `(await ${ template })` : template;
 	});
 
@@ -353,7 +356,7 @@ export function joinFragments(fragments, options, isEventCallback = false) {
 	src = src.join(' + ');
 
 	if (isEventCallback) {
-		src = `${ isAsync ? 'async ' : '' }(${ event }) => ${ src }`;
+		src = `${ isAsync ? 'async ' : '' }(${ eventName }) => ${ src }`;
 	}
 
 	return src;

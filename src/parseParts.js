@@ -1,4 +1,5 @@
-import { camelCase, config } from './core';
+import configs from './configs';
+import { camelCase } from './utils';
 import splitFragments, { joinFragments } from './splitFragments';
 
 const ITERATION_CONSTANT_TYPES = ['value', 'key', 'collection'];
@@ -60,7 +61,7 @@ export function searchName(str, exp) {
  * @function parseParts
  * @param {Element} element The element to parse. Must be an instance of
  *     [Element](https://developer.mozilla.org/en-US/docs/Web/API/element).
- * @param {Object} [options] Configuration options object.
+ * @param {Window} window The window object to use during the parsing process.
  * @returns {Object} A "parse result" object (which can be used to create a context function using
  *     `createContextFunction`) with the following properties:
  *     * `constants`: An object with constant variable names and the expressions (strings) to
@@ -75,7 +76,7 @@ export function searchName(str, exp) {
  *     * `parsedChildNodes`: An array of all the parsed child node (text nodes) indexes.
  *     * `watches`: A `Map` of events in which the element, or parts of it, must be re-infused.
  */
-export default function parseParts(element, options) {
+export default function parseParts(element, window) {
 	const constants = {};
 	const parts = new Map();
 	const watches = new Map();
@@ -83,9 +84,10 @@ export default function parseParts(element, options) {
 	const iterationConstants = {};
 	const parsedAttributeNames = [];
 	const eventListeners = new Map();
-	const { HTMLTemplateElement, Node } = config(options, 'window');
-	const expressions = config(options, 'constantExp', 'listenerExp', 'watchExp');
-	const { constantExp, listenerExp, watchExp } = expressions;
+	const watchExp = configs.get('watchExp');
+	const constantExp = configs.get('constantExp');
+	const listenerExp = configs.get('listenerExp');
+	const { HTMLTemplateElement, Node } = window;
 
 	let isAsync = false;
 
@@ -118,7 +120,7 @@ export default function parseParts(element, options) {
 			}
 		}
 
-		const fragments = splitFragments(value, options);
+		const fragments = splitFragments(value);
 		const hasFragments = fragments !== null;
 
 		/**
@@ -142,7 +144,7 @@ export default function parseParts(element, options) {
 
 		// If it's defining a constant, add it to the `constants` object.
 		if (isConstant) {
-			value = hasFragments ? joinFragments(fragments, options) : JSON.stringify(value);
+			value = hasFragments ? joinFragments(fragments) : JSON.stringify(value);
 			constants[camelCase(constantName)] = value;
 			continue;
 		}
@@ -150,7 +152,7 @@ export default function parseParts(element, options) {
 		// If it's defining a watch, add it to the `watches` object.
 		if (isWatch) {
 			if (hasFragments) {
-				value = joinFragments(fragments, options);
+				value = joinFragments(fragments);
 			} else {
 				const isArray = value.startsWith('[') && value.endsWith(']');
 				const isObject = value.startsWith('{') && value.endsWith('}');
@@ -167,7 +169,7 @@ export default function parseParts(element, options) {
 		// If it's defining an event listener, add it to `eventListeners`.
 		if (isEventListener) {
 			// Join the fragments and add it to `eventListeners`.
-			const callbackCode = joinFragments(fragments, options, true);
+			const callbackCode = joinFragments(fragments, true);
 			eventListeners.set(camelCase(eventName), callbackCode);
 			continue;
 		}
@@ -200,7 +202,7 @@ export default function parseParts(element, options) {
 		}
 
 		// Join the fragments and add it to `parts`.
-		const callbackCode = joinFragments(fragments, options, true);
+		const callbackCode = joinFragments(fragments, true);
 		parts.set(name, callbackCode);
 	}
 
@@ -212,10 +214,10 @@ export default function parseParts(element, options) {
 		for (let i = 0, node = element.firstChild; node !== null; i++, node = node.nextSibling) {
 			const { data: text, length, nodeType } = node;
 			const isTextNode = nodeType === Node.TEXT_NODE && length > 3;
-			const fragments = isTextNode ? splitFragments(text, options) : null;
+			const fragments = isTextNode ? splitFragments(text) : null;
 
 			if (fragments !== null) {
-				const callbackCode = joinFragments(fragments, options, true);
+				const callbackCode = joinFragments(fragments, true);
 				parts.set(i, callbackCode);
 
 				// Add the child node's index to `parsedChildNodes`.
@@ -241,26 +243,26 @@ export default function parseParts(element, options) {
  *
  * @function contextSourceCode
  * @param {Object} parseResult The parse result object returned by the `parseParts` function.
- * @param {Object} [options] Configuration options object.
  * @returns {string} The source code of the body of a context function.
  */
-export function contextSourceCode(parseResult, options) {
+export function contextSourceCode(parseResult) {
 	const context = {};
-	const tagsName = config(options, 'tagsName');
-	const dataConstants = [...config(options, 'dataConstants')];
+	const tagsName = configs.get('tagsName');
+	const dataConstants = [];
+	// const dataConstants = [...config(options, 'dataConstants')];
 	const { constants, eventListeners, iterationConstants, parts, watches } = parseResult;
 	// Name of constant variables declared in the element using "const-*" attributes.
 	const names = Object.keys(constants);
 	// Each string in `constLines` declares one or more constant variables.
 	const constLines = [`const [host, data, ${ tagsName }] = arguments;`];
 	/**
-	 * `options.dataConstants` defines attributes within `data` that are meant to be used as
+	 * `dataConstants` defines attributes within `data` that are meant to be used as
 	 * constant variables within the context function. The `notOverwritten` array contains
 	 * `dataConstants` names that are not overwritten by "const-[name]" attributes.
 	 */
 	const notOverwritten = dataConstants.filter(name => !names.includes(name));
 
-	// First declare constants as defined by `options.dataConstants`.
+	// First declare constants as defined by `dataConstants`.
 	if (notOverwritten.length > 0) {
 		constLines.push(`const { ${ notOverwritten.join(', ') } } = data;`);
 	}
@@ -305,12 +307,11 @@ export function contextSourceCode(parseResult, options) {
  *
  * @function createContextFunction
  * @param {Object} parseResult The parse result object returned by the `parseParts` function.
- * @param {Object} [options] Configuration options object.
  * @returns {Function|AsyncFunction} The context function.
  */
-export function createContextFunction(parseResult, options) {
+export function createContextFunction(parseResult) {
 	const { isAsync } = parseResult;
-	const source = contextSourceCode(parseResult, options);
+	const source = contextSourceCode(parseResult);
 
 	// eslint-disable-next-line no-new-func
 	return isAsync ? new AsyncFunction(source) : new Function(source);

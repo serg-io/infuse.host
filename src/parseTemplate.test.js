@@ -1,9 +1,10 @@
 /* eslint-disable no-template-curly-in-string */
 import domino, { impl as window } from 'domino';
-import { contextFunctions, parsedTemplates } from './core';
 import parseTemplate, { parseElement } from './parseTemplate';
+import { uniqueId } from './utils';
+import { contextFunctions, setConfigs, parsedTemplates } from './configs';
 
-const OPTIONS = { window };
+const OPTIONS = { uniqueId, window };
 
 function parseHTMLElement(html) {
 	const doc = domino.createDocument(`<body>${ html }</body>`);
@@ -27,21 +28,24 @@ describe('parseElement', () => {
 		expect(element.hasAttribute('data-cid')).toBe(true);
 	});
 
-	it('should add a custom context id attribute to the parsed element', () => {
-		parseElement(element, { ...OPTIONS, dataCid: 'ctx-id' });
+	it('should add a custom context function id attribute to the parsed element', () => {
+		setConfigs({ contextFunctionId: 'ctx-id' });
+		parseElement(element, OPTIONS);
 		expect(element.hasAttribute('ctx-id')).toBe(true);
 	});
 
 	it('should use the data-cid attribute if the element has one', () => {
+		setConfigs({ contextFunctionId: 'data-cid' });
 		element = parseHTMLElement('<p data-cid="fancyParagraph1">${ host.foo }</p>');
 		parseElement(element, OPTIONS);
 
 		expect(contextFunctions.has('fancyParagraph1')).toBe(true);
 	});
 
-	it('should use the custom context id attribute if the element has one', () => {
+	it('should use the custom context function id attribute if the element has one', () => {
+		setConfigs({ contextFunctionId: 'ctx-id' });
 		element = parseHTMLElement('<p ctx-id="fancyParagraph2">${ host.foo }</p>');
-		parseElement(element, { ...OPTIONS, dataCid: 'ctx-id' });
+		parseElement(element, OPTIONS);
 
 		expect(contextFunctions.has('fancyParagraph2')).toBe(true);
 	});
@@ -51,7 +55,7 @@ describe('parseTemplate', () => {
 	it('should throw an exception when called with an element that is not a template', () => {
 		const div = parseHTMLElement('<div></div>');
 
-		expect(() => parseTemplate(div, { window })).toThrow();
+		expect(() => parseTemplate(div, OPTIONS)).toThrow();
 	});
 
 	describe('when called with a template', () => {
@@ -89,12 +93,14 @@ describe('parseTemplate', () => {
 		});
 
 		it('should add a custom template id attribute to the template', () => {
-			parseTemplate(template, { ...OPTIONS, dataTid: 'id' });
+			setConfigs({ templateId: 'id' });
+			parseTemplate(template, OPTIONS);
 
 			expect(template.hasAttribute('id')).toBe(true);
 		});
 
 		it('should use the data-tid attribute if the template has one', () => {
+			setConfigs({ templateId: 'data-tid' });
 			template = parseHTMLElement('<template data-tid="fancyTemplate1"></template>');
 			parseTemplate(template, OPTIONS);
 
@@ -102,8 +108,9 @@ describe('parseTemplate', () => {
 		});
 
 		it('should use a custom template id attribute if the template has one', () => {
+			setConfigs({ templateId: 'id' });
 			template = parseHTMLElement('<template id="fancyTemplate2"></template>');
-			parseTemplate(template, { ...OPTIONS, dataTid: 'id' });
+			parseTemplate(template, OPTIONS);
 
 			expect(parsedTemplates.has('fancyTemplate2')).toBe(true);
 		});
@@ -125,9 +132,9 @@ describe('parseTemplate', () => {
 		const before = parsedTemplates.size;
 		const outerTemplate = parseHTMLElement(htmlBefore);
 		const innerTemplate = outerTemplate.content.firstChild;
-		const options = { ...OPTIONS, dataTid: 'id', dataPid: 'pid' };
+		setConfigs({ templateId: 'id', placeholderId: 'pid' });
 
-		parseTemplate(outerTemplate, options);
+		parseTemplate(outerTemplate, OPTIONS);
 
 		expect(parsedTemplates.size).toBe(before + 2);
 		expect(parsedTemplates.has('outerTempl')).toBe(true);

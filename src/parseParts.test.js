@@ -31,7 +31,7 @@ describe('parseParts', () => {
 		const doc = domino.createDocument(`<body>${ html }</body>`);
 		const element = doc.body.firstElementChild;
 
-		return parseParts(element, { window, ...options });
+		return parseParts(element, window);
 	}
 
 	it('should parse constants that have a string as their value', () => {
@@ -190,12 +190,12 @@ describe('contextSourceCode', () => {
 		parts: new Map([["class", (event) => "btn btn-" + (host.btnClass)]])
 	};`;
 
-	function contextSrc(html, options = {}) {
+	function contextSrc(html) {
 		const doc = domino.createDocument(`<body>${ html }</body>`);
 		const element = doc.body.firstElementChild;
-		const parseResult = parseParts(element, { window, ...options });
+		const parseResult = parseParts(element, window);
 
-		return contextSourceCode(parseResult, options);
+		return contextSourceCode(parseResult);
 	}
 
 	it('should return source code', () => {
@@ -207,12 +207,12 @@ describe('contextSourceCode', () => {
 });
 
 describe('createContextFunction', () => {
-	function contextFn(html, options = {}) {
+	function contextFn(html) {
 		const doc = domino.createDocument(`<body>${ html }</body>`);
 		const element = doc.body.firstElementChild;
-		const parseResult = parseParts(element, { window, ...options });
+		const parseResult = parseParts(element, window);
 
-		return createContextFunction(parseResult, options);
+		return createContextFunction(parseResult);
 	}
 
 	it('should return a function', () => {

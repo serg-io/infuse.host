@@ -1,4 +1,5 @@
 /* eslint-disable no-template-curly-in-string */
+import { setConfigs } from './configs';
 import splitFragments, { joinFragments, createTagSettings } from './splitFragments';
 
 describe('createTagSettings', () => {
@@ -27,6 +28,11 @@ describe('createTagSettings', () => {
 });
 
 describe('splitFragments', () => {
+	beforeAll(() => {
+		setConfigs({
+			tags: ['i18n'],
+		});
+	});
 	it('should return `null` if a string doesn\'t contain expressions or template literals', () => {
 		const fragments = splitFragments('String with no fragments');
 
@@ -120,8 +126,7 @@ describe('splitFragments', () => {
 	});
 
 	it('should parse tagged template literals correctly', () => {
-		const options = { tags: ['i18n'] };
-		const fragments = splitFragments('i18n`total`', options);
+		const fragments = splitFragments('i18n`total`');
 
 		expect(fragments).toEqual([{
 			tag: 'i18n',
@@ -131,8 +136,7 @@ describe('splitFragments', () => {
 	});
 
 	it('should parse a string with expressions and template literals correctly', () => {
-		const options = { tags: ['i18n'] };
-		const fragments = splitFragments('i18n`total`: $${ order.total }', options);
+		const fragments = splitFragments('i18n`total`: $${ order.total }');
 
 		expect(fragments).toEqual([
 			{
@@ -151,8 +155,7 @@ describe('splitFragments', () => {
 
 describe('joinFragments', () => {
 	it('should join together multiple fragments into a single line of source code', () => {
-		const options = { tags: ['i18n'] };
-		const fragments = splitFragments('i18n`total`: $${ order.total }', options);
+		const fragments = splitFragments('i18n`total`: $${ order.total }');
 		const source = joinFragments(fragments);
 
 		expect(source).toBe('tags.i18n`total` + ": $" + (order.total)');
@@ -160,7 +163,7 @@ describe('joinFragments', () => {
 
 	it('should join fragments into an event callback if the second argument is `true`', () => {
 		const fragments = splitFragments('${ event ? event.target.value : "" }');
-		const source = joinFragments(fragments, {}, true);
+		const source = joinFragments(fragments, true);
 
 		expect(source).toBe('(event) => (event ? event.target.value : "")');
 	});

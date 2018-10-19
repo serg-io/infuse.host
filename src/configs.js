@@ -54,14 +54,6 @@ export const DEFAULTS = [
 	 */
 	['eventName', 'event'],
 	/**
-	 * Used by the createESModule to generate unique ids using the document's MD5 hash.
-	 */
-	['hashLength', 7],
-	/**
-	 * Path to configs (this module) to use in generated ES modules.
-	 */
-	['configsPath', 'infuse.host/src/config'],
-	/**
 	 * Name of the attribute that indicates an element must be sweept when it's removed from
 	 * the DOM.
 	 */
@@ -87,10 +79,6 @@ export const DEFAULTS = [
 	 * which an element, or parts of it, must be re-infused).
 	 */
 	['watchExp', 'watch-'],
-	/**
-	 * Default window variable.
-	 */
-	['window', typeof window !== 'undefined' ? window : undefined],
 ];
 
 // Container for configuration options.

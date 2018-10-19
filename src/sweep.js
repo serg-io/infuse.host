@@ -1,15 +1,11 @@
+import configs from './configs';
+
 /**
  * Keys will be elements and values will be a `Set` of callbacks that will be executed, by the
  * `sweepElement` function (which is meant to be executed when the elements are removed from the
  * DOM), to clean up data associated with the element.
  */
 export const stacks = new WeakMap();
-
-// Name of the attribute that indicates the element must be sweept when it's removed from the DOM.
-const FLAG_ATTRIBUTE = 'data-sweep';
-
-// CSS selector used to search for elements that need to be sweept.
-const SELECTOR = `[${ FLAG_ATTRIBUTE }]`;
 
 /**
  * Adds a callback to the element's stack of callbacks.
@@ -26,7 +22,7 @@ export function addCleanupFunction(element, callback) {
 	if (!stack) {
 		stack = new Set();
 		stacks.set(element, stack);
-		element.setAttribute(FLAG_ATTRIBUTE, '');
+		element.setAttribute(configs.get('sweepFlag'), '');
 	}
 
 	// Add the given `callback` to the element's `stack`.
@@ -57,7 +53,7 @@ export function sweepElement(element) {
 	// Clear the `stack`, remove it from `stacks`, and remove the flag attribute.
 	stack.clear();
 	stacks.delete(element);
-	element.removeAttribute(FLAG_ATTRIBUTE);
+	element.removeAttribute(configs.get('sweepFlag'));
 }
 
 /**
@@ -70,9 +66,10 @@ export function sweepElement(element) {
  *     "sweept". The `element` itself will also be sweept if it has the flag attribute.
  */
 export default function sweep(element) {
-	const elements = Array.from(element.querySelectorAll(SELECTOR));
+	const selector = `[${ configs.get('sweepFlag') }]`;
+	const elements = Array.from(element.querySelectorAll(selector));
 
-	if (element.matches(SELECTOR)) {
+	if (element.matches(selector)) {
 		elements.push(element);
 	}
 

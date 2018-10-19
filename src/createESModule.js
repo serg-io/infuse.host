@@ -1,6 +1,11 @@
 import parseDocument from './parseDocument';
 import parseTemplate from './parseTemplate';
-import { config, contextFunctions, parsedTemplates } from './core';
+import configs, { contextFunctions, parsedTemplates } from './configs';
+
+/**
+ * Path to the configs module to use in generated ES modules.
+ */
+const DEFAULT_CONFIGS_PATH = 'infuse.host/src/configs';
 
 /**
  * Generates a function that can be used to create unique IDs. The returned function is meant to be
@@ -10,17 +15,15 @@ import { config, contextFunctions, parsedTemplates } from './core';
  *
  * @function uniqueIdFn
  * @param {string} fullHash A hash to append to all IDs.
- * @param {Object} [options] Configuration options object.
- * @param {number} [options.hashLength] Limits the length of the hash to the number of characters
+ * @param {number} [hashLength=7] Limits the length of the hash to the number of characters
  *     specified by this attribute. Uses 7 by default, which means that the returned function will
  *     only append the first 7 characters of the hash to the generated unique IDs.
  * @returns {Function} The return function takes a `tagName` (string) as the only argument and
  *     returns a unique ID string.
  */
-export const uniqueIdFn = function createUniqueIdFunction(fullHash, options) {
+export const uniqueIdFn = function createUniqueIdFunction(fullHash, hashLength = 7) {
 	let idCounter = 1;
-	const len = config(options, 'hashLength');
-	const hash = len > fullHash.length ? fullHash : fullHash.substr(0, len);
+	const hash = hashLength > fullHash.length ? fullHash : fullHash.substr(0, hashLength);
 
 	return tagName => `${ tagName }${ idCounter++ }_${ hash }`;
 };
@@ -41,32 +44,33 @@ export const uniqueIdFn = function createUniqueIdFunction(fullHash, options) {
  * @function createESModule
  * @param {(string|Document)} htmlDocument The HTML document as a string (HTML source code) or as an
  *     instance of `Document`.
- * @param {Object} [configOptions] Configuration options object.
- * @param {number} [configOptions.hashLength=7] The length of the hash to use when generating unique
+ * @param {Object} [options={}] Options object.
+ * @param {number} [options.hashLength=7] The length of the hash to use when generating unique
  *     element IDs. The hash is used to avoid collisions with IDs of elements in other documents.
- * @param {string} [configOptions.infuseCorePath='infuse.host/src/core'] Path to the infuse.host
- *     core module to use in the generated ES module.
+ * @param {Function} [options.uniqueId] A function to generate unique ID values during the
+ *     parsing process.
+ * @param {string} [options.configsPath='infuse.host/src/configs'] Path to the infuse.host
+ *     configs module to use in the generated ES module.
  * @returns {string} The source code of the generated ES module.
  */
-export default function createESModule(htmlDocument, configOptions) {
+export default function createESModule(htmlDocument, options = {}) {
 	const lines = [''];
-	const { infuseCorePath, dataTid } = config(configOptions, 'infuseCorePath', 'dataTid');
+	const templateId = configs.get('templateId');
+	const configsPath = options.configsPath || DEFAULT_CONFIGS_PATH;
 
 	// Parse the document.
 	const { doctype, document, hash, window } = parseDocument(htmlDocument);
-	// Use the document's hash to create a `uniqueId` function.
-	const uniqueId = uniqueIdFn(hash, configOptions);
-	// Options needed for the infuse.host parser.
-	const options = { uniqueId, window, ...configOptions };
+	// If a unique ID function was not provided, create one using the document's `hash`.
+	const uniqueId = options.uniqueId || uniqueIdFn(hash, options.hashLength);
 
 	// Find and parse all templates in the `document`. This changes the document's DOM.
-	let templates = document.querySelectorAll('template');
+	let templates = Array.from(document.querySelectorAll('template'));
 	for (let i = 0; i < templates.length; i++) {
-		parseTemplate(templates.item(i), options);
+		parseTemplate(templates[i], { uniqueId, window });
 	}
 
 	// Since the document's DOM changed, we need to find all templates again.
-	templates = document.querySelectorAll('template');
+	templates = Array.from(document.querySelectorAll('template'));
 
 	/**
 	 * Iterate over each template and add lines of code to `lines` to perform the following actions
@@ -76,7 +80,7 @@ export default function createESModule(htmlDocument, configOptions) {
 	 *     * Add the template to the `parsedTemplates` map using its template ID.
 	 */
 	for (let i = 0; i < templates.length; i++) {
-		const tid = templates.item(i).getAttribute(dataTid);
+		const tid = templates[i].getAttribute(templateId);
 
 		lines.splice(i, 0, `export const ${ tid } = templates[${ i }];`);
 		lines.push(`parsedTemplates.set('${ tid }', ${ tid });`);
@@ -98,7 +102,7 @@ export default function createESModule(htmlDocument, configOptions) {
 	contextFunctions.clear();
 	parsedTemplates.clear();
 
-	return `import { contextFunctions, parsedTemplates } from '${ infuseCorePath }';
+	return `import { contextFunctions, parsedTemplates } from '${ configsPath }';
 
 const html = \`${ doctype }\n${ document.body.outerHTML.replace(/\\?`/g, '\\`') }\`;
 
