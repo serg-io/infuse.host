@@ -27,7 +27,7 @@ describe('searchName', () => {
 });
 
 describe('parseParts', () => {
-	function parse(html, options) {
+	function parse(html) {
 		const doc = domino.createDocument(`<body>${ html }</body>`);
 		const element = doc.body.firstElementChild;
 

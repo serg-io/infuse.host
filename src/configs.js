@@ -28,23 +28,12 @@ export const DEFAULTS = [
 	 */
 	['dataConstants', new Set()],
 	/**
-	 * Name of the attribute that indicates that an element has event listeners.
-	 * TODO: Remove this after refeactoring EventListener.
-	 */
-	['dataListener', 'data-listener'],
-	/**
 	 * Name of the placeholder ID attribute. Nested templates are replaced with "placeholder"
 	 * templates. The presence of the placeholder ID attribute on a template indicates that the
 	 * template is a placeholder. The value of the placeholder ID attribute can be used to find
 	 * the original nested template.
 	 */
 	['placeholderId', 'data-pid'],
-	/**
-	 * Name of the attribute that indicates that an element is a "watcher" (it's watching events
-	 * that happen in another element).
-	 * TODO: Remove this after refeactoring EventListener.
-	 */
-	['dataWatcher', 'data-watcher'],
 	/**
 	 * Prefix or regular expression used to determine if an attribute is an event listener.
 	 */

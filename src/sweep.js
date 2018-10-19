@@ -5,54 +5,54 @@ import configs from './configs';
  * `sweepElement` function (which is meant to be executed when the elements are removed from the
  * DOM), to clean up data associated with the element.
  */
-export const stacks = new WeakMap();
+export const queues = new WeakMap();
 
 /**
- * Adds a callback to the element's stack of callbacks.
+ * Adds a callback to the element's queue of callbacks.
  *
  * @function add
  * @param {Element} element The element.
  * @param {Function} callback A function that cleans up some data associated with the `element`.
  */
 export function addCleanupFunction(element, callback) {
-	// Get the `stack` of callbacks for the given `element`.
-	let stack = stacks.get(element);
+	// Get the `queue` of callbacks for the given `element`.
+	let queue = queues.get(element);
 
-	// If there's no `stack`, create a new one, add it to `stacks`, and set the flag attribute.
-	if (!stack) {
-		stack = new Set();
-		stacks.set(element, stack);
+	// If there's no `queue`, create a new one, add it to `queues`, and set the flag attribute.
+	if (!queue) {
+		queue = new Set();
+		queues.set(element, queue);
 		element.setAttribute(configs.get('sweepFlag'), '');
 	}
 
-	// Add the given `callback` to the element's `stack`.
-	stack.add(callback);
+	// Add the given `callback` to the element's `queue`.
+	queue.add(callback);
 }
 
 /**
- * Executes all callbacks in the element's stack to clean up data associated with the element.
+ * Executes all callbacks in the element's queue to clean up data associated with the element.
  * This is meant to be called when an element is removed from the DOM.
  *
  * @function sweepElement
  * @param {Element} element The element.
  */
 export function sweepElement(element) {
-	// Get the `stack` of callbacks for the given `element`.
-	const stack = stacks.get(element);
+	// Get the `queue` of callbacks for the given `element`.
+	const queue = queues.get(element);
 
-	// End execution if there's no `stack`.
-	if (!stack) {
+	// End execution if there's no `queue`.
+	if (!queue) {
 		return;
 	}
 
-	// Execute each `callback` in the `stack`.
-	for (const callback of stack) {
+	// Execute each `callback` in the `queue`.
+	for (const callback of queue) {
 		callback();
 	}
 
-	// Clear the `stack`, remove it from `stacks`, and remove the flag attribute.
-	stack.clear();
-	stacks.delete(element);
+	// Clear the `queue`, remove it from `queues`, and remove the flag attribute.
+	queue.clear();
+	queues.delete(element);
 	element.removeAttribute(configs.get('sweepFlag'));
 }
 
