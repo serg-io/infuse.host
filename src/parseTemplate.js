@@ -11,6 +11,8 @@ import parseParts, { createContextFunction } from './parseParts';
  * @param {Object} options Options object.
  * @param {Function} options.uniqueId A function to generate a unique context function ID.
  * @param {Window} options.window The window object to use during the parsing process.
+ * @param {Set} [options.iterationConstants] Names of constant iteration variables defined by a
+ *     parent template element.
  * @returns {Object} The same parse result object returned by `parseParts` or `undefined` if
  *     the result doesn't contain any parts.
  */
@@ -27,7 +29,7 @@ export function parseElement(element, options) {
 	if (parts.size !== 0 || eventListeners.size !== 0) {
 		let cid;
 		const { childNodes, tagName } = element;
-		const ctxFn = createContextFunction(result);
+		const ctxFn = createContextFunction(result, options);
 
 		// If it already has a context id, use it. Otherwise, generate and set one.
 		if (element.hasAttribute(contextFnId)) {
@@ -64,21 +66,17 @@ export function parseElement(element, options) {
  * @function parseTemplate
  * @param {HTMLTemplateElement} template The template element to parse. Must be an instance of
  *     [HTMLTemplateElement](https://developer.mozilla.org/en-US/docs/Web/API/HTMLTemplateElement).
- * @param {Object} options Options object.
- * @param {Function} options.uniqueId A function to generate unique ID values during the parsing
- *     process.
- * @param {Window} options.window The window object to use during the parsing process.
+ * @param {Object} parseOptions Parse options object.
+ * @param {Function} parseOptions.uniqueId A function to generate unique ID values during the
+ *     parsing process.
+ * @param {Window} parseOptions.window The window object to use during the parsing process.
  */
-export default function parseTemplate(template, options) {
+export default function parseTemplate(template, parseOptions) {
+	const options = { ...parseOptions };
 	const { uniqueId } = options;
 	const templateId = configs.get('templateId');
 	const placeholderId = configs.get('placeholderId');
 	const { HTMLTemplateElement, NodeFilter } = options.window;
-
-	// Convert `options.dataConstans` into a `Set` if it's an array.
-	if (Array.isArray(options.dataConstans) && options.dataConstans.length > 1) {
-		options.dataConstans = new Set(options.dataConstans);
-	}
 
 	if (!(template instanceof HTMLTemplateElement)) {
 		throw new TypeError('The `template` must be an instance of `HTMLTemplateElement`');
@@ -102,15 +100,19 @@ export default function parseTemplate(template, options) {
 	// Parse the <template> element.
 	const result = parseElement(template, options);
 
-	// Add the template's  constants to `options.dataConstans` before parsing its descendants.
+	/**
+	 * If the template is defining `forVariableNames`, add them to `options.iterationConstants`
+	 * (which must be an instance of `Set`) before parsing its descendants.
+	 */
 	if (result !== undefined) {
-		const constants = [
-			...Object.keys(result.constants),
-			...Object.values(result.iterationConstants),
-		];
+		const names = result.forVariableNames;
 
-		if (constants.length > 0) {
-			options.dataConstants = new Set([...(options.dataConstants || []), ...constants]);
+		if (names.length > 0) {
+			if (!options.iterationConstants) {
+				options.iterationConstants = new Set();
+			}
+
+			names.forEach(name => options.iterationConstants.add(name));
 		}
 	}
 

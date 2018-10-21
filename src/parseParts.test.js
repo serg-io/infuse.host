@@ -77,9 +77,9 @@ describe('parseParts', () => {
 	});
 
 	it('should parse the "value" iteration constant from the "for" attribute a template', () => {
-		const html = '<template for="val" of="${ host.collection }"></template>';
-		const { iterationConstants } = parse(html);
-		const { value, key, collection } = iterationConstants;
+		const html = '<template for="val" each="${ host.collection }"></template>';
+		const { forVariableNames } = parse(html);
+		const [value, key, collection] = forVariableNames;
 
 		expect(value).toBe('val');
 		expect(key).toBeUndefined();
@@ -87,9 +87,9 @@ describe('parseParts', () => {
 	});
 
 	it('should parse "value" and "key" iteration constants from the "for" attribute a template', () => {
-		const html = '<template for="[val, k]" of="${ host.collection }"></template>';
-		const { iterationConstants } = parse(html);
-		const { value, key, collection } = iterationConstants;
+		const html = '<template for="[val, k]" each="${ host.collection }"></template>';
+		const { forVariableNames } = parse(html);
+		const [value, key, collection] = forVariableNames;
 
 		expect(value).toBe('val');
 		expect(key).toBe('k');
@@ -97,9 +97,9 @@ describe('parseParts', () => {
 	});
 
 	it('should parse all iteration constants from the "for" attribute a template', () => {
-		const html = '<template for="[val, k, items]" of="${ host.collection }"></template>';
-		const { iterationConstants } = parse(html);
-		const { value, key, collection } = iterationConstants;
+		const html = '<template for="[val, k, items]" each="${ host.collection }"></template>';
+		const { forVariableNames } = parse(html);
+		const [value, key, collection] = forVariableNames;
 
 		expect(value).toBe('val');
 		expect(key).toBe('k');
@@ -146,44 +146,44 @@ describe('parseParts', () => {
 		expect(parts.get(2)).toBe('(event) => (host.bar)');
 	});
 
-	describe('when parsing iterationConstants of a template using the "for" attribute', () => {
+	describe('when parsing forVariableNames of a template using the "for" attribute', () => {
 		function parseFor(value) {
 			const html = `<template for="${ value }" each="\${ host.collection }"></template>`;
 			return parse(html);
 		}
 
-		it('should parse "value"', () => {
+		it('should parse the first name as "value"', () => {
 			const result = parseFor('item');
-			expect(result.iterationConstants.value).toBe('item');
+			expect(result.forVariableNames[0]).toBe('item');
 		});
 
-		it('should parse "value" and "key"', () => {
+		it('should parse the first two names as "value" and "key"', () => {
 			const result = parseFor('item, i');
 
-			expect(result.iterationConstants.key).toBe('i');
-			expect(result.iterationConstants.value).toBe('item');
+			expect(result.forVariableNames[0]).toBe('item');
+			expect(result.forVariableNames[1]).toBe('i');
 		});
 
-		it('should parse "value", "key", and "collection"', () => {
+		it('should parse "value", "key", and "collection" in order', () => {
 			const result = parseFor('item, i, list');
 
-			expect(result.iterationConstants.key).toBe('i');
-			expect(result.iterationConstants.value).toBe('item');
-			expect(result.iterationConstants.collection).toBe('list');
+			expect(result.forVariableNames[0]).toBe('item');
+			expect(result.forVariableNames[1]).toBe('i');
+			expect(result.forVariableNames[2]).toBe('list');
 		});
 
 		it('should ignore square brackets', () => {
 			const result = parseFor('[item, i, list]');
 
-			expect(result.iterationConstants.key).toBe('i');
-			expect(result.iterationConstants.value).toBe('item');
-			expect(result.iterationConstants.collection).toBe('list');
+			expect(result.forVariableNames[0]).toBe('item');
+			expect(result.forVariableNames[1]).toBe('i');
+			expect(result.forVariableNames[2]).toBe('list');
 		});
 	});
 });
 
 describe('contextSourceCode', () => {
-	const SOURCE_CODE = `	const [host, data, tags] = arguments;
+	const SOURCE_CODE = `	const [host, data, iterationData, tags] = arguments;
 
 	return {
 		constants: { host, data },

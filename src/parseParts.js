@@ -2,8 +2,6 @@ import configs from './configs';
 import { camelCase } from './utils';
 import splitFragments, { joinFragments } from './splitFragments';
 
-const ITERATION_CONSTANT_TYPES = ['value', 'key', 'collection'];
-
 /**
  * Obtain a reference to the `AsyncFunction` constructor since it's not a global variable.
  * https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/AsyncFunction
@@ -68,9 +66,10 @@ export function searchName(str, exp) {
  *         define them when a new context is created. Hyphenated variable names are turned into
  *         camelCase.
  *     * `eventListeners`: A `Map` of event listeners to add to each new instance of the element.
+ *     * `forVariableNames`: If the `element` is a <template> element and it has the "for"
+ *         attribute, this array will contain the name of the constants to use in each iteration.
+ *         The order of the variable names follow this format: [value, key, collection].
  *     * `isAsync`: Indicates if one of the `constants` or `watches` use "await".
- *     * `iterationConstants`: If the `element` is a <template> element and it has the "for"
- *         attribute, this object will contain the name of the constants to use in each iteration.
  *     * `parts`: A `Map` of parts and their corresponding callback expressions (strings).
  *     * `parsedAttributeNames`: An array of all the parsed attribute names.
  *     * `parsedChildNodes`: An array of all the parsed child node (text nodes) indexes.
@@ -81,7 +80,7 @@ export default function parseParts(element, window) {
 	const parts = new Map();
 	const watches = new Map();
 	const parsedChildNodes = [];
-	const iterationConstants = {};
+	const forVariableNames = [];
 	const parsedAttributeNames = [];
 	const eventListeners = new Map();
 	const watchExp = configs.get('watchExp');
@@ -174,7 +173,7 @@ export default function parseParts(element, window) {
 			continue;
 		}
 
-		// If it's defining iteration constants, parse them and add them to `iterationConstants`.
+		// If it's defining "for" variable names, parse them and add them to `forVariableNames`.
 		if (isFor) {
 			value = value.trim();
 
@@ -183,16 +182,7 @@ export default function parseParts(element, window) {
 			}
 
 			const variableNames = value.split(',').map(str => str.trim());
-			const length = Math.min(variableNames.length, ITERATION_CONSTANT_TYPES.length);
-
-			for (let j = 0; j < length; j++) {
-				const variableName = variableNames[j];
-				const type = ITERATION_CONSTANT_TYPES[j];
-
-				if (variableName) {
-					iterationConstants[type] = variableName;
-				}
-			}
+			forVariableNames.push(...variableNames);
 			continue;
 		}
 
@@ -229,8 +219,8 @@ export default function parseParts(element, window) {
 	return {
 		constants,
 		eventListeners,
+		forVariableNames,
 		isAsync,
-		iterationConstants,
 		parts,
 		parsedAttributeNames,
 		parsedChildNodes,
@@ -243,58 +233,78 @@ export default function parseParts(element, window) {
  *
  * @function contextSourceCode
  * @param {Object} parseResult The parse result object returned by the `parseParts` function.
+ * @param {Object} [options={}] Options object.
+ * @param {Set} [options.iterationConstants] Names of constant iteration variables defined by a
+ *     parent template element.
  * @returns {string} The source code of the body of a context function.
  */
-export function contextSourceCode(parseResult) {
+export function contextSourceCode(parseResult, options = {}) {
+	// `context` is the object returned by the context function.
 	const context = {};
 	const tagsName = configs.get('tagsName');
-	const dataConstants = [];
-	// const dataConstants = [...config(options, 'dataConstants')];
-	const { constants, eventListeners, iterationConstants, parts, watches } = parseResult;
-	// Name of constant variables declared in the element using "const-*" attributes.
-	const names = Object.keys(constants);
-	// Each string in `constLines` declares one or more constant variables.
-	const constLines = [`const [host, data, ${ tagsName }] = arguments;`];
-	/**
-	 * `dataConstants` defines attributes within `data` that are meant to be used as
-	 * constant variables within the context function. The `notOverwritten` array contains
-	 * `dataConstants` names that are not overwritten by "const-[name]" attributes.
-	 */
-	const notOverwritten = dataConstants.filter(name => !names.includes(name));
+	const { constants, eventListeners, forVariableNames, parts, watches } = parseResult;
+	const constantNames = Object.keys(constants);
 
-	// First declare constants as defined by `dataConstants`.
-	if (notOverwritten.length > 0) {
-		constLines.push(`const { ${ notOverwritten.join(', ') } } = data;`);
+	// Each string in `constLines` declares one or more constant variables.
+	const constLines = [`const [host, data, iterationData, ${ tagsName }] = arguments;`];
+
+	/**
+	 * If the parsed element was inside a template element that defined "for" variable names, the
+	 * name of those constants will be in the `options.iterationConstants` set. At run time, the
+	 * `iterationData` (the third argument received by the context function) will be an object
+	 * containing the iteration data.
+	 */
+	const iterationConstants = Array.from(options.iterationConstants || []);
+
+	// If there are iteration constants, add a line to `constLines` to declare them.
+	if (iterationConstants.length > 0) {
+		constLines.push(`const { ${ iterationConstants.join(', ') } } = iterationData || {};`);
 	}
 
-	// Then declare constants as defined by "const-[name]" attributes.
-	for (const name of names) {
+	// Declare constants as defined by "const-[name]" attributes.
+	for (const name of constantNames) {
 		constLines.push(`const ${ name } = ${ constants[name] };`);
 	}
 
-	/**
-	 * Add `constants`, `eventListeners`, `iterationConstants`, and `watches` to the object
-	 * returned by the context function.
-	 */
-	context.constants = `{ ${ [...notOverwritten, ...names, 'host', 'data'].join(', ') } }`;
+	// Add `iterationConstants` at the beginning of `constantNames`.
+	constantNames.unshift(...iterationConstants);
+
+	// Add constants to `context`.
+	context.constants = `{ ${ [...constantNames, 'host', 'data'].join(', ') } }`;
+
+	// Add event listeners to `context`.
 	if (eventListeners.size > 0) {
 		context.eventListeners = `new Map([${
 			Array.from(eventListeners).map(([name, src]) => `["${ name }", ${ src }]`).join(',')
 		}])`;
 	}
-	if (Object.keys(iterationConstants).length > 0) {
-		context.iterationConstants = JSON.stringify(iterationConstants);
+
+	/**
+	 * If the parsed element was a template element and defined "for" variable names,
+	 * `forVariableNames` (an array) will contain the names of those variables/constants and their
+	 * order will be [value, key, collection]. If it's not empty, add `forVariableNames` to the
+	 * `context` object.
+	 */
+	if (forVariableNames.length > 0) {
+		context.forVariableNames = JSON.stringify(forVariableNames);
 	}
+
+	// Add watches to `context`.
 	if (watches.size > 0) {
 		context.watches = `new Map([${
 			Array.from(watches).map(([name, src]) => `["${ name }", ${ src }]`).join(',')
 		}])`;
 	}
 
+	// Add parts to `context`.
 	context.parts = `new Map([${
 		Array.from(parts).map(([key, src]) => `[${ JSON.stringify(key) }, ${ src }]`).join(',')
 	}])`;
 
+	/**
+	 * Return the generated source code. The declaration of constants go at the top followed by
+	 * a return statement for the `context` object.
+	 */
 	return `	${ constLines.join('\n\t') }
 
 	return {
@@ -307,11 +317,14 @@ export function contextSourceCode(parseResult) {
  *
  * @function createContextFunction
  * @param {Object} parseResult The parse result object returned by the `parseParts` function.
+ * @param {Object} [options={}] Options object.
+ * @param {Set} [options.iterationConstants] Names of constant iteration variables defined by a
+ *     parent template element.
  * @returns {Function|AsyncFunction} The context function.
  */
-export function createContextFunction(parseResult) {
+export function createContextFunction(parseResult, options = {}) {
 	const { isAsync } = parseResult;
-	const source = contextSourceCode(parseResult);
+	const source = contextSourceCode(parseResult, options);
 
 	// eslint-disable-next-line no-new-func
 	return isAsync ? new AsyncFunction(source) : new Function(source);

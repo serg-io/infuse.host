@@ -22,11 +22,13 @@ export const DEFAULTS = [
 	 */
 	['contextFunctionId', 'data-cid'],
 	/**
-	 * Names of the "data" constant variables to declare in all context functions. Can be
-	 * overwritten using an array of strings.
-	 * TODO: Is this used?
+	 * Name of the "event" variable to use in event callbacks/listeners.
 	 */
-	['dataConstants', new Set()],
+	['eventName', 'event'],
+	/**
+	 * Prefix or regular expression used to determine if an attribute is an event listener.
+	 */
+	['listenerExp', 'on'],
 	/**
 	 * Name of the placeholder ID attribute. Nested templates are replaced with "placeholder"
 	 * templates. The presence of the placeholder ID attribute on a template indicates that the
@@ -34,14 +36,6 @@ export const DEFAULTS = [
 	 * the original nested template.
 	 */
 	['placeholderId', 'data-pid'],
-	/**
-	 * Prefix or regular expression used to determine if an attribute is an event listener.
-	 */
-	['listenerExp', 'on'],
-	/**
-	 * Name of the "event" variable to use in event callbacks/listeners.
-	 */
-	['eventName', 'event'],
 	/**
 	 * Name of the attribute that indicates an element must be sweept when it's removed from
 	 * the DOM.
