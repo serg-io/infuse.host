@@ -1,7 +1,7 @@
 {
   "name": "infuse.host",
   "version": "0.0.1",
-  "description": "",
+  "description": "Infuse HTML templates with dynamic content using infuse.host",
   "license": "MIT",
   "author": "Sergio Alcantara <iserg9@gmail.com> (https://github.com/serg-io)",
   "homepage": "https://github.com/serg-io/infuse.host#readme",
