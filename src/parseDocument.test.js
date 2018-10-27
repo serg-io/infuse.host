@@ -1,4 +1,4 @@
-import parseDocument, { getDoctype } from './parseDocument';
+import parseDocument, { getDoctype } from './parseDocument.js';
 
 // Default DOCTYPE (HTML5).
 const DOCTYPE = '<!DOCTYPE html>';

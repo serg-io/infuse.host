@@ -1,5 +1,5 @@
-import infuseElement from './infuseElement';
-import { addCleanupFunction } from './sweep';
+import infuseElement from './infuseElement.js';
+import { addCleanupFunction } from './sweep.js';
 
 /**
  * Stores all the watches. The keys are the elements being "watched" and the values are "watch maps"

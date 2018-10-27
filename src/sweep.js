@@ -1,4 +1,4 @@
-import configs from './configs';
+import configs from './configs.js';
 
 /**
  * Keys will be elements and values will be a `Set` of callbacks that will be executed, by the

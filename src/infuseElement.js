@@ -1,5 +1,5 @@
-import { contexts } from './configs';
-import { camelCase } from './utils';
+import { contexts } from './configs.js';
+import { camelCase } from './utils.js';
 
 const PART_SYNTAX_HELP = 'Make sure the part name is spelled correctly. If it\'s a property, it must start with a dot, if it\'s a boolean attribute, it must end with a question mark.';
 

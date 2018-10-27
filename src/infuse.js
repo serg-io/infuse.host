@@ -1,7 +1,7 @@
-import Watch from './Watch';
-import infuseElement from './infuseElement';
-import sweep, { addCleanupFunction } from './sweep';
-import configs, { contexts, contextFunctions, parsedTemplates } from './configs';
+import Watch from './Watch.js';
+import infuseElement from './infuseElement.js';
+import sweep, { addCleanupFunction } from './sweep.js';
+import configs, { contexts, contextFunctions, parsedTemplates } from './configs.js';
 
 // Export the `sweep` function as `clear`.
 export { sweep as clear };

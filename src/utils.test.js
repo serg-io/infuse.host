@@ -1,4 +1,4 @@
-import { camelCase, uniqueId } from './utils';
+import { camelCase, uniqueId } from './utils.js';
 
 describe('camelCase', () => {
 	it('should turn hyphenated strings into camelCase', () => {

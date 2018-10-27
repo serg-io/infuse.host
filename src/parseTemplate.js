@@ -1,5 +1,6 @@
-import configs, { contextFunctions, parsedTemplates } from './configs';
-import parseParts, { createContextFunction } from './parseParts';
+import { uniqueId as defaultUniqueIdFn } from './utils.js';
+import configs, { contextFunctions, parsedTemplates } from './configs.js';
+import parseParts, { createContextFunction } from './parseParts.js';
 
 /**
  * Finds and parses all the expressions and template literals in all attributes and text child
@@ -66,13 +67,23 @@ export function parseElement(element, options) {
  * @function parseTemplate
  * @param {HTMLTemplateElement} template The template element to parse. Must be an instance of
  *     [HTMLTemplateElement](https://developer.mozilla.org/en-US/docs/Web/API/HTMLTemplateElement).
- * @param {Object} parseOptions Parse options object.
- * @param {Function} parseOptions.uniqueId A function to generate unique ID values during the
- *     parsing process.
- * @param {Window} parseOptions.window The window object to use during the parsing process.
+ * @param {Object} [parseOptions={}] Parse options object.
+ * @param {Function} [parseOptions.uniqueId] A function to generate unique ID values during the
+ *     parsing process. If not provided, the `uniqueId` function from the "utils" module will be
+ *     used by default.
+ * @param {Window} [parseOptions.window] The window object to use during the parsing process. If
+ *     not provided, it will try to use the global `window` variable.
  */
-export default function parseTemplate(template, parseOptions) {
+export default function parseTemplate(template, parseOptions = {}) {
 	const options = { ...parseOptions };
+
+	if (!options.uniqueId) {
+		options.uniqueId = defaultUniqueIdFn;
+	}
+	if (!options.window && typeof window !== 'undefined') {
+		options.window = window;
+	}
+
 	const { uniqueId } = options;
 	const templateId = configs.get('templateId');
 	const placeholderId = configs.get('placeholderId');

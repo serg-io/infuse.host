@@ -4,7 +4,7 @@ import parseParts, {
 	searchName,
 	contextSourceCode,
 	createContextFunction,
-} from './parseParts';
+} from './parseParts.js';
 
 const AsyncFunction = Object.getPrototypeOf(async () => {}).constructor;
 

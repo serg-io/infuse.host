@@ -1,8 +1,8 @@
 /* eslint-disable no-template-curly-in-string */
 import domino, { impl as window } from 'domino';
-import parseTemplate, { parseElement } from './parseTemplate';
-import { uniqueId } from './utils';
-import { contextFunctions, setConfigs, parsedTemplates } from './configs';
+import parseTemplate, { parseElement } from './parseTemplate.js';
+import { uniqueId } from './utils.js';
+import { contextFunctions, setConfigs, parsedTemplates } from './configs.js';
 
 const OPTIONS = { uniqueId, window };
 

@@ -1,4 +1,4 @@
-import configs from './configs';
+import configs from './configs.js';
 
 /**
  * Takes an array of tag function names and returns a settings object that can be used to find tag
@@ -90,8 +90,8 @@ export function createTagSettings(tags) {
  * The last example contains a tagged template literal. In order to identify tags, the "tags"
  * configuration object must be set first. For instance:
  *
- *     import { setConfigs } from 'path/to/configs';
- *     import splitFragments, { createTagSettings } from 'path/to/splitFragments';
+ *     import { setConfigs } from 'path/to/configs.js';
+ *     import splitFragments, { createTagSettings } from 'path/to/splitFragments.js';
  *     // Pass all tag names that could be found in the string.
  *     setConfigs({ tags: ['i18n', 'currency', 'date'] });
  *     // Template literals can be tagged using any tag name in the "tags" configuration.

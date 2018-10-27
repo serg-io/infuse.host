@@ -1,11 +1,11 @@
-import parseDocument from './parseDocument';
-import parseTemplate from './parseTemplate';
-import configs, { contextFunctions, parsedTemplates } from './configs';
+import parseDocument from './parseDocument.js';
+import parseTemplate from './parseTemplate.js';
+import configs, { contextFunctions, parsedTemplates } from './configs.js';
 
 /**
  * Path to the configs module to use in generated ES modules.
  */
-const DEFAULT_CONFIGS_PATH = 'infuse.host/src/configs';
+const DEFAULT_CONFIGS_PATH = 'infuse.host/src/configs.js';
 
 /**
  * Generates a function that can be used to create unique IDs. The returned function is meant to be

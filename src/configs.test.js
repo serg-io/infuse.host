@@ -1,4 +1,4 @@
-import configs, { setConfigs } from './configs';
+import configs, { setConfigs } from './configs.js';
 
 describe('setConfigs', () => {
 	it('should set configuration options from an object', () => {

@@ -1,6 +1,6 @@
-import configs from './configs';
-import { camelCase } from './utils';
-import splitFragments, { joinFragments } from './splitFragments';
+import configs from './configs.js';
+import { camelCase } from './utils.js';
+import splitFragments, { joinFragments } from './splitFragments.js';
 
 /**
  * Obtain a reference to the `AsyncFunction` constructor since it's not a global variable.
