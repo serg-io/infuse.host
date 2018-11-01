@@ -22,13 +22,13 @@ export const DEFAULTS = [
 	 */
 	['contextFunctionId', 'data-cid'],
 	/**
+	 * Prefix or regular expression used to determine if an attribute is an event handler.
+	 */
+	['eventHandlerExp', 'on'],
+	/**
 	 * Name of the "event" variable to use in event callbacks/listeners.
 	 */
 	['eventName', 'event'],
-	/**
-	 * Prefix or regular expression used to determine if an attribute is an event listener.
-	 */
-	['listenerExp', 'on'],
 	/**
 	 * Name of the placeholder ID attribute. Nested templates are replaced with "placeholder"
 	 * templates. The presence of the placeholder ID attribute on a template indicates that the

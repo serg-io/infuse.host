@@ -85,7 +85,7 @@ export default function parseParts(element, window) {
 	const eventListeners = new Map();
 	const watchExp = configs.get('watchExp');
 	const constantExp = configs.get('constantExp');
-	const listenerExp = configs.get('listenerExp');
+	const eventHandlerExp = configs.get('eventHandlerExp');
 	const { HTMLTemplateElement, Node } = window;
 
 	let isAsync = false;
@@ -94,19 +94,19 @@ export default function parseParts(element, window) {
 		let { name, value } = element.attributes.item(i);
 
 		const constantName = searchName(name, constantExp);
-		const eventName = searchName(name, listenerExp);
+		const eventName = searchName(name, eventHandlerExp);
 		const watchName = searchName(name, watchExp);
 
 		const isConstant = constantName !== null;
-		const isEventListener = eventName !== null;
+		const isEventHandler = eventName !== null;
 		const isFor = name === 'for' && element instanceof HTMLTemplateElement;
 		const isWatch = watchName !== null;
 
 		/**
 		 * The opening ('${') and closing ('}') expression brackets are optional for event
-		 * listeners. Add them if the value doesn't have them.
+		 * handlers. Add them if the value doesn't have them.
 		 */
-		if (isEventListener) {
+		if (isEventHandler) {
 			value = value.trim();
 
 			// Remove semi-colon if it ends with one.
@@ -126,7 +126,7 @@ export default function parseParts(element, window) {
 		 * Ignore attribute and continue to the next one if there are no fragments and it's not:
 		 * a constant, event listener, "for" attribute, or watch.
 		 */
-		if (!hasFragments && !isConstant && !isEventListener && !isFor && !isWatch) {
+		if (!hasFragments && !isConstant && !isEventHandler && !isFor && !isWatch) {
 			continue;
 		}
 
@@ -166,7 +166,7 @@ export default function parseParts(element, window) {
 		}
 
 		// If it's defining an event listener, add it to `eventListeners`.
-		if (isEventListener) {
+		if (isEventHandler) {
 			// Join the fragments and add it to `eventListeners`.
 			const callbackCode = joinFragments(fragments, true);
 			eventListeners.set(camelCase(eventName), callbackCode);
