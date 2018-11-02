@@ -15,9 +15,9 @@ describe('searchName', () => {
 	});
 
 	it('should find a "name" using a regular expression', () => {
-		expect(searchName('const-foo', /const-(\w+)/)).toBe('foo');
-		expect(searchName('foo-const', /(\w+)-const/)).toBe('foo');
-		expect(searchName('var-foo-const', /var-(\w+)-const/)).toBe('foo');
+		expect(searchName('const-foo', /^const-(\w+)$/)).toBe('foo');
+		expect(searchName('foo-const', /^(\w+)-const$/)).toBe('foo');
+		expect(searchName('var-foo-const', /^var-(\w+)-const$/)).toBe('foo');
 	});
 
 	it('should return null if no "name" was found', () => {

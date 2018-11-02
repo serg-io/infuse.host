@@ -17,9 +17,9 @@ const AsyncFunction = Object.getPrototypeOf(async () => {}).constructor;
  *
  *     searchName('c-foo', 'c-');
  *     searchName('const-foo', 'const-');
- *     searchName('const-foo', /const-(\w+)/);
- *     searchName('foo-const', /(\w+)-const/);
- *     searchName('var-foo-const', /var-(\w+)-const/);
+ *     searchName('const-foo', /^const-(\w+)$/);
+ *     searchName('foo-const', /^(\w+)-const$/);
+ *     searchName('var-foo-const', /^var-(\w+)-const$/);
  *
  * @function searchName
  * @param {string} str The string in which to search for the variable or event name.
