@@ -72,7 +72,7 @@ export function initializeElement(element, host, data, iterationData = {}) {
 	 *     * An object: {'eventType1[ selector1][; eventType2[ selector2]]': 'parts'}
 	 */
 	Array.from(watches.keys()).forEach((name) => {
-		const el = constants[name];
+		const el = name === 'this' ? element : constants[name];
 		let eventMap = watches.get(name);
 
 		if (!(eventMap instanceof Map)) {
