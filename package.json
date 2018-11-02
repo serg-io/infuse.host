@@ -1,6 +1,6 @@
 {
   "name": "infuse.host",
-  "version": "0.0.1",
+  "version": "0.0.0",
   "description": "Infuse HTML templates with dynamic content using infuse.host",
   "license": "MIT",
   "author": "Sergio Alcantara <iserg9@gmail.com> (https://github.com/serg-io)",
@@ -26,7 +26,7 @@
   ],
   "scripts": {
     "lint": "eslint src/*",
-    "postversion": "git push && git push --tags",
+    "postversion": "git push && git push --tags && npm publish",
     "prepare": "rm -rf lib && npm run transpile",
     "preversion": "npm run lint && npm run test",
     "test": "jest",
