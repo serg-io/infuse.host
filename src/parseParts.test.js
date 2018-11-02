@@ -118,6 +118,24 @@ describe('parseParts', () => {
 		expect(parts.get('disabled?')).toBe('(event) => (host.foo)');
 	});
 
+	it('should parse "event handlers"', () => {
+		const { eventListeners } = parse('<form onsubmit="host.submit(event)"></form>');
+
+		expect(eventListeners.get('submit')).toBe('(event) => (host.submit(event))');
+	});
+
+	it('should parse "event handlers" with spaces and that end with a semi-colon', () => {
+		const { eventListeners } = parse('<form onsubmit=" host.submit(event); "></form>');
+
+		expect(eventListeners.get('submit')).toBe('(event) => (host.submit(event))');
+	});
+
+	it('should parse "event handlers" that have "${" and "}" in the value', () => {
+		const { eventListeners } = parse('<form onsubmit="${ host.submit(event) }"></form>');
+
+		expect(eventListeners.get('submit')).toBe('(event) => (host.submit(event))');
+	});
+
 	it('should parse "property parts"', () => {
 		const { parts } = parse('<input type="text" .value="${ host.foo }">');
 
