@@ -86,6 +86,7 @@ export default function parseParts(element, window) {
 	const watchExp = configs.get('watchExp');
 	const constantExp = configs.get('constantExp');
 	const eventHandlerExp = configs.get('eventHandlerExp');
+	const camelCaseEvents = configs.get('camelCaseEvents');
 	const { HTMLTemplateElement, Node } = window;
 
 	let isAsync = false;
@@ -94,7 +95,7 @@ export default function parseParts(element, window) {
 		let { name, value } = element.attributes.item(i);
 
 		const constantName = searchName(name, constantExp);
-		const eventName = searchName(name, eventHandlerExp);
+		let eventName = searchName(name, eventHandlerExp);
 		const watchName = searchName(name, watchExp);
 
 		const isConstant = constantName !== null;
@@ -169,7 +170,12 @@ export default function parseParts(element, window) {
 		if (isEventHandler) {
 			// Join the fragments and add it to `eventListeners`.
 			const callbackCode = joinFragments(fragments, true);
-			eventListeners.set(camelCase(eventName), callbackCode);
+
+			if (camelCaseEvents) {
+				eventName = camelCase(eventName);
+			}
+
+			eventListeners.set(eventName, callbackCode);
 			continue;
 		}
 

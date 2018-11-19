@@ -226,20 +226,22 @@ export default function infuse(host, template, data = {}, iterationData = {}) {
 	});
 }
 
-export class Host extends HTMLElement {
-	constructor() {
-		super();
+export function CustomizedHost(BuiltInElement) {
+	return class extends BuiltInElement {
+		connectedCallback() {
+			let { template } = this;
 
-		let { template } = this;
+			if (typeof template === 'function') {
+				template = template();
+			}
 
-		if (typeof template === 'function') {
-			template = template();
+			this.appendChild(infuse(this, template));
 		}
 
-		this.appendChild(infuse(this, template));
-	}
-
-	disconnectedCallback() {
-		sweep(this);
-	}
+		disconnectedCallback() {
+			sweep(this);
+		}
+	};
 }
+
+export class Host extends CustomizedHost(HTMLElement) {}

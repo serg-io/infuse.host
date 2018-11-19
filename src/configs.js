@@ -12,6 +12,10 @@ export const contextFunctions = new Map();
  */
 export const DEFAULTS = [
 	/**
+	 * 
+	 */
+	['camelCaseEvents', false],
+	/**
 	 * Prefix or regular expression used to determine if an attribute is a constant variable
 	 * declaration.
 	 */
@@ -24,7 +28,7 @@ export const DEFAULTS = [
 	/**
 	 * Prefix or regular expression used to determine if an attribute is an event handler.
 	 */
-	['eventHandlerExp', 'on'],
+	['eventHandlerExp', /^on-?(\w[\w:-]+)$/],
 	/**
 	 * Name of the "event" variable to use in event callbacks/listeners.
 	 */
