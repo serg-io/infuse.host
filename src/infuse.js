@@ -226,10 +226,51 @@ export default function infuse(host, template, data = {}, iterationData = {}) {
 	});
 }
 
-export function CustomizedHost(BuiltInElement) {
-	return class extends BuiltInElement {
+/**
+ * Uses (extends) the given element class to define a custom element class that uses the `infuse`
+ * function to generate its contents. The `template` getter must be overwritten to return a
+ * template, which would be cloned and infused when the element is added to the DOM (when
+ * `connectedCallback` is called). When the element is removed from the DOM (and
+ * `disconnectCallback` is called) all memory allocated by infuse process (associated with the
+ * element **and any of its descendants**) will be cleared.
+ *
+ * To define a [custom element
+ * class](https://developers.google.com/web/fundamentals/web-components/customelements) use
+ * `HTMLElement` when calling this function. To define a [customized built-in element
+ * class](https://developers.google.com/web/fundamentals/web-components/customelements#extendhtml),
+ * use the class of the native element that you want to extend (for instance use `HTMLLIElement` if
+ * you want to extend the native `<li>` element).
+ *
+ * @function CustomHost
+ * @param ElementClass The element class to extend.
+ * @returns The custom element class.
+ */
+export function CustomHost(ElementClass) {
+	return class extends ElementClass {
+		/**
+		 * This is the only property/getter that must be overwritten in order to generate the
+		 * contents of the element automatically. The function used to overwrite this getter must
+		 * return a template, which will be cloned and infused when the element is added to the DOM.
+		 *
+		 */
+		// eslint-disable-next-line class-methods-use-this
+		get template() {
+			return null;
+		}
+
+		/**
+		 * Uses the template provided by the `template` getter to generate the contents of this
+		 * element when the element is added to the DOM. Performs no action if the `template` getter
+		 * returns a falsy value.
+		 *
+		 * @method connectedCallback
+		 */
 		connectedCallback() {
 			let { template } = this;
+
+			if (!template) {
+				return;
+			}
 
 			if (typeof template === 'function') {
 				template = template();
@@ -238,10 +279,22 @@ export function CustomizedHost(BuiltInElement) {
 			this.appendChild(infuse(this, template));
 		}
 
+		/**
+		 * When the element is removed from the DOM, this method clears all memory associated with
+		 * this element, **and any of its descendants**, that was allocated by infuse process.
+		 *
+		 * @method disconnectedCallback
+		 */
 		disconnectedCallback() {
 			sweep(this);
 		}
 	};
 }
 
-export class Host extends CustomizedHost(HTMLElement) {}
+/**
+ * This class extends the `HTMLElement` class and can be used to define [custom
+ * elements](https://developers.google.com/web/fundamentals/web-components/customelements).
+ *
+ * @class
+ */
+export class Host extends CustomHost(HTMLElement) {}
