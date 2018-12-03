@@ -468,12 +468,12 @@ generate a `<table>` with a list of books.
 Note how the iterating template is inside a parent template. When a template is cloned and infused,
 nested templates are also cloned and infused.
 
-## Custom Elements Using Infuse.Host ##
+## Custom Elements ##
 
-The `Infuse.Host` can be extended to define a class for a custom element. The only property that
-is required to be defined is a `template` getter.
+The `Infuse.Host` class can be extended to define a class for a custom element. The only property
+that is required to be defined is a `template` getter.
 
-Lets say you want to define a custom element for a login form and that you're using
+Lets say you want to define a custom element for a login form and that you're using webpack and
 [infuse-loader](https://github.com/serg-io/infuse-loader) to parse and import your templates. The
 following code would define a custom element called `<login-form>`:
 
@@ -491,10 +491,59 @@ following code would define a custom element called `<login-form>`:
 	// Define the custom element.
 	window.customElements.define('login-form', LoginForm);
 
-When the custom element is created, `Infuse.Host` uses the `template` property to obtain the
-template to clone and infuse and the resulting fragment is added to the custom element. When the
-custom element is removed from the DOM, memory allocated (during the infusion process) for any of
-its descendants it's cleared automatically, no need to call the `clear` function.
+When the custom element is added to the DOM, `Infuse.Host` uses the `template` property to obtain
+the template to clone and infuse and the resulting fragment is added to the custom element. When the
+custom element is removed from the DOM, memory allocated (during the infusion process) for the
+element, and any of its descendants, is cleared automatically, no need to call the `clear` function.
+
+### Customized Built-in Elements ###
+
+If you want to extend one of the browser's built-in elements you can use the `CustomHost` function
+to define a [customized built-in
+element](https://developers.google.com/web/fundamentals/web-components/customelements#extendhtml).
+
+For instance, lets say that your application contains a shopping cart and you want to summarize the
+items in the cart using a list (an `<ul>` element) where each element in the list is an item in the
+cart. You can define a **customized built-in element** that extends the `HTMLLIElement` class (the
+`<li>` element):
+
+	import { CustomHost } from 'path/to/infuse.host/src/infuse.js';
+	import cartItemTemplate from './cart-item.html';
+
+	/**
+	 * Extend the `HTMLLIElement` class to define a new `CartItem` class.
+	 */
+	class CartItem extends CustomHost(HTMLLIElement) {
+		get template() {
+			// Return the parsed template.
+			return cartItemTemplate;
+		}
+	}
+
+	/**
+	 * When defining customized built-in elements, you must specify (in the third argument) what
+	 * built-in HTML tag the custom element extends.
+	 */
+	window.customElements.define('cart-item', CartItem, { extends: 'li' });
+
+Once defined, you can create them manually using the constructor:
+
+	const item = new CartItem();
+
+or using `document.createElement`:
+
+	const item = document.createElement('li', { is: 'cart-item' });
+
+and add them to the DOM manually.
+
+You can also use them in HTML templates:
+
+	<ul>
+		<template for="item" each="${ host.shoppingCartItems }">
+			<li is="cart-item" .description="${ item.description }" .price="${ item.price }"></li>
+		</template>
+	</ul>
+
 
 ## Configuration Options ##
 
