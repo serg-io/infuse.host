@@ -514,6 +514,18 @@ In the following example, the `setConfigs` function is used to change the config
 
 The following is a list of all the configuration options:
 
+* **`camelCaseEvents`**: Indicates whether or not event names in event handlers should be camel
+  cased during the parsing process. For instance, consider the following element:
+
+		<form on-client-side-validation="host.enableSubmitBtn(event)">
+			<!-- Form fields. -->
+		</form>
+
+  Since the default value for the `camelCaseEvents` configuration option is `false` an event
+  listerner will be added to the previous form element that will listen for "client-side-validation"
+  events. However, if `camelCaseEvents` is changed to `true`, the event listener would be listening
+  for "clientSideValidation" events (the dashes are used to camel case the event name).
+
 * **`constantExp`**: The prefix (a string) or a regular expression used to determine if an
   attribute is a custom constant. This is "const-" by default which means that all attributes that
   start with "const-" are custom constant definitions.
@@ -533,25 +545,33 @@ The following is a list of all the configuration options:
   is "data-cid" by default.
 
 * **`eventHandlerExp`**: The prefix (a string) or a regular expression used to determine if an
-  attribute is an event handler. This is "on" by default which means that all attributes that start
-  with "on" are event handlers.
+  attribute is an event handler. The regular expression `/^on-?(\w[\w:-]+)$/` is used by default,
+  which means that event handlers start with "on" and can contain alphanumeric characters,
+  underscores, dashes, and colons.
 
-  If `eventHandlerExp` is set to a regular expression, the regular expression is used to determine
-  if attributes are event handlers. For instance, when using the following expression:
+  The parentheses within the regular expression indicate the location of the event type. For
+  instance, when using the following expression:
 
-		setConfigs({ eventHandlerExp: /^on-(\w+)-run$/ });
+		setConfigs({ eventHandlerExp: /^when-(\w+)-run$/ });
 
   you would write event handlers in the following format:
 
-		on-type-run="expression"
+		when-eventtype-run="expression"
 
-  where `type` is the event type and `expression` is the expression to execute when the event
-  occurs, for example:
+  where `eventtype` is the event type and `expression` is the expression to execute when the event
+  occurs, for example using:
 
-		on-submit-run="event.preventDefault()"
+		when-submit-run="event.preventDefault()"
 
-  If you're using a regular expression, it must contain parenthesis, as shown above. The
-  parenthesis indicate the location of the type of event.
+  would add an event listener to the element that will listen for "submit" events. Parentheses are
+  required when using a regular expression.
+
+  Alternatively, you can use a string to indicate the prefix of event handlers. For instance, when
+  using "on":
+
+		setConfigs({ eventHandlerExp: 'on' });
+
+  all attributes that start with "on" will be treated as event handlers.
 
 * **`eventName`**: Name of the event variable available within expressions and event handlers.
   This is "event" by default. If you wanted event variables to be named "e" instead, you would have
