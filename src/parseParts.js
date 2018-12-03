@@ -104,23 +104,18 @@ export default function parseParts(element, window) {
 		const isWatch = watchName !== null;
 
 		/**
-		 * The opening ('${') and closing ('}') expression brackets are optional for event
-		 * handlers. Add them if the value doesn't have them.
+		 * Trim white space if it's an event handler. Throw an exception if it starts with ${ and
+		 * ends with }.
 		 */
 		if (isEventHandler) {
 			value = value.trim();
 
-			// Remove semi-colon if it ends with one.
-			if (value.endsWith(';')) {
-				value = value.substr(0, value.length - 1);
-			}
-
-			if (!value.startsWith('${') && !value.endsWith('}')) {
-				value = `\${${ value }}`;
+			if (value.startsWith('${') && value.endsWith('}')) {
+				throw new SyntaxError(`Event handlers should not start with "\${" and end with "}": ${ name }="${ value }".`);
 			}
 		}
 
-		const fragments = splitFragments(value);
+		const fragments = isEventHandler ? null : splitFragments(value);
 		const hasFragments = fragments !== null;
 
 		/**
@@ -169,7 +164,7 @@ export default function parseParts(element, window) {
 		// If it's defining an event listener, add it to `eventListeners`.
 		if (isEventHandler) {
 			// Join the fragments and add it to `eventListeners`.
-			const callbackCode = joinFragments(fragments, true);
+			const callbackCode = `(${ configs.get('eventName') }) => {${ value }}`;
 
 			if (camelCaseEvents) {
 				eventName = camelCase(eventName);

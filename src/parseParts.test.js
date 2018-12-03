@@ -121,19 +121,19 @@ describe('parseParts', () => {
 	it('should parse "event handlers"', () => {
 		const { eventListeners } = parse('<form onsubmit="host.submit(event)"></form>');
 
-		expect(eventListeners.get('submit')).toBe('(event) => (host.submit(event))');
+		expect(eventListeners.get('submit')).toBe('(event) => {host.submit(event)}');
 	});
 
 	it('should parse "event handlers" with spaces and that end with a semi-colon', () => {
 		const { eventListeners } = parse('<form onsubmit=" host.submit(event); "></form>');
 
-		expect(eventListeners.get('submit')).toBe('(event) => (host.submit(event))');
+		expect(eventListeners.get('submit')).toBe('(event) => {host.submit(event);}');
 	});
 
-	it('should parse "event handlers" that have "${" and "}" in the value', () => {
-		const { eventListeners } = parse('<form onsubmit="${ host.submit(event) }"></form>');
-
-		expect(eventListeners.get('submit')).toBe('(event) => (host.submit(event))');
+	it('should throw when parsing an event handler that starts with "${" and ends with "}"', () => {
+		expect(() => {
+			parse('<form onsubmit="${ host.submit(event) }"></form>');
+		}).toThrowError(SyntaxError);
 	});
 
 	it('should parse "property parts"', () => {

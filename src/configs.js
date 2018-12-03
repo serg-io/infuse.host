@@ -12,7 +12,14 @@ export const contextFunctions = new Map();
  */
 export const DEFAULTS = [
 	/**
-	 * 
+	 * Indicates whether or not event names in event handlers should be camel cased during the
+	 * parsing process. For instance, if this configuration option is `true` when parsing:
+	 *
+	 *     on-item-completed="host.completed(event)"
+	 *
+	 * this event handler will be listening for "itemCompleted" events. Otherwise, if this
+	 * configuration option is `false`, the previous event handler would be listeninig for
+	 * "item-completed" events.
 	 */
 	['camelCaseEvents', false],
 	/**
