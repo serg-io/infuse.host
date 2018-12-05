@@ -108,7 +108,7 @@ const html = \`${ doctype }\n${ document.body.outerHTML.replace(/\\?`/g, '\\`') 
 
 const parser = new DOMParser();
 const doc = parser.parseFromString(html, 'text/html');
-const templates = doc.querySelectorAll('template');
+const templates = doc.getElementsByTagName('template');
 
 export { doc as document };
 export default templates[0];

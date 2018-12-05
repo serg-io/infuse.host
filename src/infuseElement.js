@@ -17,14 +17,15 @@ const PART_SYNTAX_HELP = 'Make sure the part name is spelled correctly. If it\'s
 export default function infuseElement(element, parts = '*', event) {
 	let partsToInfuse;
 	const context = contexts.get(element);
+	const contextParts = context.parts || new Map();
 
 	if (parts === '*') {
-		partsToInfuse = context.parts;
+		partsToInfuse = contextParts;
 	} else {
 		// Make sure we're using an array.
 		partsToInfuse = Array.isArray(parts) ? parts : [parts];
 		// Map it into pairs of parts and functions.
-		partsToInfuse = partsToInfuse.map(part => ([part, context.parts.get(part)]));
+		partsToInfuse = partsToInfuse.map(part => ([part, contextParts.get(part)]));
 		// Instantiate a `Map` of parts and their corresponding functions.
 		partsToInfuse = new Map(partsToInfuse);
 	}

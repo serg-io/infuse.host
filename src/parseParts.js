@@ -298,9 +298,11 @@ export function contextSourceCode(parseResult, options = {}) {
 	}
 
 	// Add parts to `context`.
-	context.parts = `new Map([${
-		Array.from(parts).map(([key, src]) => `[${ JSON.stringify(key) }, ${ src }]`).join(',')
-	}])`;
+	if (parts.size > 0) {
+		context.parts = `new Map([${
+			Array.from(parts).map(([key, src]) => `[${ JSON.stringify(key) }, ${ src }]`).join(',')
+		}])`;
+	}
 
 	/**
 	 * Return the generated source code. The declaration of constants go at the top followed by

@@ -7,18 +7,24 @@ import configs, { contexts, contextFunctions, parsedTemplates } from './configs.
 export { sweep as clear };
 
 /**
- * Finds the corresponding context function for the given element, executes it to create a new
- * context, stores it in `contexts`, infuses the element, and if needed, adds event listeners.
+ * Creates a context object for the given `element`.
  *
- * @function initializeElement
- * @param {Element} element The element to infuse.
+ * @function createContext
+ * @param {Element} element The element for which the context will be created.
  * @param {Element} host The host element.
- * @param {Object} [data] The data object.
- * @param {Object} [iterationData={}] Optional iteration data object.
+ * @param {Object} data The data object.
+ * @param {Object} iterationData The iteration data object.
+ * @returns {Object} The created context object or `undefined` if the element doesn't have the
+ *     context function id attribute.
  */
-export function initializeElement(element, host, data, iterationData = {}) {
+export function createContext(element, host, data, iterationData) {
 	const tags = configs.get('tags');
 	const contextFnId = configs.get('contextFunctionId');
+
+	// Do not proceed if the element doesn't have the context function id attribute.
+	if (!element.hasAttribute(contextFnId)) {
+		return undefined;
+	}
 
 	// Get the ID of the element's context function and remove the attribute.
 	const ctxId = element.getAttribute(contextFnId);
@@ -29,19 +35,33 @@ export function initializeElement(element, host, data, iterationData = {}) {
 
 	// Execute the context function to create a new context object for the given `element`.
 	const context = ctxFn.call(element, host, data, iterationData, tags);
-	const { constants, eventListeners, watches } = context;
 
 	// Add it to `contexts` and infuse the element.
 	contexts.set(element, context);
-	infuseElement(element);
 
-	/**
-	 * Add a function to delete the element's `context` from `contexts` when the `element` is
-	 * removed from the DOM.
-	 */
+	// Add a function to delete the element's `context` when the `element` is removed from the DOM.
 	addCleanupFunction(element, () => {
 		contexts.delete(element);
 	});
+
+	return context;
+}
+
+/**
+ * Creates a context for the given `element`, infuses it, and if needed, adds event listeners and
+ * watches.
+ *
+ * @function initializeElement
+ * @param {Element} element The element to infuse.
+ * @param {Element} host The host element.
+ * @param {Object} [data] The data object.
+ * @param {Object} [iterationData] Optional iteration data object.
+ */
+export function initializeElement(element, host, data, iterationData) {
+	const context = createContext(element, host, data, iterationData);
+	const { constants, eventListeners, watches } = context;
+
+	infuseElement(element);
 
 	// Add event listeners.
 	if (eventListeners) {
@@ -60,7 +80,7 @@ export function initializeElement(element, host, data, iterationData = {}) {
 	}
 
 	// Do not continue if there are no watches.
-	if (!watches || watches.size === 0) {
+	if (!watches) {
 		return;
 	}
 
@@ -162,21 +182,14 @@ export function infuseTemplate(host, template, data = {}, iterationData = {}) {
  * @returns {DocumentFragment} The infused document fragment.
  */
 export default function infuse(host, template, data = {}, iterationData = {}) {
-	const contextFnId = configs.get('contextFunctionId');
+	// Create a context (if one can be created).
+	const context = createContext(template, host, data, iterationData);
 
-	// Call infuseTemplate if the template doesn't have a context function.
-	if (!template.hasAttribute(contextFnId)) {
+	// If the context couldn't be created, call infuseTemplate.
+	if (!context) {
 		return infuseTemplate(host, template, data, iterationData);
 	}
 
-	// Get the ID of the template's context function.
-	const ctxId = template.getAttribute(contextFnId);
-
-	// Get the template's context function.
-	const ctxFn = contextFunctions.get(ctxId);
-
-	// Execute the context function to create a new context object.
-	const context = ctxFn.call(template, host, data, iterationData, configs.get('tags'));
 	const { forVariableNames, parts } = context;
 	const fn = parts.get('each');
 
