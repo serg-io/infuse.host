@@ -1,4 +1,5 @@
 <section>
+
 ## Introduction ##
 
 Infuse.host allows you to **infuse** an HTML fragment, cloned from an HTML template, with dynamic
@@ -12,9 +13,10 @@ code, for the parts you want to infuse. It also allows you to:
   the `host` and other variables.
 * Write watches to re-infuse an element automatically when an event occurs on another element.
 * Clone and infuse a template multiple times using templates known as **iterating templates**.
-</section>
 
+</section>
 <section>
+
 ## Template Literals ##
 
 A **template literal** starts and ends with back-tick characters, and just like template literals
@@ -43,9 +45,10 @@ setConfigs({ tags: { i18n: i18n } });
 The infuse.host parser uses the "tags" configuration object to identify the tag functions that you
 use in your HTML templates. For instance, if you use the "tags" configuration object shown above,
 `` i18n`submit` `` will be infused with (replaced with) the string `Submit`.
-</section>
 
+</section>
 <section>
+
 ## Expressions ##
 
 An **expression** starts with a `${` and ends with `}` and contains Javascript code, which is
@@ -71,9 +74,10 @@ Expressions and template literals can be used in combination with static strings
 	i18n`submit`
 </button>
 ```
-</section>
 
+</section>
 <section>
+
 ## Example ##
 
 In the following basic example, the `<template>` element is parsed, cloned, and infused. The
@@ -165,9 +169,10 @@ can avoid doing this in the browser, which would increase performance, by parsin
 part of a build or back-end process. If you're using [webpack](https://webpack.js.org/), you can
 use [infuse-loader](https://github.com/serg-io/infuse-loader) to parse templates and generate ES
 modules from HTML files. These modules can then be imported into other modules.
-</section>
 
+</section>
 <section>
+
 ## Custom Constants ##
 
 Custom constants are variables available within expressions and event handlers of an element. These
@@ -192,9 +197,10 @@ To define a variable with a capital letter in its name, you must use dashes as s
 previous example.
 
 Note: the `event` variable is not available in expressions to declare custom constants.
-</section>
 
+</section>
 <section>
+
 ## Parts ##
 
 There are four parts of an element that can be infused:
@@ -275,9 +281,10 @@ Tagged template literals can be used for things like internationalization:
 	i18n`submit`
 </button>
 ```
-</section>
 
+</section>
 <section>
+
 ## Event Handlers ##
 
 You can add event handlers to elements, just like you would in regular HTML code, by using
@@ -298,9 +305,10 @@ event handler attribute:
 	<!-- Form fields. -->
 </form>
 ```
-</section>
 
+</section>
 <section>
+
 ## Watches ##
 
 Watches re-infuse an element when an event occurs on itself or another element.
@@ -441,9 +449,10 @@ The values can be written in any of the following formats:
     	i18n`signup`
     </button>
     ```
-</section>
 
+</section>
 <section>
+
 ## Cleanup ##
 
 When a template is cloned and the cloned fragment is infused, memory is allocated to create
@@ -471,9 +480,10 @@ clear(form);
 
 Note: The `clear` function doesn't need to be called if you're defining custom elements that extend
 the `Infuse.Host`.
-</section>
 
+</section>
 <section>
+
 ## Iterating Templates ##
 
 Iterating templates use the `for` and `each` attributes to indicate that the template must be
@@ -538,9 +548,10 @@ generate a `<table>` with a list of books.
 
 Note how the iterating template is inside a parent template. When a template is cloned and infused,
 nested templates are also cloned and infused.
-</section>
 
+</section>
 <section>
+
 ## Custom Elements ##
 
 The `Infuse.Host` class can be extended to define a class for a custom element. The only property
@@ -626,9 +637,10 @@ You can also use them in HTML templates:
 	</template>
 </ul>
 ```
-</section>
 
+</section>
 <section>
+
 ## Configuration Options ##
 
 The config ES module allows you to change configuration options.
@@ -778,4 +790,5 @@ The following is a list of all the configuration options:
 
     If you're using a regular expression, it must contain parenthesis, as shown above. The
     parenthesis indicate the location of the name of the variable/element to watch.
+
 </section>
