@@ -210,6 +210,8 @@ There are four parts of an element that can be infused:
 * Properties
 * Text child nodes
 
+<section>
+
 ### Attributes ###
 
 In the following example, the `class` attribute will be infused with "is-valid" (in addition to
@@ -218,6 +220,9 @@ In the following example, the `class` attribute will be infused with "is-valid" 
 ```html
 <input type="email" class="form-control ${ host.isEmailValid ? 'is-valid' : '' }">
 ```
+
+</section>
+<section>
 
 ### Boolean Attributes ###
 
@@ -250,6 +255,9 @@ will be used as the value of the `class` attribute.
 </button>
 ```
 
+</section>
+<section>
+
 ### Properties ###
 
 Properties of elements can be infused by adding an attribute in the HTML code that starts with a
@@ -264,6 +272,9 @@ specified **property** of the element. In the following example, the expression 
 Note that in HTML, attributes names are case-insensitive (they're [lower-cased automatically
 ](https://www.w3.org/TR/html5/dom.html#embedding-custom-non-visible-data-with-the-data-attributes)).
 To infuse properties with capital letters in their names use dashes as shown in the example above.
+
+</section>
+<section>
 
 ### Text Child Nodes ###
 
@@ -282,6 +293,7 @@ Tagged template literals can be used for things like internationalization:
 </button>
 ```
 
+</section>
 </section>
 <section>
 
@@ -582,6 +594,8 @@ the template to clone and infuse and the resulting fragment is added to the cust
 custom element is removed from the DOM, memory allocated (during the infusion process) for the
 element, and any of its descendants, is cleared automatically, no need to call the `clear` function.
 
+<section>
+
 ### Customized Built-in Elements ###
 
 If you want to extend one of the browser's built-in elements you can use the `CustomHost` function
@@ -638,6 +652,7 @@ You can also use them in HTML templates:
 </ul>
 ```
 
+</section>
 </section>
 <section>
 
