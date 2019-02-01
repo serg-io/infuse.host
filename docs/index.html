@@ -1,0 +1,533 @@
+<!DOCTYPE html>
+<html lang="en-US">
+<head>
+	<meta charset="utf-8" />
+	<meta name="generator" content="pandoc" />
+	<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+
+			<meta name="author" content="Sergio Alcantara iserg9@gmail.com (https://github.com/serg-io)" />
+	
+	
+			<meta name="keywords" content="infuse, HTML, template, engine" />
+	
+	<title>infuse.host - Infuse your HTML with dynamic content.</title>
+
+			<link rel="stylesheet" href="style.css" />
+	
+			<style>
+			a.sourceLine { display: inline-block; line-height: 1.25; }
+a.sourceLine { pointer-events: none; color: inherit; text-decoration: inherit; }
+a.sourceLine:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode { white-space: pre; position: relative; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+code.sourceCode { white-space: pre-wrap; }
+a.sourceLine { text-indent: -1em; padding-left: 1em; }
+}
+pre.numberSource a.sourceLine
+  { position: relative; left: -4em; }
+pre.numberSource a.sourceLine::before
+  { content: attr(title);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; pointer-events: all; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+    background-color: #ffffff;
+    color: #a0a0a0;
+  }
+pre.numberSource { margin-left: 3em; border-left: 1px solid #a0a0a0;  padding-left: 4px; }
+div.sourceCode
+  { color: #1f1c1b; background-color: #ffffff; }
+@media screen {
+a.sourceLine::before { text-decoration: underline; }
+}
+code span. { color: #1f1c1b; } /* Normal */
+code span.al { color: #bf0303; background-color: #f7e6e6; font-weight: bold; } /* Alert */
+code span.an { color: #ca60ca; } /* Annotation */
+code span.at { color: #0057ae; } /* Attribute */
+code span.bn { color: #b08000; } /* BaseN */
+code span.bu { color: #644a9b; font-weight: bold; } /* BuiltIn */
+code span.cf { color: #1f1c1b; font-weight: bold; } /* ControlFlow */
+code span.ch { color: #924c9d; } /* Char */
+code span.cn { color: #aa5500; } /* Constant */
+code span.co { color: #898887; } /* Comment */
+code span.cv { color: #0095ff; } /* CommentVar */
+code span.do { color: #607880; } /* Documentation */
+code span.dt { color: #0057ae; } /* DataType */
+code span.dv { color: #b08000; } /* DecVal */
+code span.er { color: #bf0303; text-decoration: underline; } /* Error */
+code span.ex { color: #0095ff; font-weight: bold; } /* Extension */
+code span.fl { color: #b08000; } /* Float */
+code span.fu { color: #644a9b; } /* Function */
+code span.im { color: #ff5500; } /* Import */
+code span.in { color: #b08000; } /* Information */
+code span.kw { color: #1f1c1b; font-weight: bold; } /* Keyword */
+code span.op { color: #1f1c1b; } /* Operator */
+code span.ot { color: #006e28; } /* Other */
+code span.pp { color: #006e28; } /* Preprocessor */
+code span.re { color: #0057ae; background-color: #e0e9f8; } /* RegionMarker */
+code span.sc { color: #3daee9; } /* SpecialChar */
+code span.ss { color: #ff5500; } /* SpecialString */
+code span.st { color: #bf0303; } /* String */
+code span.va { color: #0057ae; } /* Variable */
+code span.vs { color: #bf0303; } /* VerbatimString */
+code span.wa { color: #bf0303; } /* Warning */
+		</style>
+	
+	
+	</head>
+<body>
+	
+			<nav id="TOC" hidden>
+			<ul>
+<li><a href="#introduction">Introduction</a></li>
+<li><a href="#template-literals">Template Literals</a></li>
+<li><a href="#expressions">Expressions</a></li>
+<li><a href="#example">Example</a></li>
+<li><a href="#custom-constants">Custom Constants</a></li>
+<li><a href="#parts">Parts</a><ul>
+<li><a href="#attributes">Attributes</a></li>
+<li><a href="#boolean-attributes">Boolean Attributes</a></li>
+<li><a href="#properties">Properties</a></li>
+<li><a href="#text-child-nodes">Text Child Nodes</a></li>
+</ul></li>
+<li><a href="#event-handlers">Event Handlers</a></li>
+<li><a href="#watches">Watches</a></li>
+<li><a href="#cleanup">Cleanup</a></li>
+<li><a href="#iterating-templates">Iterating Templates</a></li>
+<li><a href="#custom-elements">Custom Elements</a><ul>
+<li><a href="#customized-built-in-elements">Customized Built-in Elements</a></li>
+</ul></li>
+<li><a href="#configuration-options">Configuration Options</a></li>
+</ul>
+		</nav>
+	
+	<article class="container">
+		<header id="title-block-header">
+			<h1 class="display-4">infuse.host</h1>
+			<p class="lead">Infuse your HTML with dynamic content.</p>
+			<!-- TODO: Add links to GitHub and NPM. -->
+			<!-- TODO: Add version number and <time datetime> (to <header> or <footer>)? -->
+					</header>
+
+		<section>
+<h2 id="introduction">Introduction</h2>
+<p>Infuse.host allows you to <strong>infuse</strong> an HTML fragment, cloned from an HTML template, with dynamic content, the infused fragment can then be added to a <strong>host</strong> element. This is done by writing expressions or <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Template_literals">template literals</a> in your HTML code, for the parts you want to infuse. It also allows you to:</p>
+<ul>
+<li>Write event handlers the same way you would normally write them (using <a href="https://developer.mozilla.org/en-US/docs/Web/Guide/Events/Event_handlers">on-event attributes</a>), but with access to the <code>host</code> and other variables.</li>
+<li>Write watches to re-infuse an element automatically when an event occurs on another element.</li>
+<li>Clone and infuse a template multiple times using templates known as <strong>iterating templates</strong>.</li>
+</ul>
+</section>
+<section>
+<h2 id="template-literals">Template Literals</h2>
+<p>A <strong>template literal</strong> starts and ends with back-tick characters, and just like template literals in regular Javascript code, they can contain strings and expressions and they can be tagged.</p>
+<p>In order to be able to tag template literals, you must tell infuse.host what are the tag functions that you use within your HTML templates. You do this by setting the "tags" configuration. A common use case for tagged template literals is internationalization. For instance, if you want to tag your template literals with a tag function called <code>i18n</code> you must use the config ES module to set the "tags" configuration object:</p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode javascript"><code class="sourceCode javascript"><a class="sourceLine" id="cb1-1" title="1"><span class="im">import</span> <span class="op">{</span> setConfigs <span class="op">}</span> <span class="im">from</span> <span class="st">&#39;path/to/infuse.host/src/configs.js&#39;</span><span class="op">;</span></a>
+<a class="sourceLine" id="cb1-2" title="2"></a>
+<a class="sourceLine" id="cb1-3" title="3"><span class="kw">const</span> dictionary <span class="op">=</span> <span class="op">{</span> <span class="dt">submit</span><span class="op">:</span> <span class="st">&#39;Submit&#39;</span> <span class="op">};</span></a>
+<a class="sourceLine" id="cb1-4" title="4"></a>
+<a class="sourceLine" id="cb1-5" title="5"><span class="co">// Tag function: It retrieves the value of the given `key` from the `dictionary`.</span></a>
+<a class="sourceLine" id="cb1-6" title="6"><span class="kw">function</span> <span class="at">i18n</span>([key]) <span class="op">{</span></a>
+<a class="sourceLine" id="cb1-7" title="7">    <span class="cf">return</span> dictionary[key]<span class="op">;</span></a>
+<a class="sourceLine" id="cb1-8" title="8"><span class="op">}</span></a>
+<a class="sourceLine" id="cb1-9" title="9"></a>
+<a class="sourceLine" id="cb1-10" title="10"><span class="co">// Set the &quot;tags&quot; configuration object.</span></a>
+<a class="sourceLine" id="cb1-11" title="11"><span class="at">setConfigs</span>(<span class="op">{</span> <span class="dt">tags</span><span class="op">:</span> <span class="op">{</span> <span class="dt">i18n</span><span class="op">:</span> i18n <span class="op">}</span> <span class="op">}</span>)<span class="op">;</span></a></code></pre></div>
+<p>The infuse.host parser uses the "tags" configuration object to identify the tag functions that you use in your HTML templates. For instance, if you use the "tags" configuration object shown above, <code>i18n`submit`</code> will be infused with (replaced with) the string <code>Submit</code>.</p>
+</section>
+<section>
+<h2 id="expressions">Expressions</h2>
+<p>An <strong>expression</strong> starts with a <code>${</code> and ends with <code>}</code> and contains Javascript code, which is evaluated, during the infuse process, and its result is used to infuse the corresponding part of an element. Expressions can be used inside template literals, inside back-tick characters (just like in regular Javascript code), or directly in your HTML code, without back-tick characters.</p>
+<p>The following variables are available within expressions:</p>
+<ul>
+<li><strong><code>this</code></strong>: The element that contains the expression.</li>
+<li><strong><code>host</code></strong>: The element to which the infused fragment will be added.</li>
+<li><strong><code>data</code></strong>: An optional data object.</li>
+<li><strong><code>tags</code></strong>: The configuration object that contains all tag functions.</li>
+<li><strong><code>event</code></strong>: When an element is infused by a "watch", the <code>event</code> variable is the event that triggered the infusion. This variable is <code>undefined</code> the first time an element is infused.</li>
+<li>Elements can define their own <strong>custom constant</strong> variables.</li>
+<li>Additional <strong>iteration constant</strong> variables are available within iterating templates.</li>
+</ul>
+<p>Expressions and template literals can be used in combination with static strings. For instance:</p>
+<div class="sourceCode" id="cb2"><pre class="sourceCode html"><code class="sourceCode html"><a class="sourceLine" id="cb2-1" title="1"><span class="kw">&lt;button</span><span class="ot"> type=</span><span class="st">&quot;submit&quot;</span><span class="ot"> class=</span><span class="st">&quot;btn btn-${ data.hasWarnings ? &#39;warning&#39; : &#39;success&#39; }&quot;</span><span class="kw">&gt;</span></a>
+<a class="sourceLine" id="cb2-2" title="2">    i18n`submit`</a>
+<a class="sourceLine" id="cb2-3" title="3"><span class="kw">&lt;/button&gt;</span></a></code></pre></div>
+</section>
+<section>
+<h2 id="example">Example</h2>
+<p>In the following basic example, the <code>&lt;template&gt;</code> element is parsed, cloned, and infused. The resulting fragment (<code>&lt;h1&gt;Page Title&lt;/h1&gt;</code>) is then added to <code>&lt;header&gt;</code> (the <code>host</code> element).</p>
+<div class="sourceCode" id="cb3"><pre class="sourceCode html"><code class="sourceCode html"><a class="sourceLine" id="cb3-1" title="1"><span class="dt">&lt;!DOCTYPE </span>html<span class="dt">&gt;</span></a>
+<a class="sourceLine" id="cb3-2" title="2"><span class="kw">&lt;html&gt;</span></a>
+<a class="sourceLine" id="cb3-3" title="3"><span class="kw">&lt;head&gt;</span></a>
+<a class="sourceLine" id="cb3-4" title="4">    <span class="kw">&lt;title&gt;</span>Basic infuse.host example<span class="kw">&lt;/title&gt;</span></a>
+<a class="sourceLine" id="cb3-5" title="5"><span class="kw">&lt;/head&gt;</span></a>
+<a class="sourceLine" id="cb3-6" title="6"><span class="kw">&lt;body&gt;</span></a>
+<a class="sourceLine" id="cb3-7" title="7">    <span class="kw">&lt;template&gt;</span></a>
+<a class="sourceLine" id="cb3-8" title="8">        <span class="kw">&lt;h1&gt;</span>${ data.pageTitle }<span class="kw">&lt;/h1&gt;</span></a>
+<a class="sourceLine" id="cb3-9" title="9">    <span class="kw">&lt;/template&gt;</span></a>
+<a class="sourceLine" id="cb3-10" title="10">    <span class="kw">&lt;header&gt;&lt;/header&gt;</span></a>
+<a class="sourceLine" id="cb3-11" title="11"></a>
+<a class="sourceLine" id="cb3-12" title="12">    <span class="kw">&lt;script</span><span class="ot"> type=</span><span class="st">&quot;module&quot;</span><span class="kw">&gt;</span></a>
+<a class="sourceLine" id="cb3-13" title="13">        <span class="co">// Import the infuse and parser modules.</span></a>
+<a class="sourceLine" id="cb3-14" title="14">        <span class="im">import</span> infuse <span class="im">from</span> <span class="st">&#39;path/to/infuse.host/src/infuse.js&#39;</span><span class="op">;</span></a>
+<a class="sourceLine" id="cb3-15" title="15">        <span class="im">import</span> parseTemplate <span class="im">from</span> <span class="st">&#39;path/to/infuse.host/src/parseTemplate.js&#39;</span><span class="op">;</span></a>
+<a class="sourceLine" id="cb3-16" title="16"></a>
+<a class="sourceLine" id="cb3-17" title="17">        <span class="co">// Find the &lt;header&gt; element, which will be used as `host`, and the &lt;template&gt; element.</span></a>
+<a class="sourceLine" id="cb3-18" title="18">        <span class="kw">const</span> host <span class="op">=</span> <span class="va">document</span>.<span class="at">querySelector</span>(<span class="st">&#39;header&#39;</span>)<span class="op">;</span></a>
+<a class="sourceLine" id="cb3-19" title="19">        <span class="kw">const</span> template <span class="op">=</span> <span class="va">document</span>.<span class="at">querySelector</span>(<span class="st">&#39;template&#39;</span>)<span class="op">;</span></a>
+<a class="sourceLine" id="cb3-20" title="20"></a>
+<a class="sourceLine" id="cb3-21" title="21">        <span class="co">// Parse the template.</span></a>
+<a class="sourceLine" id="cb3-22" title="22">        <span class="at">parseTemplate</span>(template)<span class="op">;</span></a>
+<a class="sourceLine" id="cb3-23" title="23"></a>
+<a class="sourceLine" id="cb3-24" title="24">        <span class="co">// Data to infuse.</span></a>
+<a class="sourceLine" id="cb3-25" title="25">        <span class="kw">const</span> data <span class="op">=</span> <span class="op">{</span> <span class="dt">pageTitle</span><span class="op">:</span> <span class="st">&#39;Page Title&#39;</span> <span class="op">};</span></a>
+<a class="sourceLine" id="cb3-26" title="26"></a>
+<a class="sourceLine" id="cb3-27" title="27">        <span class="co">// Clone/infuse the template and add the infused fragment to the &lt;header&gt; (`host`).</span></a>
+<a class="sourceLine" id="cb3-28" title="28">        <span class="kw">const</span> fragment <span class="op">=</span> <span class="at">infuse</span>(host<span class="op">,</span> template<span class="op">,</span> data)<span class="op">;</span></a>
+<a class="sourceLine" id="cb3-29" title="29">        <span class="va">host</span>.<span class="at">appendChild</span>(fragment)<span class="op">;</span></a>
+<a class="sourceLine" id="cb3-30" title="30">    <span class="kw">&lt;/script&gt;</span></a>
+<a class="sourceLine" id="cb3-31" title="31"><span class="kw">&lt;/body&gt;</span></a>
+<a class="sourceLine" id="cb3-32" title="32"><span class="kw">&lt;/html&gt;</span></a></code></pre></div>
+<p>The same result can be achieved using custom elements. The <code>Infuse.Host</code> class can be used to define custom elements. Note that in the following example, instead of getting <code>pageTitle</code> from <code>data</code>, it is obtained from the <code>host</code> variable (the custom element).</p>
+<div class="sourceCode" id="cb4"><pre class="sourceCode html"><code class="sourceCode html"><a class="sourceLine" id="cb4-1" title="1"><span class="dt">&lt;!DOCTYPE </span>html<span class="dt">&gt;</span></a>
+<a class="sourceLine" id="cb4-2" title="2"><span class="kw">&lt;html&gt;</span></a>
+<a class="sourceLine" id="cb4-3" title="3"><span class="kw">&lt;head&gt;</span></a>
+<a class="sourceLine" id="cb4-4" title="4">    <span class="kw">&lt;title&gt;</span>Basic infuse.host example using a custom element<span class="kw">&lt;/title&gt;</span></a>
+<a class="sourceLine" id="cb4-5" title="5"><span class="kw">&lt;/head&gt;</span></a>
+<a class="sourceLine" id="cb4-6" title="6"><span class="kw">&lt;body&gt;</span></a>
+<a class="sourceLine" id="cb4-7" title="7">    <span class="kw">&lt;template&gt;</span></a>
+<a class="sourceLine" id="cb4-8" title="8">        <span class="kw">&lt;h1&gt;</span>${ host.pageTitle }<span class="kw">&lt;/h1&gt;</span></a>
+<a class="sourceLine" id="cb4-9" title="9">    <span class="kw">&lt;/template&gt;</span></a>
+<a class="sourceLine" id="cb4-10" title="10">    <span class="kw">&lt;custom-header&gt;&lt;/custom-header&gt;</span></a>
+<a class="sourceLine" id="cb4-11" title="11"></a>
+<a class="sourceLine" id="cb4-12" title="12">    <span class="kw">&lt;script</span><span class="ot"> type=</span><span class="st">&quot;module&quot;</span><span class="kw">&gt;</span></a>
+<a class="sourceLine" id="cb4-13" title="13">        <span class="co">// Import the infuse and parser modules.</span></a>
+<a class="sourceLine" id="cb4-14" title="14">        <span class="im">import</span> <span class="op">*</span> <span class="im">as</span> Infuse <span class="im">from</span> <span class="st">&#39;path/to/infuse.host/src/infuse.js&#39;</span><span class="op">;</span></a>
+<a class="sourceLine" id="cb4-15" title="15">        <span class="im">import</span> parseTemplate <span class="im">from</span> <span class="st">&#39;path/to/infuse.host/src/parseTemplate.js&#39;</span><span class="op">;</span></a>
+<a class="sourceLine" id="cb4-16" title="16"></a>
+<a class="sourceLine" id="cb4-17" title="17">        <span class="co">// Find the &lt;template&gt; and parse it.</span></a>
+<a class="sourceLine" id="cb4-18" title="18">        <span class="kw">const</span> headerTemplate <span class="op">=</span> <span class="va">document</span>.<span class="at">querySelector</span>(<span class="st">&#39;template&#39;</span>)<span class="op">;</span></a>
+<a class="sourceLine" id="cb4-19" title="19">        <span class="at">parseTemplate</span>(headerTemplate)<span class="op">;</span></a>
+<a class="sourceLine" id="cb4-20" title="20"></a>
+<a class="sourceLine" id="cb4-21" title="21">        <span class="co">// Extend `Infuse.Host` to define a class for the new custom element.</span></a>
+<a class="sourceLine" id="cb4-22" title="22">        <span class="kw">class</span> CustomHeader <span class="kw">extends</span> <span class="va">Infuse</span>.<span class="at">Host</span> <span class="op">{</span></a>
+<a class="sourceLine" id="cb4-23" title="23">            <span class="co">// `Infuse.Host` uses `this.template` to obtain the template to clone/infuse.</span></a>
+<a class="sourceLine" id="cb4-24" title="24">            get <span class="at">template</span>() <span class="op">{</span></a>
+<a class="sourceLine" id="cb4-25" title="25">                <span class="cf">return</span> headerTemplate<span class="op">;</span></a>
+<a class="sourceLine" id="cb4-26" title="26">            <span class="op">}</span></a>
+<a class="sourceLine" id="cb4-27" title="27"></a>
+<a class="sourceLine" id="cb4-28" title="28">            <span class="co">// This is the property used in the template.</span></a>
+<a class="sourceLine" id="cb4-29" title="29">            get <span class="at">pageTitle</span>() <span class="op">{</span></a>
+<a class="sourceLine" id="cb4-30" title="30">                <span class="cf">return</span> <span class="st">&#39;Page Title&#39;</span><span class="op">;</span></a>
+<a class="sourceLine" id="cb4-31" title="31">            <span class="op">}</span></a>
+<a class="sourceLine" id="cb4-32" title="32">        <span class="op">}</span></a>
+<a class="sourceLine" id="cb4-33" title="33"></a>
+<a class="sourceLine" id="cb4-34" title="34">        <span class="co">// Define the custom element using the `CustomHeader` class.</span></a>
+<a class="sourceLine" id="cb4-35" title="35">        <span class="va">window</span>.<span class="va">customElements</span>.<span class="at">define</span>(<span class="st">&#39;custom-header&#39;</span><span class="op">,</span> CustomHeader)<span class="op">;</span></a>
+<a class="sourceLine" id="cb4-36" title="36">    <span class="kw">&lt;/script&gt;</span></a>
+<a class="sourceLine" id="cb4-37" title="37"><span class="kw">&lt;/body&gt;</span></a>
+<a class="sourceLine" id="cb4-38" title="38"><span class="kw">&lt;/html&gt;</span></a></code></pre></div>
+<p>In order to keep things simple in these two examples, expressions within the <code>&lt;template&gt;</code> elements are parsed in the browser. However, this practice is discouraged in a production environment. One can avoid doing this in the browser, which would increase performance, by parsing templates as part of a build or back-end process. If you're using <a href="https://webpack.js.org/">webpack</a>, you can use <a href="https://github.com/serg-io/infuse-loader">infuse-loader</a> to parse templates and generate ES modules from HTML files. These modules can then be imported into other modules.</p>
+</section>
+<section>
+<h2 id="custom-constants">Custom Constants</h2>
+<p>Custom constants are variables available within expressions and event handlers of an element. These constants are defined using this format: <code>const-variable-name="${ expression }"</code>, where <code>variable-name</code> is the name of the variable, <code>expression</code> is the Javascript code that gets evaluated (right before the element is infused for the first time), and the resulting value is assigned to the variable.</p>
+<p>For instance, lets say that <code>host.getCarInventory()</code> returns an array of objects, each object represents a car with a <code>color</code> attribute. The following paragraph displays how many blue cars are there in the inventory:</p>
+<div class="sourceCode" id="cb5"><pre class="sourceCode html"><code class="sourceCode html"><a class="sourceLine" id="cb5-1" title="1"><span class="kw">&lt;p</span><span class="ot"> const-car-inventory=</span><span class="st">&quot;${ host.getCarInventory() }&quot;</span><span class="kw">&gt;</span></a>
+<a class="sourceLine" id="cb5-2" title="2">    Number of blue cars: ${ carInventory.filter(car =&gt; car.color === &#39;blue&#39;).length }</a>
+<a class="sourceLine" id="cb5-3" title="3"><span class="kw">&lt;/p&gt;</span></a></code></pre></div>
+<p>Note that in HTML, attributes names are case-insensitive (they're <a href="https://www.w3.org/TR/html5/dom.html#embedding-custom-non-visible-data-with-the-data-attributes">lower-cased automatically</a>). To define a variable with a capital letter in its name, you must use dashes as shown in the previous example.</p>
+<p>Note: the <code>event</code> variable is not available in expressions to declare custom constants.</p>
+</section>
+<section>
+<h2 id="parts">Parts</h2>
+<p>There are four parts of an element that can be infused:</p>
+<ul>
+<li>Attributes</li>
+<li>Boolean attributes</li>
+<li>Properties</li>
+<li>Text child nodes</li>
+</ul>
+<section>
+<h3 id="attributes">Attributes</h3>
+<p>In the following example, the <code>class</code> attribute will be infused with "is-valid" (in addition to "form-control") if <code>host.isEmailValid</code> evaluates to a truthy value:</p>
+<div class="sourceCode" id="cb6"><pre class="sourceCode html"><code class="sourceCode html"><a class="sourceLine" id="cb6-1" title="1"><span class="kw">&lt;input</span><span class="ot"> type=</span><span class="st">&quot;email&quot;</span><span class="ot"> class=</span><span class="st">&quot;form-control ${ host.isEmailValid ? &#39;is-valid&#39; : &#39;&#39; }&quot;</span><span class="kw">&gt;</span></a></code></pre></div>
+</section>
+<section>
+<h3 id="boolean-attributes">Boolean Attributes</h3>
+<p>Boolean attributes have names that end with a question mark and they're added to the element if their expressions result in a <a href="https://developer.mozilla.org/en-US/docs/Glossary/Truthy">truthy value</a>.</p>
+<p>If the result of an expression is <code>true</code>, the attribute is added to the element using an empty string as its value. If the result is a truthy value, other than <code>true</code>, it will be used as the value of the attribute. Otherwise, if the expression results in a <a href="https://developer.mozilla.org/en-US/docs/Glossary/Falsy">falsy value</a>, the attribute is removed from the element.</p>
+<p>In the following example, the attribute <code>disabled</code> is added to the <code>&lt;button&gt;</code> element, with an empty string as its value, if <code>host.isFormInvalid</code> is <code>true</code>:</p>
+<div class="sourceCode" id="cb7"><pre class="sourceCode html"><code class="sourceCode html"><a class="sourceLine" id="cb7-1" title="1"><span class="kw">&lt;button</span><span class="ot"> type=</span><span class="st">&quot;submit&quot;</span><span class="ot"> disabled</span><span class="er">?</span><span class="ot">=</span><span class="st">&quot;${ host.isFormInvalid }&quot;</span><span class="kw">&gt;</span></a>
+<a class="sourceLine" id="cb7-2" title="2">    Submit</a>
+<a class="sourceLine" id="cb7-3" title="3"><span class="kw">&lt;/button&gt;</span></a></code></pre></div>
+<p>When an expressions results in a string that is <strong>not empty</strong>, the string will be used as the value of the attribute. For instance, if <code>host.getBtnClass()</code> returns the string <code>"btn btn-warning"</code>, it will be used as the value of the <code>class</code> attribute.</p>
+<div class="sourceCode" id="cb8"><pre class="sourceCode html"><code class="sourceCode html"><a class="sourceLine" id="cb8-1" title="1"><span class="kw">&lt;button</span><span class="ot"> type=</span><span class="st">&quot;reset&quot;</span><span class="ot"> class</span><span class="er">?</span><span class="ot">=</span><span class="st">&quot;${ host.getBtnClass() }&quot;</span><span class="kw">&gt;</span></a>
+<a class="sourceLine" id="cb8-2" title="2">    Clear Form</a>
+<a class="sourceLine" id="cb8-3" title="3"><span class="kw">&lt;/button&gt;</span></a></code></pre></div>
+</section>
+<section>
+<h3 id="properties">Properties</h3>
+<p>Properties of elements can be infused by adding an attribute in the HTML code that starts with a dot. The expression given in the value will be evaluated and the result will be assigned to the specified <strong>property</strong> of the element. In the following example, the expression evaluates to a <code>Date</code> instance which is assigned to the property <code>valueAsDate</code> of the input element:</p>
+<div class="sourceCode" id="cb9"><pre class="sourceCode html"><code class="sourceCode html"><a class="sourceLine" id="cb9-1" title="1"><span class="kw">&lt;input</span><span class="ot"> type=</span><span class="st">&quot;date&quot;</span><span class="ot"> name=</span><span class="st">&quot;moon-landing&quot;</span> <span class="er">.value-as-date</span><span class="ot">=</span><span class="st">&quot;${ new Date(1969, 6, 20) }&quot;</span><span class="kw">&gt;</span></a></code></pre></div>
+<p>Note that in HTML, attributes names are case-insensitive (they're <a href="https://www.w3.org/TR/html5/dom.html#embedding-custom-non-visible-data-with-the-data-attributes">lower-cased automatically</a>). To infuse properties with capital letters in their names use dashes as shown in the example above.</p>
+</section>
+<section>
+<h3 id="text-child-nodes">Text Child Nodes</h3>
+<p>The <strong>text</strong> child nodes of an element can be infused by adding an expression or a template literal:</p>
+<div class="sourceCode" id="cb10"><pre class="sourceCode html"><code class="sourceCode html"><a class="sourceLine" id="cb10-1" title="1"><span class="kw">&lt;p&gt;</span>${ host.paragraphText }<span class="kw">&lt;/p&gt;</span></a></code></pre></div>
+<p>Tagged template literals can be used for things like internationalization:</p>
+<div class="sourceCode" id="cb11"><pre class="sourceCode html"><code class="sourceCode html"><a class="sourceLine" id="cb11-1" title="1"><span class="kw">&lt;button</span><span class="ot"> type=</span><span class="st">&quot;submit&quot;</span><span class="ot"> disabled</span><span class="er">?</span><span class="ot">=</span><span class="st">&quot;${ host.isFormInvalid }&quot;</span><span class="kw">&gt;</span></a>
+<a class="sourceLine" id="cb11-2" title="2">    i18n`submit`</a>
+<a class="sourceLine" id="cb11-3" title="3"><span class="kw">&lt;/button&gt;</span></a></code></pre></div>
+</section>
+</section>
+<section>
+<h2 id="event-handlers">Event Handlers</h2>
+<p>You can add event handlers to elements, just like you would in regular HTML code, by using <a href="https://developer.mozilla.org/en-US/docs/Web/Guide/Events/Event_handlers">on-event attributes</a>.</p>
+<p>When an element is parsed, event handler attributes are converted into event listener functions (<a href="https://developer.mozilla.org/en-US/docs/Web/Guide/Events/Event_handlers#Terminology">terminology</a>). When an element is infused for the first time, these event listeners are added to the element using the <a href="https://developer.mozilla.org/en-US/docs/Web/API/EventTarget/addEventListener"><code>addEventListener</code></a> method.</p>
+<p>Event handlers have access to the same variables available within expressions. For instance, if you want to call a method on the <code>host</code> element when a form is submitted, you would add an <code>onsubmit</code> event handler attribute:</p>
+<div class="sourceCode" id="cb12"><pre class="sourceCode html"><code class="sourceCode html"><a class="sourceLine" id="cb12-1" title="1"><span class="kw">&lt;form</span><span class="ot"> id=</span><span class="st">&quot;login-form&quot;</span><span class="ot"> onsubmit=</span><span class="st">&quot;host.login(event)&quot;</span><span class="kw">&gt;</span></a>
+<a class="sourceLine" id="cb12-2" title="2">    <span class="co">&lt;!-- Form fields. --&gt;</span></a>
+<a class="sourceLine" id="cb12-3" title="3"><span class="kw">&lt;/form&gt;</span></a></code></pre></div>
+</section>
+<section>
+<h2 id="watches">Watches</h2>
+<p>Watches re-infuse an element when an event occurs on itself or another element.</p>
+<p>For instance, when the following button is infused for the first time the <code>disabled</code> boolean attribute will not be added because <code>event</code> is <code>undefined</code>.</p>
+<div class="sourceCode" id="cb13"><pre class="sourceCode html"><code class="sourceCode html"><a class="sourceLine" id="cb13-1" title="1"><span class="kw">&lt;button</span><span class="ot"> type=</span><span class="st">&quot;submit&quot;</span><span class="ot"> disabled</span><span class="er">?</span><span class="ot">=</span><span class="st">&quot;${ event !== undefined }&quot;</span><span class="kw">&gt;</span></a>
+<a class="sourceLine" id="cb13-2" title="2">    i18n`submit`</a>
+<a class="sourceLine" id="cb13-3" title="3"><span class="kw">&lt;/button&gt;</span></a></code></pre></div>
+<p>A watch can be added to infuse the button again whenever it is clicked. When a watch infuses an element, the value of <code>event</code> is the event that triggered the infusion.</p>
+<p>In the following example, the watch will listen for the <code>click</code> event on the button itself (<code>this</code>). When the event occurs, the element will be re-infused, this time the <code>event</code> will be the <code>click</code> event that triggered the watch, which will cause the <code>disabled</code> attribute to be added to the button.</p>
+<div class="sourceCode" id="cb14"><pre class="sourceCode html"><code class="sourceCode html"><a class="sourceLine" id="cb14-1" title="1"><span class="kw">&lt;button</span><span class="ot"> type=</span><span class="st">&quot;submit&quot;</span><span class="ot"> disabled</span><span class="er">?</span><span class="ot">=</span><span class="st">&quot;${ event !== undefined }&quot;</span><span class="ot"> watch-this=</span><span class="st">&quot;click&quot;</span><span class="kw">&gt;</span></a>
+<a class="sourceLine" id="cb14-2" title="2">    i18n`submit`</a>
+<a class="sourceLine" id="cb14-3" title="3"><span class="kw">&lt;/button&gt;</span></a></code></pre></div>
+<p>Watches can also be used to watch events on other elements. For instance, the button can be infused when a <code>submit</code> event occurs on the <code>host</code> element:</p>
+<div class="sourceCode" id="cb15"><pre class="sourceCode html"><code class="sourceCode html"><a class="sourceLine" id="cb15-1" title="1"><span class="kw">&lt;button</span><span class="ot"> type=</span><span class="st">&quot;submit&quot;</span><span class="ot"> disabled</span><span class="er">?</span><span class="ot">=</span><span class="st">&quot;${ event !== undefined }&quot;</span><span class="ot"> watch-host=</span><span class="st">&quot;submit&quot;</span><span class="kw">&gt;</span></a>
+<a class="sourceLine" id="cb15-2" title="2">    i18n`submit`</a>
+<a class="sourceLine" id="cb15-3" title="3"><span class="kw">&lt;/button&gt;</span></a></code></pre></div>
+<p>If the <code>host</code> element in the previous example contains multiple forms, the button will be disabled whenever any of those forms are submitted. This is because events <a href="https://developer.mozilla.org/en-US/docs/Learn/JavaScript/Building_blocks/Events#Event_bubbling_and_capture">bubble up the DOM</a> and eventually reach the <code>host</code>.</p>
+<p>Watches can be limited to infuse an element only when the specified type of event is triggered by an element that matches a given selector. For instance, the following button will be disabled when a <code>submit</code> event reaches the <code>host</code> element and the event was triggered by a form with "login-form" as its ID:</p>
+<div class="sourceCode" id="cb16"><pre class="sourceCode html"><code class="sourceCode html"><a class="sourceLine" id="cb16-1" title="1"><span class="kw">&lt;button</span><span class="ot"> type=</span><span class="st">&quot;submit&quot;</span><span class="ot"> disabled</span><span class="er">?</span><span class="ot">=</span><span class="st">&quot;${ event !== undefined }&quot;</span><span class="ot"> watch-host=</span><span class="st">&quot;submit #login-form&quot;</span><span class="kw">&gt;</span></a>
+<a class="sourceLine" id="cb16-2" title="2">    i18n`login`</a>
+<a class="sourceLine" id="cb16-3" title="3"><span class="kw">&lt;/button&gt;</span></a></code></pre></div>
+<p>Watches are written in the following format:</p>
+<pre><code>watch-variable=&quot;event-map&quot;</code></pre>
+<p>The <strong><code>variable</code></strong> is the name of the variable (element) to watch. This would usually be <code>host</code> or <code>this</code> but it can be any variable available within the element's expressions, as long as it's an <a href="https://developer.mozilla.org/en-US/docs/Web/API/Element"><code>Element</code></a> or implements the <a href="https://developer.mozilla.org/en-US/docs/Web/API/EventTarget/addEventListener"><code>addEventListener</code></a> method.</p>
+<p>The values can be written in any of the following formats:</p>
+<ul>
+<li><p>A string:</p>
+<pre><code>watch-variable=&quot;eventList&quot;</code></pre>
+<p>where:</p>
+<ul>
+<li><code>eventList</code> is: <code>event1[; event2]...[; eventN]</code></li>
+<li><code>event</code> is: <code>eventType[ selector1[, selector2]...[, selectorN] ]</code></li>
+<li><code>eventType</code> is the type of event to watch, for instance <code>click</code> or <code>submit</code>.</li>
+<li><code>selector</code> is an optional CSS selector used for event delegation. A watch will only infuse the element if the element that triggered the event matches the <code>selector</code>.</li>
+</ul>
+<p>For instance, the following button will be infused only when a form triggers a <code>submit</code> event or a form field with the <code>required</code> boolean attribute triggers an <code>invalid</code> event:</p>
+<div class="sourceCode" id="cb19"><pre class="sourceCode html"><code class="sourceCode html"><a class="sourceLine" id="cb19-1" title="1"><span class="kw">&lt;button</span><span class="ot"> type=</span><span class="st">&quot;submit&quot;</span><span class="ot"> disabled</span><span class="er">?</span><span class="ot">=</span><span class="st">&quot;${ event !== undefined }&quot;</span><span class="ot"> watch-host=</span><span class="st">&quot;submit; invalid [required]&quot;</span><span class="kw">&gt;</span></a>
+<a class="sourceLine" id="cb19-2" title="2">    i18n`signup`</a>
+<a class="sourceLine" id="cb19-3" title="3"><span class="kw">&lt;/button&gt;</span></a></code></pre></div></li>
+<li><p>An object:</p>
+<pre><code>watch-variable=&quot;{ eventList: parts }&quot;</code></pre>
+<p>where:</p>
+<ul>
+<li>The keys follow the <code>eventList</code> structure explained above.</li>
+<li><p>The values indicate one (a string or a number) or multiple (an array) parts of the element to infuse.</p>
+<ul>
+<li>If the part is a boolean attribute, it must end with a question mark (i.e. <code>disabled?</code>).</li>
+<li>If the part is a property, it must start with a dot and it can be either dashed (i.e. <code>.value-as-date</code>) or camel cased (i.e. <code>.valueAsDate</code>).</li>
+<li>If the part is a text child node, it must be a number indicating the zero-based index position of the text child node to infuse. For instance, the template literal in the following paragraph element is the child node <strong>0</strong> and the expression is the child node <strong>2</strong>: <code>&lt;p&gt;i18n`total`&lt;strong&gt;=&lt;/strong&gt;${ host.getTotal() }&lt;/p&gt;</code></li>
+</ul></li>
+</ul>
+<p>In the following example, when a <code>submit</code> event reaches the <code>host</code>, the watch will <strong>only</strong> infuse the <code>disabled</code> boolean attribute.</p>
+<div class="sourceCode" id="cb21"><pre class="sourceCode html"><code class="sourceCode html"><a class="sourceLine" id="cb21-1" title="1"><span class="kw">&lt;button</span><span class="ot"> type=</span><span class="st">&quot;submit&quot;</span><span class="ot"> disabled</span><span class="er">?</span><span class="ot">=</span><span class="st">&quot;${ event !== undefined }&quot;</span><span class="ot"> watch-host=</span><span class="st">&quot;{ submit: &#39;disabled?&#39; }&quot;</span><span class="kw">&gt;</span></a>
+<a class="sourceLine" id="cb21-2" title="2">    i18n`signup`</a>
+<a class="sourceLine" id="cb21-3" title="3"><span class="kw">&lt;/button&gt;</span></a></code></pre></div></li>
+<li><p>An array of arrays:</p>
+<pre><code>watch-variable=&quot;[ [eventList, parts] ]&quot;</code></pre>
+<p>This is the same as using an object but the <code>eventList</code>/<code>parts</code> pairs are written as arrays.</p></li>
+<li><p>An expression:</p>
+<pre><code>watch-variable=&quot;${ expression }&quot;</code></pre>
+<p>The expression, when evaluated, must return a value in one of the formats listed above (a string, an object, or an array).</p>
+<p>In the following example, <code>host.getEventMapForSubmitBtn()</code> must return a string, an object, or an array:</p>
+<div class="sourceCode" id="cb24"><pre class="sourceCode html"><code class="sourceCode html"><a class="sourceLine" id="cb24-1" title="1"><span class="kw">&lt;button</span><span class="ot"> type=</span><span class="st">&quot;submit&quot;</span><span class="ot"> disabled</span><span class="er">?</span><span class="ot">=</span><span class="st">&quot;${ event !== undefined }&quot;</span><span class="ot"> watch-host=</span><span class="st">&quot;${ host.getEventMapForSubmitBtn() }&quot;</span><span class="kw">&gt;</span></a>
+<a class="sourceLine" id="cb24-2" title="2">    i18n`signup`</a>
+<a class="sourceLine" id="cb24-3" title="3"><span class="kw">&lt;/button&gt;</span></a></code></pre></div></li>
+</ul>
+</section>
+<section>
+<h2 id="cleanup">Cleanup</h2>
+<p>When a template is cloned and the cloned fragment is infused, memory is allocated to create variables, event listeners, and watches. Infuse.host keeps track of allocated memory. When an element is removed from the DOM and is no longer needed, memory associated with that element must be cleared. This memory can be cleared using the <code>clear</code> function. The <code>clear</code> function searches for infused elements and clears memory associated with the elements it finds.</p>
+<p>In the following example a <code>&lt;form&gt;</code> element is removed from the DOM and the <code>clear</code> function is called using the <code>form</code>, which will search for infused elements inside the form and clear memory allocated to infuse them. If the form is an infused element, memory associated with the form will also be cleared.</p>
+<div class="sourceCode" id="cb25"><pre class="sourceCode javascript"><code class="sourceCode javascript"><a class="sourceLine" id="cb25-1" title="1"><span class="im">import</span> <span class="op">{</span> clear <span class="op">}</span> <span class="im">from</span> <span class="st">&#39;path/to/infuse.host/src/infuse.js&#39;</span><span class="op">;</span></a>
+<a class="sourceLine" id="cb25-2" title="2"></a>
+<a class="sourceLine" id="cb25-3" title="3"><span class="kw">const</span> form <span class="op">=</span> <span class="va">document</span>.<span class="at">querySelector</span>(<span class="st">&#39;#login-form&#39;</span>)<span class="op">;</span></a>
+<a class="sourceLine" id="cb25-4" title="4"></a>
+<a class="sourceLine" id="cb25-5" title="5"><span class="co">// Remove form from the DOM.</span></a>
+<a class="sourceLine" id="cb25-6" title="6"><span class="va">form</span>.<span class="at">remove</span>()<span class="op">;</span></a>
+<a class="sourceLine" id="cb25-7" title="7"></a>
+<a class="sourceLine" id="cb25-8" title="8"><span class="co">// Clear memory from any infused element within the form (including the form itself).</span></a>
+<a class="sourceLine" id="cb25-9" title="9"><span class="at">clear</span>(form)<span class="op">;</span></a></code></pre></div>
+<p>Note: The <code>clear</code> function doesn't need to be called if you're defining custom elements that extend the <code>Infuse.Host</code>.</p>
+</section>
+<section>
+<h2 id="iterating-templates">Iterating Templates</h2>
+<p>Iterating templates use the <code>for</code> and <code>each</code> attributes to indicate that the template must be cloned and infused multiple times. The value of the <code>for</code> attribute is a string with up to 3 comma-separated variable names to use in each iteration. The value of the <code>each</code> attribute must be an expression. Evaluating the expression must result in a collection (array, <code>Map</code>, <code>Set</code>, or any value that has a <code>forEach</code> method). The collection is used to clone the template multiple times, once for each value in the collection.</p>
+<p>Using the <code>for</code> and <code>each</code> attributes to clone and infuse a template multiple times is analogous to using the <code>forEach</code> method to iterate over multiple values in regular Javascript. For instance, in Javascript you would write a <code>forEach</code> loop like this:</p>
+<div class="sourceCode" id="cb26"><pre class="sourceCode javascript"><code class="sourceCode javascript"><a class="sourceLine" id="cb26-1" title="1"><span class="va">host</span>.<span class="at">getBooksArray</span>().<span class="at">forEach</span>(<span class="kw">function</span>(book<span class="op">,</span> index<span class="op">,</span> books) <span class="op">{</span></a>
+<a class="sourceLine" id="cb26-2" title="2">    <span class="co">// Code to execute in each iteration.</span></a>
+<a class="sourceLine" id="cb26-3" title="3">    <span class="co">// The variables `book`, `index`, and `books` are available within each iteration.</span></a>
+<a class="sourceLine" id="cb26-4" title="4"><span class="op">}</span>)<span class="op">;</span></a></code></pre></div>
+<p>A similar iteration can be implemented to clone and infuse a template multiple times by adding the <code>for</code> and <code>each</code> attributes to the <code>&lt;template&gt;</code> element:</p>
+<div class="sourceCode" id="cb27"><pre class="sourceCode html"><code class="sourceCode html"><a class="sourceLine" id="cb27-1" title="1"><span class="kw">&lt;template</span><span class="ot"> for=</span><span class="st">&quot;book, index, books&quot;</span><span class="ot"> each=</span><span class="st">&quot;${ host.getBooksArray() }&quot;</span><span class="kw">&gt;</span></a>
+<a class="sourceLine" id="cb27-2" title="2">    <span class="co">&lt;!--</span></a>
+<a class="sourceLine" id="cb27-3" title="3"><span class="co">        Contents of this template will be cloned and infuse once for each `book`.</span></a>
+<a class="sourceLine" id="cb27-4" title="4"><span class="co">        The variables `book`, `index`, and `books` are available within any expression and</span></a>
+<a class="sourceLine" id="cb27-5" title="5"><span class="co">        event handlers inside this template.</span></a>
+<a class="sourceLine" id="cb27-6" title="6"><span class="co">    --&gt;</span></a>
+<a class="sourceLine" id="cb27-7" title="7"><span class="kw">&lt;/template&gt;</span></a></code></pre></div>
+<p>Lets say that <code>host.getBooksArray()</code> returns an array of objects, each object represents a book and contains the attributes <code>isbn</code>, <code>title</code>, and <code>author</code>. The following template can be used to generate a <code>&lt;table&gt;</code> with a list of books.</p>
+<div class="sourceCode" id="cb28"><pre class="sourceCode html"><code class="sourceCode html"><a class="sourceLine" id="cb28-1" title="1"><span class="kw">&lt;template&gt;</span></a>
+<a class="sourceLine" id="cb28-2" title="2">    <span class="kw">&lt;table&gt;</span></a>
+<a class="sourceLine" id="cb28-3" title="3">        <span class="kw">&lt;thead&gt;</span></a>
+<a class="sourceLine" id="cb28-4" title="4">            <span class="kw">&lt;tr&gt;</span></a>
+<a class="sourceLine" id="cb28-5" title="5">                <span class="kw">&lt;th&gt;</span>Index<span class="kw">&lt;/th&gt;</span></a>
+<a class="sourceLine" id="cb28-6" title="6">                <span class="kw">&lt;th&gt;</span>ISBN<span class="kw">&lt;/th&gt;</span></a>
+<a class="sourceLine" id="cb28-7" title="7">                <span class="kw">&lt;th&gt;</span>Title<span class="kw">&lt;/th&gt;</span></a>
+<a class="sourceLine" id="cb28-8" title="8">                <span class="kw">&lt;th&gt;</span>Author<span class="kw">&lt;/th&gt;</span></a>
+<a class="sourceLine" id="cb28-9" title="9">            <span class="kw">&lt;/tr&gt;</span></a>
+<a class="sourceLine" id="cb28-10" title="10">        <span class="kw">&lt;/thead&gt;</span></a>
+<a class="sourceLine" id="cb28-11" title="11">        <span class="kw">&lt;tbody&gt;</span></a>
+<a class="sourceLine" id="cb28-12" title="12">            <span class="kw">&lt;template</span><span class="ot"> for=</span><span class="st">&quot;book, index&quot;</span><span class="ot"> each=</span><span class="st">&quot;${ host.getBooksArray() }&quot;</span><span class="kw">&gt;</span></a>
+<a class="sourceLine" id="cb28-13" title="13">                <span class="kw">&lt;tr&gt;</span></a>
+<a class="sourceLine" id="cb28-14" title="14">                    <span class="kw">&lt;td&gt;</span>${ index }<span class="kw">&lt;/td&gt;</span></a>
+<a class="sourceLine" id="cb28-15" title="15">                    <span class="kw">&lt;td&gt;</span>${ book.isbn }<span class="kw">&lt;/td&gt;</span></a>
+<a class="sourceLine" id="cb28-16" title="16">                    <span class="kw">&lt;td&gt;</span>${ book.title }<span class="kw">&lt;/td&gt;</span></a>
+<a class="sourceLine" id="cb28-17" title="17">                    <span class="kw">&lt;td&gt;</span>${ book.author }<span class="kw">&lt;/td&gt;</span></a>
+<a class="sourceLine" id="cb28-18" title="18">                <span class="kw">&lt;/tr&gt;</span></a>
+<a class="sourceLine" id="cb28-19" title="19">            <span class="kw">&lt;/template&gt;</span></a>
+<a class="sourceLine" id="cb28-20" title="20">        <span class="kw">&lt;/tbody&gt;</span></a>
+<a class="sourceLine" id="cb28-21" title="21">    <span class="kw">&lt;/table&gt;</span></a>
+<a class="sourceLine" id="cb28-22" title="22"><span class="kw">&lt;/template&gt;</span></a></code></pre></div>
+<p>Note how the iterating template is inside a parent template. When a template is cloned and infused, nested templates are also cloned and infused.</p>
+</section>
+<section>
+<h2 id="custom-elements">Custom Elements</h2>
+<p>The <code>Infuse.Host</code> class can be extended to define a class for a custom element. The only property that is required to be defined is a <code>template</code> getter.</p>
+<p>Lets say you want to define a custom element for a login form and that you're using webpack and <a href="https://github.com/serg-io/infuse-loader">infuse-loader</a> to parse and import your templates. The following code would define a custom element called <code>&lt;login-form&gt;</code>:</p>
+<div class="sourceCode" id="cb29"><pre class="sourceCode javascript"><code class="sourceCode javascript"><a class="sourceLine" id="cb29-1" title="1"><span class="im">import</span> <span class="op">*</span> <span class="im">as</span> Infuse <span class="im">from</span> <span class="st">&#39;path/to/infuse.host/src/infuse.js&#39;</span><span class="op">;</span></a>
+<a class="sourceLine" id="cb29-2" title="2"><span class="im">import</span> loginTemplate <span class="im">from</span> <span class="st">&#39;./login-form.html&#39;</span><span class="op">;</span></a>
+<a class="sourceLine" id="cb29-3" title="3"></a>
+<a class="sourceLine" id="cb29-4" title="4"><span class="co">// Extend `Infuse.Host` to define a class for the new custom element.</span></a>
+<a class="sourceLine" id="cb29-5" title="5"><span class="kw">class</span> LoginForm <span class="kw">extends</span> <span class="va">Infuse</span>.<span class="at">Host</span> <span class="op">{</span></a>
+<a class="sourceLine" id="cb29-6" title="6">    get <span class="at">template</span>() <span class="op">{</span></a>
+<a class="sourceLine" id="cb29-7" title="7">        <span class="co">// Return the parsed template.</span></a>
+<a class="sourceLine" id="cb29-8" title="8">        <span class="cf">return</span> loginTemplate<span class="op">;</span></a>
+<a class="sourceLine" id="cb29-9" title="9">    <span class="op">}</span></a>
+<a class="sourceLine" id="cb29-10" title="10"><span class="op">}</span></a>
+<a class="sourceLine" id="cb29-11" title="11"></a>
+<a class="sourceLine" id="cb29-12" title="12"><span class="co">// Define the custom element.</span></a>
+<a class="sourceLine" id="cb29-13" title="13"><span class="va">window</span>.<span class="va">customElements</span>.<span class="at">define</span>(<span class="st">&#39;login-form&#39;</span><span class="op">,</span> LoginForm)<span class="op">;</span></a></code></pre></div>
+<p>When the custom element is added to the DOM, <code>Infuse.Host</code> uses the <code>template</code> property to obtain the template to clone and infuse and the resulting fragment is added to the custom element. When the custom element is removed from the DOM, memory allocated (during the infusion process) for the element, and any of its descendants, is cleared automatically, no need to call the <code>clear</code> function.</p>
+<section>
+<h3 id="customized-built-in-elements">Customized Built-in Elements</h3>
+<p>If you want to extend one of the browser's built-in elements you can use the <code>CustomHost</code> function to define a <a href="https://developers.google.com/web/fundamentals/web-components/customelements#extendhtml">customized built-in element</a>.</p>
+<p>For instance, lets say that your application contains a shopping cart and you want to summarize the items in the cart using a list (an <code>&lt;ul&gt;</code> element) where each element in the list is an item in the cart. You can define a <strong>customized built-in element</strong> that extends the <code>HTMLLIElement</code> class (the <code>&lt;li&gt;</code> element):</p>
+<div class="sourceCode" id="cb30"><pre class="sourceCode javascript"><code class="sourceCode javascript"><a class="sourceLine" id="cb30-1" title="1"><span class="im">import</span> <span class="op">{</span> CustomHost <span class="op">}</span> <span class="im">from</span> <span class="st">&#39;path/to/infuse.host/src/infuse.js&#39;</span><span class="op">;</span></a>
+<a class="sourceLine" id="cb30-2" title="2"><span class="im">import</span> cartItemTemplate <span class="im">from</span> <span class="st">&#39;./cart-item.html&#39;</span><span class="op">;</span></a>
+<a class="sourceLine" id="cb30-3" title="3"></a>
+<a class="sourceLine" id="cb30-4" title="4"><span class="co">/**</span></a>
+<a class="sourceLine" id="cb30-5" title="5"><span class="co"> * Extend the `HTMLLIElement` class to define a new `CartItem` class.</span></a>
+<a class="sourceLine" id="cb30-6" title="6"><span class="co"> */</span></a>
+<a class="sourceLine" id="cb30-7" title="7"><span class="kw">class</span> CartItem <span class="kw">extends</span> <span class="at">CustomHost</span>(HTMLLIElement) <span class="op">{</span></a>
+<a class="sourceLine" id="cb30-8" title="8">    get <span class="at">template</span>() <span class="op">{</span></a>
+<a class="sourceLine" id="cb30-9" title="9">        <span class="co">// Return the parsed template.</span></a>
+<a class="sourceLine" id="cb30-10" title="10">        <span class="cf">return</span> cartItemTemplate<span class="op">;</span></a>
+<a class="sourceLine" id="cb30-11" title="11">    <span class="op">}</span></a>
+<a class="sourceLine" id="cb30-12" title="12"><span class="op">}</span></a>
+<a class="sourceLine" id="cb30-13" title="13"></a>
+<a class="sourceLine" id="cb30-14" title="14"><span class="co">/**</span></a>
+<a class="sourceLine" id="cb30-15" title="15"><span class="co"> * When defining customized built-in elements, you must specify (in the third argument) what</span></a>
+<a class="sourceLine" id="cb30-16" title="16"><span class="co"> * built-in HTML tag the custom element extends.</span></a>
+<a class="sourceLine" id="cb30-17" title="17"><span class="co"> */</span></a>
+<a class="sourceLine" id="cb30-18" title="18"><span class="va">window</span>.<span class="va">customElements</span>.<span class="at">define</span>(<span class="st">&#39;cart-item&#39;</span><span class="op">,</span> CartItem<span class="op">,</span> <span class="op">{</span> <span class="dt">extends</span><span class="op">:</span> <span class="st">&#39;li&#39;</span> <span class="op">}</span>)<span class="op">;</span></a></code></pre></div>
+<p>Once defined, you can create them manually using the constructor:</p>
+<div class="sourceCode" id="cb31"><pre class="sourceCode javascript"><code class="sourceCode javascript"><a class="sourceLine" id="cb31-1" title="1"><span class="kw">const</span> item <span class="op">=</span> <span class="kw">new</span> <span class="at">CartItem</span>()<span class="op">;</span></a></code></pre></div>
+<p>or using <code>document.createElement</code>:</p>
+<div class="sourceCode" id="cb32"><pre class="sourceCode javascript"><code class="sourceCode javascript"><a class="sourceLine" id="cb32-1" title="1"><span class="kw">const</span> item <span class="op">=</span> <span class="va">document</span>.<span class="at">createElement</span>(<span class="st">&#39;li&#39;</span><span class="op">,</span> <span class="op">{</span> <span class="dt">is</span><span class="op">:</span> <span class="st">&#39;cart-item&#39;</span> <span class="op">}</span>)<span class="op">;</span></a></code></pre></div>
+<p>and add them to the DOM manually.</p>
+<p>You can also use them in HTML templates:</p>
+<div class="sourceCode" id="cb33"><pre class="sourceCode html"><code class="sourceCode html"><a class="sourceLine" id="cb33-1" title="1"><span class="kw">&lt;ul&gt;</span></a>
+<a class="sourceLine" id="cb33-2" title="2">    <span class="kw">&lt;template</span><span class="ot"> for=</span><span class="st">&quot;item&quot;</span><span class="ot"> each=</span><span class="st">&quot;${ host.shoppingCartItems }&quot;</span><span class="kw">&gt;</span></a>
+<a class="sourceLine" id="cb33-3" title="3">        <span class="kw">&lt;li</span><span class="ot"> is=</span><span class="st">&quot;cart-item&quot;</span> <span class="er">.description</span><span class="ot">=</span><span class="st">&quot;${ item.description }&quot;</span> <span class="er">.price</span><span class="ot">=</span><span class="st">&quot;${ item.price }&quot;</span><span class="kw">&gt;&lt;/li&gt;</span></a>
+<a class="sourceLine" id="cb33-4" title="4">    <span class="kw">&lt;/template&gt;</span></a>
+<a class="sourceLine" id="cb33-5" title="5"><span class="kw">&lt;/ul&gt;</span></a></code></pre></div>
+</section>
+</section>
+<section>
+<h2 id="configuration-options">Configuration Options</h2>
+<p>The config ES module allows you to change configuration options.</p>
+<p>In the following example, the <code>setConfigs</code> function is used to change the configuration options <code>eventHandlerExp</code> and <code>eventName</code>:</p>
+<div class="sourceCode" id="cb34"><pre class="sourceCode javascript"><code class="sourceCode javascript"><a class="sourceLine" id="cb34-1" title="1"><span class="im">import</span> <span class="op">{</span> setConfigs <span class="op">}</span> <span class="im">from</span> <span class="st">&#39;path/to/infuse.host/src/configs.js&#39;</span><span class="op">;</span></a>
+<a class="sourceLine" id="cb34-2" title="2"></a>
+<a class="sourceLine" id="cb34-3" title="3"><span class="at">setConfigs</span>(<span class="op">{</span></a>
+<a class="sourceLine" id="cb34-4" title="4">    <span class="co">// Change the name of the &quot;event&quot; variable to just &quot;e&quot;.</span></a>
+<a class="sourceLine" id="cb34-5" title="5">    <span class="dt">eventName</span><span class="op">:</span> <span class="st">&#39;e&#39;</span><span class="op">,</span></a>
+<a class="sourceLine" id="cb34-6" title="6">    <span class="co">// Change the prefix of event handler attributes to &quot;on-&quot;.</span></a>
+<a class="sourceLine" id="cb34-7" title="7">    <span class="dt">eventHandlerExp</span><span class="op">:</span> <span class="st">&#39;on-&#39;</span></a>
+<a class="sourceLine" id="cb34-8" title="8"><span class="op">}</span>)<span class="op">;</span></a></code></pre></div>
+<p>The following is a list of all the configuration options:</p>
+<ul>
+<li><p><strong><code>camelCaseEvents</code></strong>: Indicates whether or not event names in event handlers should be camel cased during the parsing process. For instance, consider the following element:</p>
+<div class="sourceCode" id="cb35"><pre class="sourceCode html"><code class="sourceCode html"><a class="sourceLine" id="cb35-1" title="1"><span class="kw">&lt;form</span><span class="ot"> on-client-side-validation=</span><span class="st">&quot;host.enableSubmitBtn(event)&quot;</span><span class="kw">&gt;</span></a>
+<a class="sourceLine" id="cb35-2" title="2">    <span class="co">&lt;!-- Form fields. --&gt;</span></a>
+<a class="sourceLine" id="cb35-3" title="3"><span class="kw">&lt;/form&gt;</span></a></code></pre></div>
+<p>Since the default value for the <code>camelCaseEvents</code> configuration option is <code>false</code> an event listerner will be added to the previous form element that will listen for "client-side-validation" events. However, if <code>camelCaseEvents</code> is changed to <code>true</code>, the event listener would be listening for "clientSideValidation" events (the dashes are used to camel case the event name).</p></li>
+<li><p><strong><code>constantExp</code></strong>: The prefix (a string) or a regular expression used to determine if an attribute is a custom constant. This is "const-" by default which means that all attributes that start with "const-" are custom constant definitions.</p>
+<p>If <code>constantExp</code> is set to a regular expression, the regular expression is used to determine if attributes are custom constants. For instance, if you want custom constant attribute names to end with "-const" you would use the following regular expression:</p>
+<div class="sourceCode" id="cb36"><pre class="sourceCode javascript"><code class="sourceCode javascript"><a class="sourceLine" id="cb36-1" title="1"><span class="at">setConfigs</span>(<span class="op">{</span> <span class="dt">constantExp</span><span class="op">:</span> <span class="ss">/</span><span class="sc">^(\w+)</span><span class="ss">-const</span><span class="sc">$</span><span class="ss">/</span> <span class="op">}</span>)<span class="op">;</span></a></code></pre></div>
+<p>If you're using a regular expression, it must contain parenthesis, as shown above. The parenthesis indicate the location of the name of the variable.</p></li>
+<li><p><strong><code>contextFunctionId</code></strong>: When an element is parsed a context function is created and an ID that uniquely identifies the function is generated. An attribute is added to the element with the ID of the context function. The <code>contextFunctionId</code> option defines the name of that attribute. This is "data-cid" by default.</p></li>
+<li><p><strong><code>eventHandlerExp</code></strong>: The prefix (a string) or a regular expression used to determine if an attribute is an event handler. The regular expression <code>/^on-?(\w[\w:-]+)$/</code> is used by default, which means that event handlers start with "on" and can contain alphanumeric characters, underscores, dashes, and colons.</p>
+<p>The parentheses within the regular expression indicate the location of the event type. For instance, when using the following expression:</p>
+<div class="sourceCode" id="cb37"><pre class="sourceCode javascript"><code class="sourceCode javascript"><a class="sourceLine" id="cb37-1" title="1"><span class="at">setConfigs</span>(<span class="op">{</span> <span class="dt">eventHandlerExp</span><span class="op">:</span> <span class="ss">/</span><span class="sc">^</span><span class="ss">when-</span><span class="sc">(\w+)</span><span class="ss">-run</span><span class="sc">$</span><span class="ss">/</span> <span class="op">}</span>)<span class="op">;</span></a></code></pre></div>
+<p>you would write event handlers in the following format:</p>
+<pre><code>when-eventtype-run=&quot;expression&quot;</code></pre>
+<p>where <code>eventtype</code> is the event type and <code>expression</code> is the expression to execute when the event occurs, for example using:</p>
+<pre><code>when-submit-run=&quot;event.preventDefault()&quot;</code></pre>
+<p>would add an event listener to the element that will listen for "submit" events. Parentheses are required when using a regular expression.</p>
+<p>Alternatively, you can use a string to indicate the prefix of event handlers. For instance, when using "on":</p>
+<div class="sourceCode" id="cb40"><pre class="sourceCode javascript"><code class="sourceCode javascript"><a class="sourceLine" id="cb40-1" title="1"><span class="at">setConfigs</span>(<span class="op">{</span> <span class="dt">eventHandlerExp</span><span class="op">:</span> <span class="st">&#39;on&#39;</span> <span class="op">}</span>)<span class="op">;</span></a></code></pre></div>
+<p>all attributes that start with "on" will be treated as event handlers.</p></li>
+<li><p><strong><code>eventName</code></strong>: Name of the event variable available within expressions and event handlers. This is "event" by default. If you wanted event variables to be named "e" instead, you would have to change this configuration option:</p>
+<div class="sourceCode" id="cb41"><pre class="sourceCode javascript"><code class="sourceCode javascript"><a class="sourceLine" id="cb41-1" title="1"><span class="at">setConfigs</span>(<span class="op">{</span> <span class="dt">eventName</span><span class="op">:</span> <span class="st">&#39;e&#39;</span> <span class="op">}</span>)<span class="op">;</span></a></code></pre></div>
+<p>This would allow you use <code>e</code> (instead of <code>event</code>) to access event variables within expressions and event handlers. For instance:</p>
+<div class="sourceCode" id="cb42"><pre class="sourceCode html"><code class="sourceCode html"><a class="sourceLine" id="cb42-1" title="1"><span class="kw">&lt;form</span><span class="ot"> onsubmit=</span><span class="st">&quot;e.preventDefault()&quot;</span><span class="kw">&gt;</span></a>
+<a class="sourceLine" id="cb42-2" title="2">    <span class="kw">&lt;button</span><span class="ot"> type=</span><span class="st">&quot;submit&quot;</span><span class="ot"> disabled</span><span class="er">?</span><span class="ot">=</span><span class="st">&quot;${ e !== undefined }&quot;</span><span class="kw">&gt;</span>Submit<span class="kw">&lt;/button&gt;</span></a>
+<a class="sourceLine" id="cb42-3" title="3"><span class="kw">&lt;/form&gt;</span></a></code></pre></div></li>
+<li><p><strong><code>placeholderId</code></strong>: Nested templates are replaced with placeholder templates during the parsing process. Placeholder templates have an attribute that uniquely identifies the template that was replaced. The <code>placeholderId</code> defines the name of the attribute. This is "data-pid" by default.</p></li>
+<li><p><strong><code>sweepFlag</code></strong>: Name of the boolean attribute to use as an indicator that memory has been allocated for an element. Allocated memory must be cleared when the element is removed from the DOM. This is "data-sweep" by default.</p></li>
+<li><p><strong><code>tags</code></strong>: An object containing all possible tag functions to be used with template literals. During parsing (for instance, when using the <a href="https://github.com/serg-io/infuse-loader">infuse-loader</a>) this can be an array of all possible tag function names. However, at run time, this must be an object where the keys are the names of the tag functions and the values are the tag functions.</p></li>
+<li><p><strong><code>tagsName</code></strong>: Name of the variable, available within expressions and event handlers, that contains all tag functions. This is "tags" by default.</p></li>
+<li><p><strong><code>templateId</code></strong>: Name of the template ID attribute. After parsing a template, a template ID attribute is set on the template element. If the template already has this attribute, its value is used to uniquely identify the template instead. This configuration option is the name of that attribute. This is "data-tid" by default. If you're already setting the "id" attribute on your templates, changing this configuration option to "id" would make it easier to access your templates (especially if you're using infuse-loader, see <a href="https://github.com/serg-io/infuse-loader">infuse-loader</a> for details).</p></li>
+<li><p><strong><code>watchExp</code></strong>: The prefix (a string) or a regular expression used to determine if an attribute is a watch. This is "watch-" by default which means that all attributes that start with "watch-" are watches.</p>
+<p>If <code>watchExp</code> is set to a regular expression, the regular expression is used to determine if attributes are watches. For instance, if you want watch attribute names to end with "-watch" you would use the following regular expression:</p>
+<div class="sourceCode" id="cb43"><pre class="sourceCode javascript"><code class="sourceCode javascript"><a class="sourceLine" id="cb43-1" title="1"><span class="at">setConfigs</span>(<span class="op">{</span> <span class="dt">watchExp</span><span class="op">:</span> <span class="ss">/</span><span class="sc">^(\w+)</span><span class="ss">-watch</span><span class="sc">$</span><span class="ss">/</span> <span class="op">}</span>)<span class="op">;</span></a></code></pre></div>
+<p>If you're using a regular expression, it must contain parenthesis, as shown above. The parenthesis indicate the location of the name of the variable/element to watch.</p></li>
+</ul>
+</section>
+	</article>
+
+	</body>
+</html>

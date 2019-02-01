@@ -1,0 +1,58 @@
+@import "../../node_modules/bootstrap/scss/functions";
+@import "../../node_modules/bootstrap/scss/variables";
+
+
+/**
+ * Variables
+ */
+$code-color: $pre-color;
+$headings-padding-top: $spacer * 2;
+$headings-margin-bottom: $headings-padding-top;
+
+
+@import "../../node_modules/bootstrap/scss/mixins";
+@import "../../node_modules/bootstrap/scss/root";
+
+@import "../../node_modules/bootstrap/scss/reboot";
+@import "../../node_modules/bootstrap/scss/type";
+
+
+/**
+ * Type
+ */
+h1, h2, h3, h4, h5, h6,
+.h1, .h2, .h3, .h4, .h5, .h6 {
+	// Add padding-top to headings.
+	padding-top: $headings-padding-top;
+}
+
+header > h1 {
+	// Remove padding from <h1> in <header>.
+	padding: 0;
+	margin-bottom: $spacer / 2;
+}
+
+
+@import "../../node_modules/bootstrap/scss/code";
+@import "../../node_modules/bootstrap/scss/grid";
+
+
+/**
+ * Layout / Style
+ */
+
+// Make the <header> use 100% of the viewport's height and center the text.
+article > header {
+	height: 100vh;
+	text-align: center;
+	padding-top: calc(50vh - 55px);
+}
+
+// Add border and spacing to <section> elements.
+article > section {
+	border-top: $border-width solid $border-color;
+
+	&:not(:last-child) {
+		padding-bottom: $spacer * 6;
+	}
+}

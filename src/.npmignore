@@ -3,3 +3,6 @@
 
 # Ignore all test files.
 *.test.js
+
+# Ignore documentation source files.
+docs
