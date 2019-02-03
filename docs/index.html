@@ -85,8 +85,12 @@ code span.wa { color: #bf0303; } /* Warning */
 	</head>
 <body>
 	
-			<nav id="TOC" hidden>
-			<ul>
+			<button class="btn btn-lg btn-outline-dark border-0 side-nav-btn" type="button" onclick="this.nextElementSibling.classList.add('visible')">
+			<span class="h2 pt-0">&equiv;</span>
+		</button>
+		<div class="side-nav" onclick="this.classList.remove('visible')">
+			<nav id="TOC" class="bg-dark py-3">
+				<ul>
 <li><a href="#introduction">Introduction</a></li>
 <li><a href="#template-literals">Template Literals</a></li>
 <li><a href="#expressions">Expressions</a></li>
@@ -107,7 +111,8 @@ code span.wa { color: #bf0303; } /* Warning */
 </ul></li>
 <li><a href="#configuration-options">Configuration Options</a></li>
 </ul>
-		</nav>
+			</nav>
+		</div>
 	
 	<article class="container">
 		<header id="title-block-header">

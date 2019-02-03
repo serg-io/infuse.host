@@ -43,9 +43,14 @@
 	$endfor$
 
 	$if(toc)$
-		<nav id="$idprefix$TOC" hidden>
-			$table-of-contents$
-		</nav>
+		<button class="btn btn-lg btn-outline-dark border-0 side-nav-btn" type="button" onclick="this.nextElementSibling.classList.add('visible')">
+			<span class="h2 pt-0">&equiv;</span>
+		</button>
+		<div class="side-nav" onclick="this.classList.remove('visible')">
+			<nav id="$idprefix$TOC" class="bg-dark py-3">
+				$table-of-contents$
+			</nav>
+		</div>
 	$endif$
 
 	<article class="container">

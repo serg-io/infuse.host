@@ -35,6 +35,8 @@ header > h1 {
 
 @import "../../node_modules/bootstrap/scss/code";
 @import "../../node_modules/bootstrap/scss/grid";
+@import "../../node_modules/bootstrap/scss/buttons";
+@import "../../node_modules/bootstrap/scss/utilities";
 
 
 /**
@@ -54,5 +56,104 @@ article > section {
 
 	&:not(:last-child) {
 		padding-bottom: $spacer * 6;
+	}
+}
+
+
+/**
+ * Navigation
+ */
+.side-nav-btn {
+	right: $spacer;
+	position: fixed;
+	top: map_get($spacers, 4);
+}
+/**
+ * The .side-nav is on top of the page content and uses 100% of the viewport but mouse events are
+ * disabled. Mouse events are enabled when the <nav> is displayed (slided in from the right).
+ */
+.side-nav {
+	top: 0;
+	right: 0;
+	z-index: 1;
+	width: 100%;
+	height: 100%;
+	overflow: hidden;
+	// Disable mouse events.
+	pointer-events: none;
+
+	&, &::before, nav {
+		position: fixed;
+	}
+
+	/**
+	 * This is a transparent (opacity: 0) overlay that sits on top of the page content but behind
+	 * the <nav> container. When <nav> is slided in from the right, the opacity of this overlay is
+	 * set to 1 (the background color still has an opacity of .6).
+	 */
+	&::before {
+		opacity: 0;
+		width: 100%;
+		height: 100%;
+		content: " ";
+		will-change: opacity;
+		background-color: rgba(0, 0, 0, .6);
+		@include transition(opacity 0.3s cubic-bezier(0, 0, 0.3, 1));
+	}
+
+	/**
+	 * This is the actual element that slides in from the right. Its position is
+	 * transformed/translated to the right (outside the viewport) by 102% of its width.
+	 */
+	nav {
+		top: 0;
+		right: 0;
+		width: 300px;
+		height: 100%;
+		overflow: auto;
+		will-change: transform;
+		transform: translateX(102%);
+		@include transition(transform 0.2s cubic-bezier(0, 0, 0.3, 1));
+	}
+
+	ul {
+		// Remove style from lists.
+		@include list-unstyled;
+
+		// Add padding and a hover effect to the links.
+		li a {
+			display: block;
+			color: rgba($white, .7);
+			padding-left: $spacer;
+			padding-top: map_get($spacers, 2);
+			padding-bottom: map_get($spacers, 2);
+			border-left: map_get($spacers, 1) solid transparent;
+
+			&:hover {
+				color: $white;
+				border-left-color: $white;
+			}
+		}
+
+		// Increase padding-left of links in nested lists.
+		li ul a {
+			padding-left: $spacer * 2;
+		}
+	}
+
+	// The class "visible" is added to "side-nav" to slide in the <nav> element.
+	&.visible {
+		// Enable mouse events.
+		pointer-events: auto;
+
+		// Make the overlay visible by setting its opacity to 1.
+		&::before {
+			opacity: 1;
+		}
+
+		// Removing the transform causes the <nav> to slide in from the right.
+		nav {
+			transform: none;
+		}
 	}
 }

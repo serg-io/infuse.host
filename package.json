@@ -25,6 +25,7 @@
     "/src"
   ],
   "scripts": {
+    "docs": "npm run docs-css && npm run docs-html",
     "docs-css": "node-sass --follow --indent-type tab --indent-width 1 --output-style expanded --source-map true --source-map-contents true --precision 6 src/docs/style.scss docs/style.css",
     "docs-html": "pandoc -s --quiet -f markdown-smart -t html5 --toc --highlight-style=kate --template=src/docs/template.html --css=style.css --metadata-file=package.json -o docs/index.html README.md",
     "lint": "eslint src/*",
