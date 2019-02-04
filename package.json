@@ -3,8 +3,8 @@
   "version": "0.1.0",
   "description": "Infuse your HTML with dynamic content.",
   "license": "MIT",
-  "author": "Sergio Alcantara <iserg9@gmail.com> (https://github.com/serg-io)",
-  "homepage": "https://github.com/serg-io/infuse.host#readme",
+  "author": "Sergio Alcantara (https://github.com/serg-io)",
+  "homepage": "https://infuse.host/",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/serg-io/infuse.host.git"
@@ -32,9 +32,10 @@
     "lint": "eslint src/*",
     "postversion": "git push && git push --tags && npm publish",
     "prepare": "rm -rf lib && npm run transpile",
-    "preversion": "npm run lint && npm run test",
+    "preversion": "npm-run-all lint test",
     "test": "jest",
-    "transpile": "babel src --out-dir lib --ignore *.test.js"
+    "transpile": "babel src --out-dir lib --ignore *.test.js",
+    "version": "npm run docs && git add docs/"
   },
   "jest": {
     "testEnvironment": "node"
@@ -48,7 +49,7 @@
     "babel-preset-env": "^1.7.0",
     "bootstrap": "^4.2.1",
     "clean-css-cli": "^4.2.1",
-    "eslint": "^5.12.1",
+    "eslint": "^5.13.0",
     "eslint-config-airbnb-base": "^13.1.0",
     "eslint-plugin-import": "^2.16.0",
     "jest": "^23.6.0",
