@@ -2,9 +2,24 @@
  * Navigation
  */
 .side-nav-btn {
+	border: 0;
 	right: $spacer;
 	position: fixed;
+	cursor: pointer;
+	background: none;
 	top: map_get($spacers, 4);
+
+	&:hover {
+		color: $white;
+	}
+
+	@include transition($btn-transition);
+	@include button-outline-variant($dark);
+	@include button-size($btn-padding-y-lg, $btn-padding-x-lg, $btn-font-size-lg, $btn-line-height-lg, $btn-border-radius-lg);
+
+	span {
+		padding: 0;
+	}
 }
 /**
  * The .side-nav is on top of the page content and uses 100% of the viewport but mouse events are
@@ -39,6 +54,31 @@
 		@include transition(opacity 0.3s cubic-bezier(0, 0, 0.3, 1));
 	}
 
+	h3, table {
+		width: 90%;
+		margin: 0 auto;
+		text-align: center;
+		color: rgba($white, .7);
+		padding: map_get($spacers, 2) 0;
+	}
+
+	a {
+		color: rgba($white, .7);
+
+		&:hover {
+			color: $white;
+		}
+	}
+
+	svg {
+		height: 1.25rem;
+		fill: rgba($white, .7);
+
+		&:hover {
+			fill: $white;
+		}
+	}
+
 	/**
 	 * This is the actual element that slides in from the right. Its position is
 	 * transformed/translated to the right (outside the viewport) by 102% of its width.
@@ -50,6 +90,7 @@
 		height: 100%;
 		overflow: auto;
 		will-change: transform;
+		background-color: $dark;
 		transform: translateX(102%);
 		@include transition(transform 0.2s cubic-bezier(0, 0, 0.3, 1));
 	}
@@ -61,14 +102,12 @@
 		// Add padding and a hover effect to the links.
 		li a {
 			display: block;
-			color: rgba($white, .7);
 			padding-left: $spacer;
-			padding-top: map_get($spacers, 2);
-			padding-bottom: map_get($spacers, 2);
+			padding-top: map_get($spacers, 1);
+			padding-bottom: map_get($spacers, 1);
 			border-left: map_get($spacers, 1) solid transparent;
 
 			&:hover {
-				color: $white;
 				border-left-color: $white;
 			}
 		}
