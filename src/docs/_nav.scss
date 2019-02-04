@@ -9,10 +9,6 @@
 	background: none;
 	top: map_get($spacers, 4);
 
-	&:hover {
-		color: $white;
-	}
-
 	@include transition($btn-transition);
 	@include button-outline-variant($dark);
 	@include button-size($btn-padding-y-lg, $btn-padding-x-lg, $btn-font-size-lg, $btn-line-height-lg, $btn-border-radius-lg);
