@@ -29,7 +29,7 @@
     "docs-css-compile": "node-sass --output-style expanded --source-map true --source-map-contents true --precision 6 src/docs/style.scss docs/style.css",
     "docs-css-minify": "cleancss --source-map --source-map-inline-sources --output docs/style.min.css docs/style.css",
     "docs-html": "pandoc -s --quiet -f markdown-smart -t html5 --toc --highlight-style=kate --template=src/docs/template.html --css=style.min.css --metadata-file=package.json -o docs/index.html README.md",
-    "lint": "eslint src/*",
+    "lint": "eslint src/*.js",
     "postversion": "git push && git push --tags && npm publish",
     "prepare": "rm -rf lib && npm run transpile",
     "preversion": "npm-run-all lint test",
