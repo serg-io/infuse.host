@@ -90,15 +90,20 @@
 	$endfor$
 
 	<script>
-		// Find all external links.
-		var links = document.querySelectorAll('a[href^="http"]');
-
-		// Convert it from an array-like variable into an actual array.
-		links = Array.prototype.slice.call(links);
+		// Finds elements in the page and returns them as an array.
+		function queryAll(selector) {
+			return Array.prototype.slice.call(document.querySelectorAll(selector));
+		}
 
 		// Change the `target` of all external links.
-		links.forEach(function(link) {
+		queryAll('a[href^="http"]').forEach(function(link) {
 			link.target = '_blank';
+		});
+
+		// Initially, iframes don't have a src attribute to avoid render blocking, data-src
+		// attributes are used instead. Find all iframes and set their src property.
+		queryAll('iframe').forEach(function(iframe) {
+			iframe.src = iframe.getAttribute('data-src');
 		});
 	</script>
 </body>

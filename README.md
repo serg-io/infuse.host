@@ -83,85 +83,13 @@ Expressions and template literals can be used in combination with static strings
 In the following basic example, the `<template>` element is parsed, cloned, and infused. The
 resulting fragment (`<h1>Page Title</h1>`) is then added to `<header>` (the `host` element).
 
-```html
-<!DOCTYPE html>
-<html>
-<head>
-	<title>Basic infuse.host example</title>
-</head>
-<body>
-	<template>
-		<h1>${ data.pageTitle }</h1>
-	</template>
-	<header></header>
-
-	<script type="module">
-		// Import the infuse and parser modules.
-		import infuse from 'path/to/infuse.host/src/infuse.js';
-		import parseTemplate from 'path/to/infuse.host/src/parseTemplate.js';
-
-		// Find the <header> element, which will be used as `host`, and the <template> element.
-		const host = document.querySelector('header');
-		const template = document.querySelector('template');
-
-		// Parse the template.
-		parseTemplate(template);
-
-		// Data to infuse.
-		const data = { pageTitle: 'Page Title' };
-
-		// Clone/infuse the template and add the infused fragment to the <header> (`host`).
-		const fragment = infuse(host, template, data);
-		host.appendChild(fragment);
-	</script>
-</body>
-</html>
-```
+<iframe height="450" style="width: 100%;" scrolling="no" title="infuse.host: Basic example" data-src="https://codepen.io/serg-io/embed/YBrwxa/?height=450&theme-id=light&default-tab=js,result" frameborder="no" allowtransparency="true" allowfullscreen="true"></iframe>
 
 The same result can be achieved using custom elements. The `Infuse.Host` class can be used to
-define custom elements. Note that in the following example, instead of getting `pageTitle` from
-`data`, it is obtained from the `host` variable (the custom element).
+define custom elements. Note that in the following example, instead of getting `title` from `data`,
+it is obtained from the `host` variable (the custom element).
 
-```html
-<!DOCTYPE html>
-<html>
-<head>
-	<title>Basic infuse.host example using a custom element</title>
-</head>
-<body>
-	<template>
-		<h1>${ host.pageTitle }</h1>
-	</template>
-	<custom-header></custom-header>
-
-	<script type="module">
-		// Import the infuse and parser modules.
-		import * as Infuse from 'path/to/infuse.host/src/infuse.js';
-		import parseTemplate from 'path/to/infuse.host/src/parseTemplate.js';
-
-		// Find the <template> and parse it.
-		const headerTemplate = document.querySelector('template');
-		parseTemplate(headerTemplate);
-
-		// Extend `Infuse.Host` to define a class for the new custom element.
-		class CustomHeader extends Infuse.Host {
-			// `Infuse.Host` uses `this.template` to obtain the template to clone/infuse.
-			get template() {
-				return headerTemplate;
-			}
-
-			// This is the property used in the template.
-			get pageTitle() {
-				return 'Page Title';
-			}
-		}
-
-		// Define the custom element using the `CustomHeader` class.
-		window.customElements.define('custom-header', CustomHeader);
-	</script>
-</body>
-</html>
-```
+<iframe height="560" style="width: 100%;" scrolling="no" title="infuse.host: Basic custom element example" data-src="https://codepen.io/serg-io/embed/yZzVbX/?height=560&theme-id=light&default-tab=js,result" frameborder="no" allowtransparency="true" allowfullscreen="true"></iframe>
 
 In order to keep things simple in these two examples, expressions within the `<template>` elements
 are parsed in the browser. However, this practice is discouraged in a production environment. One
