@@ -26,16 +26,16 @@
   ],
   "scripts": {
     "docs": "npm-run-all docs-*",
-    "docs-css-compile": "node-sass --output-style expanded --source-map true --source-map-contents true --precision 6 src/docs/style.scss docs/style.css",
-    "docs-css-minify": "cleancss --source-map --source-map-inline-sources --output docs/style.min.css docs/style.css",
-    "docs-html": "pandoc -s --quiet -f markdown-smart -t html5 --toc --highlight-style=kate --template=src/docs/template.html --css=style.min.css --metadata-file=package.json -o docs/index.html README.md",
+    "docs-css-compile": "node-sass --output-style expanded --source-map true --source-map-contents true --precision 6 docs/style.scss docs/dist/style.css",
+    "docs-css-minify": "cleancss --source-map --source-map-inline-sources --output docs/dist/style.min.css docs/dist/style.css",
+    "docs-html": "pandoc -s --quiet -f markdown-smart -t html5 --toc --highlight-style=kate --template=docs/template.html --css=docs/dist/style.min.css --metadata-file=package.json -o index.html README.md",
     "lint": "eslint src/*.js",
     "postversion": "git push && git push --tags && npm publish",
     "prepare": "rm -rf lib && npm run transpile",
     "preversion": "npm-run-all lint test",
     "test": "jest",
     "transpile": "babel src --out-dir lib --ignore *.test.js",
-    "version": "npm run docs && git add docs/"
+    "version": "npm run docs && git add index.html docs/dist/"
   },
   "jest": {
     "testEnvironment": "node"
