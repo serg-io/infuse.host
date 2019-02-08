@@ -28,7 +28,7 @@
     "docs": "npm-run-all docs-*",
     "docs-css-compile": "node-sass --output-style expanded --source-map true --source-map-contents true --precision 6 docs/style.scss docs/dist/style.css",
     "docs-css-minify": "cleancss --source-map --source-map-inline-sources --output docs/dist/style.min.css docs/dist/style.css",
-    "docs-html": "pandoc -s --quiet -f markdown-smart -t html5 --toc --highlight-style=kate --template=docs/template.html --css=docs/dist/style.min.css --metadata-file=package.json -o index.html README.md",
+    "docs-html": "pandoc -s --quiet -f markdown-smart -t html5 --toc --highlight-style=kate --template=docs/template.html --css=docs/dist/style.min.css --metadata-file=package.json -o index.html docs/index.md",
     "lint": "eslint src/*.js",
     "postversion": "git push && git push --tags && npm publish",
     "prepare": "rm -rf lib && npm run transpile",
