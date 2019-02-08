@@ -244,7 +244,7 @@ export default function infuse(host, template, data = {}, iterationData = {}) {
  * function to generate its contents. The `template` getter must be overwritten to return a
  * template, which would be cloned and infused when the element is added to the DOM (when
  * `connectedCallback` is called). When the element is removed from the DOM (and
- * `disconnectCallback` is called) all memory allocated by infuse process (associated with the
+ * `disconnectedCallback` is called) all memory allocated by infuse process (associated with the
  * element **and any of its descendants**) will be cleared.
  *
  * To define a [custom element
