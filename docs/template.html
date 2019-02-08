@@ -100,11 +100,41 @@
 			link.target = '_blank';
 		});
 
-		// Initially, iframes don't have a src attribute to avoid render blocking, data-src
-		// attributes are used instead. Find all iframes and set their src property.
-		queryAll('iframe').forEach(function(iframe) {
-			iframe.src = iframe.getAttribute('data-src');
-		});
+		/**
+		 * Initially, iframes don't have a src attribute to avoid render blocking. Instead, they
+		 * have data-src attributes. To load iframes, their src attributes must be set using the
+		 * values of their data-src attributes.
+		 */
+		var iframes = queryAll('iframe');
+
+		if (typeof IntersectionObserver === 'undefined') {
+			// Load the iframes right away if the browser doesn't support IntersectionObserver.
+			iframes.forEach(function(iframe) {
+				iframe.src = iframe.getAttribute('data-src');
+			});
+		} else {
+			/**
+			 * If the browser supports IntersectionObserver, wait until each iframe is visible
+			 * before loading them.
+			 */
+			var observer = new IntersectionObserver(function(entries) {
+				entries.forEach(function(entry) {
+					// If the iframe is visible
+					if (entry.isIntersecting) {
+						var iframe = entry.target;
+
+						// Set the iframe's src attribute and stop observing it.
+						iframe.src = iframe.getAttribute('data-src');
+						observer.unobserve(iframe);
+					}
+				});
+			});
+
+			// Observe all iframes.
+			iframes.forEach(function(iframe) {
+				observer.observe(iframe);
+			});
+		}
 	</script>
 </body>
 </html>
