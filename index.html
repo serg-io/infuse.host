@@ -153,9 +153,15 @@ code span.wa { color: #bf0303; } /* Warning */
 <h2 id="example">Example</h2>
 <p>In the following "Hello World" example, the <code>&lt;template&gt;</code> element is parsed, cloned, and infused and the resulting fragment (<code>&lt;h1&gt;Hello World&lt;/h1&gt;</code>) is added to <code>&lt;header&gt;</code> (the <code>host</code> element).</p>
 <p><strong>Note:</strong> In order to keep things simple, templates in these examples are parsed in the browser. However, this practice is discouraged in a production environment. You can avoid this by parsing templates as part of a build or back-end process. If you're using <a href="https://webpack.js.org/">webpack</a>, you can use <a href="https://github.com/serg-io/infuse-loader">infuse-loader</a> to parse templates and generate <a href="https://developers.google.com/web/fundamentals/primers/modules#intro">ES modules</a> from HTML files. These modules can then be imported into other modules.</p>
+<p class="loading-iframe">
+Loading example...
+</p>
 <iframe height="500" style="width: 100%;" scrolling="no" title="Hello World - infuse.host" data-src="https://codepen.io/serg-io/embed/YBrwxa/?height=500&amp;theme-id=light&amp;default-tab=js,result" frameborder="no" allowtransparency="true" allowfullscreen="true">
 </iframe>
 <p>The same result can be achieved using custom elements. The <code>Infuse.Host</code> class can be extended to define custom elements. In this example the text is obtained from the custom element (<code>host.title</code> is used in the template instead of <code>data.title</code>).</p>
+<p class="loading-iframe">
+Loading example...
+</p>
 <iframe height="560" style="width: 100%;" scrolling="no" title="Custom &quot;Hello World&quot; element - infuse.host" data-src="https://codepen.io/serg-io/embed/yZzVbX/?height=560&amp;theme-id=light&amp;default-tab=js,result" frameborder="no" allowtransparency="true" allowfullscreen="true">
 </iframe>
 </section>
@@ -179,6 +185,9 @@ code span.wa { color: #bf0303; } /* Warning */
 <a class="sourceLine" id="cb1-14" title="14">    <span class="op">}</span></a>
 <a class="sourceLine" id="cb1-15" title="15"><span class="op">}</span>)<span class="op">;</span></a></code></pre></div>
 <p>The parser uses the "tags" configuration option to identify the tag functions that you use in your HTML templates. For instance, if you use the <code>tags</code> object shown above, <code>i18n`submit`</code> will be infused with (replaced with) the string "Submit".</p>
+<p class="loading-iframe">
+Loading example...
+</p>
 <iframe height="500" style="width: 100%;" scrolling="no" title="Tagged template literal - infuse.host" data-src="https://codepen.io/serg-io/embed/NoXRjB/?height=500&amp;theme-id=light&amp;default-tab=html,result" frameborder="no" allowtransparency="true" allowfullscreen="true">
 </iframe>
 </section>
@@ -258,6 +267,9 @@ code span.wa { color: #bf0303; } /* Warning */
 <p>You can add event handlers to elements, just like you would in regular HTML code, by using <a href="https://developer.mozilla.org/en-US/docs/Web/Guide/Events/Event_handlers">on-event attributes</a>.</p>
 <p>When an element is parsed, event handler attributes are converted into event listener functions (<a href="https://developer.mozilla.org/en-US/docs/Web/Guide/Events/Event_handlers#Terminology">terminology</a>). When an element is infused for the first time, these event listeners are added to the element using the <a href="https://developer.mozilla.org/en-US/docs/Web/API/EventTarget/addEventListener"><code>addEventListener</code></a> method.</p>
 <p>Event handlers have access to the same variables available within expressions. For instance, if you want to call a method on the <code>host</code> element when a form is submitted, you would add an <code>onsubmit</code> event handler attribute.</p>
+<p class="loading-iframe">
+Loading example...
+</p>
 <iframe height="500" style="width: 100%;" scrolling="no" title="Event handler - infuse.host" data-src="https://codepen.io/serg-io/embed/KJQgPQ/?height=500&amp;theme-id=light&amp;default-tab=html,result" frameborder="no" allowtransparency="true" allowfullscreen="true">
 </iframe>
 </section>
@@ -345,6 +357,9 @@ It contains three child nodes:
 <a class="sourceLine" id="cb20-6" title="6"><span class="co">    --&gt;</span></a>
 <a class="sourceLine" id="cb20-7" title="7"><span class="kw">&lt;/template&gt;</span></a></code></pre></div>
 <p>Lets say that <code>host.getBooksArray()</code> returns an array of objects, each object represents a book and contains the attributes <code>isbn</code>, <code>title</code>, and <code>author</code>. The following template can be used to generate a <code>&lt;table&gt;</code> with a list of books.</p>
+<p class="loading-iframe">
+Loading example...
+</p>
 <iframe height="550" style="width: 100%;" scrolling="no" title="Iterating template - infuse.host" data-src="https://codepen.io/serg-io/embed/KJQzmP/?height=550&amp;theme-id=light&amp;default-tab=html,result" frameborder="no" allowtransparency="true" allowfullscreen="true">
 </iframe>
 <p>Note how the iterating template is inside a parent template. When a template is cloned and infused, nested templates are also cloned and infused.</p>
@@ -489,6 +504,16 @@ It contains three child nodes:
 		 * values of their data-src attributes.
 		 */
 		var iframes = queryAll('iframe');
+
+		/**
+		 * There's a loading message (a <p> element) right before each <iframe>. Add an event
+		 * listerner to each iframe to remove the loading message when the iframe is loaded.
+		 */
+		iframes.forEach(function(iframe) {
+			iframe.addEventListener('load', function(e) {
+				this.previousElementSibling.remove();
+			}, false);
+		});
 
 		if (typeof IntersectionObserver === 'undefined') {
 			// Load the iframes right away if the browser doesn't support IntersectionObserver.

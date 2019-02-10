@@ -29,12 +29,14 @@ you can use [infuse-loader](https://github.com/serg-io/infuse-loader) to parse t
 generate [ES modules](https://developers.google.com/web/fundamentals/primers/modules#intro) from
 HTML files. These modules can then be imported into other modules.
 
+<p class="loading-iframe">Loading example...</p>
 <iframe height="500" style="width: 100%;" scrolling="no" title="Hello World - infuse.host" data-src="https://codepen.io/serg-io/embed/YBrwxa/?height=500&theme-id=light&default-tab=js,result" frameborder="no" allowtransparency="true" allowfullscreen="true"></iframe>
 
 The same result can be achieved using custom elements. The `Infuse.Host` class can be extended to
 define custom elements. In this example the text is obtained from the custom element (`host.title`
 is used in the template instead of `data.title`).
 
+<p class="loading-iframe">Loading example...</p>
 <iframe height="560" style="width: 100%;" scrolling="no" title="Custom &quot;Hello World&quot; element - infuse.host" data-src="https://codepen.io/serg-io/embed/yZzVbX/?height=560&theme-id=light&default-tab=js,result" frameborder="no" allowtransparency="true" allowfullscreen="true"></iframe>
 
 </section>
@@ -76,6 +78,7 @@ The parser uses the "tags" configuration option to identify the tag functions th
 HTML templates. For instance, if you use the `tags` object shown above, `` i18n`submit` `` will be
 infused with (replaced with) the string "Submit".
 
+<p class="loading-iframe">Loading example...</p>
 <iframe height="500" style="width: 100%;" scrolling="no" title="Tagged template literal - infuse.host" data-src="https://codepen.io/serg-io/embed/NoXRjB/?height=500&theme-id=light&default-tab=html,result" frameborder="no" allowtransparency="true" allowfullscreen="true"></iframe>
 </section>
 <section>
@@ -250,6 +253,7 @@ Event handlers have access to the same variables available within expressions. F
 want to call a method on the `host` element when a form is submitted, you would add an `onsubmit`
 event handler attribute.
 
+<p class="loading-iframe">Loading example...</p>
 <iframe height="500" style="width: 100%;" scrolling="no" title="Event handler - infuse.host" data-src="https://codepen.io/serg-io/embed/KJQgPQ/?height=500&theme-id=light&default-tab=html,result" frameborder="no" allowtransparency="true" allowfullscreen="true"></iframe>
 </section>
 <section>
@@ -421,6 +425,7 @@ Lets say that `host.getBooksArray()` returns an array of objects, each object re
 contains the attributes `isbn`, `title`, and `author`. The following template can be used to
 generate a `<table>` with a list of books.
 
+<p class="loading-iframe">Loading example...</p>
 <iframe height="550" style="width: 100%;" scrolling="no" title="Iterating template - infuse.host" data-src="https://codepen.io/serg-io/embed/KJQzmP/?height=550&theme-id=light&default-tab=html,result" frameborder="no" allowtransparency="true" allowfullscreen="true"></iframe>
 
 Note how the iterating template is inside a parent template. When a template is cloned and infused,

@@ -107,6 +107,16 @@
 		 */
 		var iframes = queryAll('iframe');
 
+		/**
+		 * There's a loading message (a <p> element) right before each <iframe>. Add an event
+		 * listerner to each iframe to remove the loading message when the iframe is loaded.
+		 */
+		iframes.forEach(function(iframe) {
+			iframe.addEventListener('load', function(e) {
+				this.previousElementSibling.remove();
+			}, false);
+		});
+
 		if (typeof IntersectionObserver === 'undefined') {
 			// Load the iframes right away if the browser doesn't support IntersectionObserver.
 			iframes.forEach(function(iframe) {

@@ -47,4 +47,10 @@ article > section {
 	}
 }
 
+// iframe loading message.
+.loading-iframe {
+	position: absolute;
+	margin: $spacer 0 0 150px;
+}
+
 @import "nav";
