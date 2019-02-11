@@ -17,27 +17,57 @@ HTML fragments can then be added to **host** elements. This is done by writing [
 </section>
 <section>
 
-## Example ##
+## Installation ##
+
+You can install the [infuse.host NPM package](https://www.npmjs.com/package/infuse.host) in your
+project by running the following command.
+
+```bash
+npm install infuse.host
+```
+
+## Webpack ##
+
+In order to keep things simple, all the code examples shown below have templates that are parsed in
+the browser (using the `parseTemplate` function). However, parsing templates in the browser is a
+practice that is discouraged in a production environment. You can avoid parsing templates in the
+browser by parsing them as part of a build or back-end process.
+
+If you're using [webpack](https://webpack.js.org/), you can use
+[infuse-loader](https://github.com/serg-io/infuse-loader) to parse templates in HTML files and
+generate [ES modules](https://developers.google.com/web/fundamentals/primers/modules#intro). These
+modules can then be imported into other modules. You can install the [infuse-loader NPM
+package](https://www.npmjs.com/package/infuse-loader) in your project by running the following
+command.
+
+```bash
+npm install --save-dev infuse-loader
+```
+
+The site [https://todo.infuse.host/](https://todo.infuse.host/) is an example of a web application
+built using infuse.host, in which all templates are parsed as part of a webpack build process using
+infuse-loader. The source code can be found at
+[https://github.com/serg-io/todo.infuse.host](https://github.com/serg-io/todo.infuse.host).
+
+## Examples ##
 
 In the following "Hello World" example, the `<template>` element is parsed, cloned, and infused and
 the resulting fragment (`<h1>Hello World</h1>`) is added to `<header>` (the `host` element).
 
-**Note:** In order to keep things simple, templates in these examples are parsed in the browser.
-However, this practice is discouraged in a production environment. You can avoid this by parsing
-templates as part of a build or back-end process. If you're using [webpack](https://webpack.js.org/),
-you can use [infuse-loader](https://github.com/serg-io/infuse-loader) to parse templates and
-generate [ES modules](https://developers.google.com/web/fundamentals/primers/modules#intro) from
-HTML files. These modules can then be imported into other modules.
-
 <p class="loading-iframe">Loading example...</p>
 <iframe height="500" style="width: 100%;" scrolling="no" title="Hello World - infuse.host" data-src="https://codepen.io/serg-io/embed/YBrwxa/?height=500&theme-id=light&default-tab=js,result" frameborder="no" allowtransparency="true" allowfullscreen="true"></iframe>
 
-The same result can be achieved using custom elements. The `Infuse.Host` class can be extended to
+The same result can be achieved using a custom element. The `Infuse.Host` class can be extended to
 define custom elements. In this example the text is obtained from the custom element (`host.title`
 is used in the template instead of `data.title`).
 
 <p class="loading-iframe">Loading example...</p>
 <iframe height="560" style="width: 100%;" scrolling="no" title="Custom &quot;Hello World&quot; element - infuse.host" data-src="https://codepen.io/serg-io/embed/yZzVbX/?height=560&theme-id=light&default-tab=js,result" frameborder="no" allowtransparency="true" allowfullscreen="true"></iframe>
+
+The following is a more elaborate example that simulates a shopping cart.
+
+<p class="loading-iframe">Loading example...</p>
+<iframe height="550" style="width: 100%;" scrolling="no" title="Shopping Cart - infuse.host" data-src="https://codepen.io/serg-io/embed/vbegWy/?height=550&theme-id=light&default-tab=html,result" frameborder="no" allowtransparency="true" allowfullscreen="true"></iframe>
 
 </section>
 <section>
