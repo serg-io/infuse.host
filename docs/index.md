@@ -26,6 +26,9 @@ project by running the following command.
 npm install infuse.host
 ```
 
+</section>
+<section>
+
 ## Webpack ##
 
 In order to keep things simple, all the code examples shown below have templates that are parsed in
@@ -48,6 +51,9 @@ The site [https://todo.infuse.host/](https://todo.infuse.host/) is an example of
 built using infuse.host, in which all templates are parsed as part of a webpack build process using
 infuse-loader. The source code can be found at
 [https://github.com/serg-io/todo.infuse.host](https://github.com/serg-io/todo.infuse.host).
+
+</section>
+<section>
 
 ## Examples ##
 

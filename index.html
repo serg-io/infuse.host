@@ -8,7 +8,7 @@
 			<meta name="author" content="Sergio Alcantara (https://github.com/serg-io)" />
 	
 	
-			<meta name="keywords" content="infuse, HTML, template, engine" />
+			<meta name="keywords" content="infuse, HTML, template, templating, engine, template engine, template-engine, custom elements, custom-elements, customized built-in elements, custom tags, custom-tags, web components, web-components, shadow dom, shadow-dom, data binding, data-binding, framework, frontend, front-end, DOM, SPA, PWA, web apps, web-apps, web applications, web-applications, webpack" />
 	
 	<title>infuse.host - Infuse your HTML with dynamic content.</title>
 
@@ -155,11 +155,15 @@ code span.wa { color: #bf0303; } /* Warning */
 <h2 id="installation">Installation</h2>
 <p>You can install the <a href="https://www.npmjs.com/package/infuse.host">infuse.host NPM package</a> in your project by running the following command.</p>
 <div class="sourceCode" id="cb1"><pre class="sourceCode bash"><code class="sourceCode bash"><a class="sourceLine" id="cb1-1" title="1"><span class="ex">npm</span> install infuse.host</a></code></pre></div>
+</section>
+<section>
 <h2 id="webpack">Webpack</h2>
 <p>In order to keep things simple, all the code examples shown below have templates that are parsed in the browser (using the <code>parseTemplate</code> function). However, parsing templates in the browser is a practice that is discouraged in a production environment. You can avoid parsing templates in the browser by parsing them as part of a build or back-end process.</p>
 <p>If you're using <a href="https://webpack.js.org/">webpack</a>, you can use <a href="https://github.com/serg-io/infuse-loader">infuse-loader</a> to parse templates in HTML files and generate <a href="https://developers.google.com/web/fundamentals/primers/modules#intro">ES modules</a>. These modules can then be imported into other modules. You can install the <a href="https://www.npmjs.com/package/infuse-loader">infuse-loader NPM package</a> in your project by running the following command.</p>
 <div class="sourceCode" id="cb2"><pre class="sourceCode bash"><code class="sourceCode bash"><a class="sourceLine" id="cb2-1" title="1"><span class="ex">npm</span> install --save-dev infuse-loader</a></code></pre></div>
 <p>The site <a href="https://todo.infuse.host/">https://todo.infuse.host/</a> is an example of a web application built using infuse.host, in which all templates are parsed as part of a webpack build process using infuse-loader. The source code can be found at <a href="https://github.com/serg-io/todo.infuse.host">https://github.com/serg-io/todo.infuse.host</a>.</p>
+</section>
+<section>
 <h2 id="examples">Examples</h2>
 <p>In the following "Hello World" example, the <code>&lt;template&gt;</code> element is parsed, cloned, and infused and the resulting fragment (<code>&lt;h1&gt;Hello World&lt;/h1&gt;</code>) is added to <code>&lt;header&gt;</code> (the <code>host</code> element).</p>
 <p class="loading-iframe">
