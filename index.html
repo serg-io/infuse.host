@@ -177,6 +177,12 @@ Loading example...
 </p>
 <iframe height="560" style="width: 100%;" scrolling="no" title="Custom &quot;Hello World&quot; element - infuse.host" data-src="https://codepen.io/serg-io/embed/yZzVbX/?height=560&amp;theme-id=light&amp;default-tab=js,result" frameborder="no" allowtransparency="true" allowfullscreen="true">
 </iframe>
+<p>In the previous example the infused fragment is appended to the <code>&lt;custom-header&gt;</code> using regular DOM. However, a <a href="https://developers.google.com/web/fundamentals/web-components/shadowdom">Shadow DOM</a> can be used by setting the element's <code>shadowRootMode</code> to either <code>'open'</code> or <code>'closed'</code>. In the following example the <code>&lt;button&gt;</code> element is extended to define a <a href="#customized-built-in-elements">customized built-in element</a> that uses a shadow DOM.</p>
+<p class="loading-iframe">
+Loading example...
+</p>
+<iframe height="550" style="width: 100%;" scrolling="no" title="Customized built-in element with Shadow DOM - infuse.host" data-src="//codepen.io/serg-io/embed/wNYMMQ/?height=550&amp;theme-id=light&amp;default-tab=js,result" frameborder="no" allowtransparency="true" allowfullscreen="true">
+</iframe>
 <p>The following is a more elaborate example that simulates a shopping cart.</p>
 <p class="loading-iframe">
 Loading example...
@@ -385,8 +391,11 @@ Loading example...
 </section>
 <section>
 <h2 id="custom-elements">Custom Elements</h2>
-<p>The <code>Infuse.Host</code> class can be extended to define a class for a custom element. The only property that is required to be defined is a <code>template</code> getter.</p>
-<p>Lets say you want to define a custom element for a login form and that you're using webpack and <a href="https://github.com/serg-io/infuse-loader">infuse-loader</a> to parse and import your templates. The following code would define a custom element called <code>&lt;login-form&gt;</code>.</p>
+<p>The <code>Infuse.Host</code> class can be extended to define a class for a custom element.</p>
+<p>Defining a <code>template</code> property is the only requirement when extending <code>Infuse.Host</code>. The purpose of the <code>template</code> property is to provide the template element that will be cloned and infused whenever the custom element is used.</p>
+<p>By default, the infused fragment will be appended to the custom element's <a href="https://developers.google.com/web/fundamentals/web-components/shadowdom#lightdom">Light DOM</a>. However, a <a href="https://developers.google.com/web/fundamentals/web-components/shadowdom">Shadow DOM</a> can be used by setting the <code>shadowRootMode</code> property to either <code>'open'</code> or <code>'close'</code> (which are the two modes that the <a href="https://developer.mozilla.org/en-US/docs/Web/API/element/attachShadow"><code>attachShadow</code></a> method accepts).</p>
+<p>Both, the <code>template</code> and <code>shadowRootMode</code> properties, can be defined as getters or regular functions.</p>
+<p>Lets say you want to define a custom element for a login form, that uses a Shadow DOM, and that you're using webpack and <a href="https://github.com/serg-io/infuse-loader">infuse-loader</a> to parse and import your templates. The following code would define a custom element called <code>&lt;login-form&gt;</code>.</p>
 <div class="sourceCode" id="cb23"><pre class="sourceCode javascript"><code class="sourceCode javascript"><a class="sourceLine" id="cb23-1" title="1"><span class="im">import</span> <span class="op">*</span> <span class="im">as</span> Infuse <span class="im">from</span> <span class="st">&#39;path/to/infuse.host/src/infuse.js&#39;</span><span class="op">;</span></a>
 <a class="sourceLine" id="cb23-2" title="2"><span class="im">import</span> loginTemplate <span class="im">from</span> <span class="st">&#39;./login-form.html&#39;</span><span class="op">;</span></a>
 <a class="sourceLine" id="cb23-3" title="3"></a>
@@ -396,11 +405,16 @@ Loading example...
 <a class="sourceLine" id="cb23-7" title="7">        <span class="co">// Return the parsed template.</span></a>
 <a class="sourceLine" id="cb23-8" title="8">        <span class="cf">return</span> loginTemplate<span class="op">;</span></a>
 <a class="sourceLine" id="cb23-9" title="9">    <span class="op">}</span></a>
-<a class="sourceLine" id="cb23-10" title="10"><span class="op">}</span></a>
-<a class="sourceLine" id="cb23-11" title="11"></a>
-<a class="sourceLine" id="cb23-12" title="12"><span class="co">// Define the custom element.</span></a>
-<a class="sourceLine" id="cb23-13" title="13"><span class="va">window</span>.<span class="va">customElements</span>.<span class="at">define</span>(<span class="st">&#39;login-form&#39;</span><span class="op">,</span> LoginForm)<span class="op">;</span></a></code></pre></div>
-<p>When the custom element is added to the DOM, <code>Infuse.Host</code> uses the <code>template</code> property to obtain the template that needs to be cloned and infused, the resulting fragment is added to the custom element. When the custom element is removed from the DOM, memory allocated (during the infusion process) for the element, and any of its descendants, is cleared automatically, there's no need to call the <code>clear</code> function.</p>
+<a class="sourceLine" id="cb23-10" title="10"></a>
+<a class="sourceLine" id="cb23-11" title="11">    get <span class="at">shadowRootMode</span>() <span class="op">{</span></a>
+<a class="sourceLine" id="cb23-12" title="12">        <span class="co">// Use an &quot;open&quot; shadow root.</span></a>
+<a class="sourceLine" id="cb23-13" title="13">        <span class="cf">return</span> <span class="st">&#39;open&#39;</span><span class="op">;</span></a>
+<a class="sourceLine" id="cb23-14" title="14">    <span class="op">}</span></a>
+<a class="sourceLine" id="cb23-15" title="15"><span class="op">}</span></a>
+<a class="sourceLine" id="cb23-16" title="16"></a>
+<a class="sourceLine" id="cb23-17" title="17"><span class="co">// Define the custom element.</span></a>
+<a class="sourceLine" id="cb23-18" title="18"><span class="va">window</span>.<span class="va">customElements</span>.<span class="at">define</span>(<span class="st">&#39;login-form&#39;</span><span class="op">,</span> LoginForm)<span class="op">;</span></a></code></pre></div>
+<p>When the <code>&lt;login-form&gt;</code> custom element is used, <code>Infuse.Host</code> uses the <code>template</code> property to obtain the template that needs to be cloned and infused. And, since <code>shadowRootMode</code> is set to <code>'open'</code>, the resulting fragment is added to the custom element's Shadow DOM. When the element is removed from the DOM, memory allocated for the element, and any of its descendants, is cleared automatically, there's no need to call the <code>clear</code> function.</p>
 <section>
 <h3 id="customized-built-in-elements">Customized Built-in Elements</h3>
 <p>If you want to extend one of the browser's built-in elements you can use the <code>CustomHost</code> function to define a <a href="https://developers.google.com/web/fundamentals/web-components/customelements#extendhtml">customized built-in element</a>.</p>

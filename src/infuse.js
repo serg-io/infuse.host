@@ -1,4 +1,5 @@
 import Watch from './Watch.js';
+import { result } from './utils.js';
 import infuseElement from './infuseElement.js';
 import sweep, { addCleanupFunction } from './sweep.js';
 import configs, { contexts, contextFunctions, parsedTemplates } from './configs.js';
@@ -240,6 +241,24 @@ export default function infuse(host, template, data = {}, iterationData = {}) {
 }
 
 /**
+ * Closed Shadow DOMs will be stored here.
+ */
+const closedShadowRoots = new WeakMap();
+
+/**
+ * Returns the root of the given element. The root can be a "closed" Shadow DOM, which is stored in
+ * `closedShadowRoots`, an "open" Shadow DOM, which is stored in `element.shadowRoot`, or the
+ * `element` itself.
+ *
+ * @function getRoot
+ * @param {Element} element
+ * @returns {(ShadowRoot|Element)}
+ */
+function getRoot(element) {
+	return closedShadowRoots.get(element) || element.shadowRoot || element;
+}
+
+/**
  * Uses (extends) the given element class to define a custom element class that uses the `infuse`
  * function to generate its contents. The `template` getter must be overwritten to return a
  * template, which would be cloned and infused when the element is added to the DOM (when
@@ -247,12 +266,13 @@ export default function infuse(host, template, data = {}, iterationData = {}) {
  * `disconnectedCallback` is called) all memory allocated by infuse process (associated with the
  * element **and any of its descendants**) will be cleared.
  *
- * To define a [custom element
- * class](https://developers.google.com/web/fundamentals/web-components/customelements) use
- * `HTMLElement` when calling this function. To define a [customized built-in element
- * class](https://developers.google.com/web/fundamentals/web-components/customelements#extendhtml),
- * use the class of the native element that you want to extend (for instance use `HTMLLIElement` if
- * you want to extend the native `<li>` element).
+ * This function defines a class that extends the given `ElementClass`. The returned class can be
+ * extended to define custom elements. This function can be used to define [custom
+ * element](https://developers.google.com/web/fundamentals/web-components/customelements) classes,
+ * by using `HTMLElement`, or [customized built-in
+ * element](https://developers.google.com/web/fundamentals/web-components/customelements#extendhtml)
+ * classes, by using the class of the native element that you want to extend (for instance use
+ * `HTMLLIElement` if you want to extend the native `<li>` element).
  *
  * @function CustomHost
  * @param ElementClass The element class to extend.
@@ -261,14 +281,43 @@ export default function infuse(host, template, data = {}, iterationData = {}) {
 export function CustomHost(ElementClass) {
 	return class extends ElementClass {
 		/**
-		 * This is the only property/getter that must be overwritten in order to generate the
-		 * contents of the element automatically. The function used to overwrite this getter must
-		 * return a template, which will be cloned and infused when the element is added to the DOM.
-		 *
+		 * If `this.shadowRootMode` is set, this constructor creates a shadow root and renders
+		 * `this.template` into the shadow root.
 		 */
-		// eslint-disable-next-line class-methods-use-this
-		get template() {
-			return null;
+		constructor() {
+			super();
+			const mode = result(this, 'shadowRootMode');
+
+			// If `this.shadowRootMode` is set...
+			if (mode) {
+				// Create a Shadow DOM.
+				const shadowRoot = this.attachShadow({ mode });
+
+				// If it's a "closed" Shadow DOM, add it to `closedShadowRoots`.
+				if (mode === 'closed') {
+					closedShadowRoots.set(this, shadowRoot);
+				}
+
+				// Render the element's template into the Shadow DOM.
+				this.render();
+			}
+		}
+
+		/**
+		 * Clones and infuses `this.template` and appends the resulting fragment to the element's
+		 * root (a Shadow DOM or directly to the element in the regular DOM).
+		 *
+		 * @method render
+		 */
+		render() {
+			const template = result(this, 'template');
+
+			if (template instanceof HTMLTemplateElement) {
+				const root = getRoot(this);
+
+				// Clone and infuse the `template` and append the resulting fragment to `root`.
+				root.appendChild(infuse(this, template));
+			}
 		}
 
 		/**
@@ -279,17 +328,10 @@ export function CustomHost(ElementClass) {
 		 * @method connectedCallback
 		 */
 		connectedCallback() {
-			let { template } = this;
-
-			if (!template) {
-				return;
+			// Call `this.render` if this element doesn't use a Shadow DOM.
+			if (!this.shadowRootMode) {
+				this.render();
 			}
-
-			if (typeof template === 'function') {
-				template = template();
-			}
-
-			this.appendChild(infuse(this, template));
 		}
 
 		/**
@@ -299,7 +341,8 @@ export function CustomHost(ElementClass) {
 		 * @method disconnectedCallback
 		 */
 		disconnectedCallback() {
-			sweep(this);
+			sweep(this, getRoot(this));
+			closedShadowRoots.delete(this);
 		}
 	};
 }

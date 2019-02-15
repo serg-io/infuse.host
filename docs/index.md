@@ -70,6 +70,15 @@ is used in the template instead of `data.title`).
 <p class="loading-iframe">Loading example...</p>
 <iframe height="560" style="width: 100%;" scrolling="no" title="Custom &quot;Hello World&quot; element - infuse.host" data-src="https://codepen.io/serg-io/embed/yZzVbX/?height=560&theme-id=light&default-tab=js,result" frameborder="no" allowtransparency="true" allowfullscreen="true"></iframe>
 
+In the previous example the infused fragment is appended to the `<custom-header>` using regular DOM.
+However, a [Shadow DOM](https://developers.google.com/web/fundamentals/web-components/shadowdom) can
+be used by setting the element's `shadowRootMode` to either `'open'` or `'closed'`. In the following
+example the `<button>` element is extended to define a [customized built-in element](
+#customized-built-in-elements) that uses a shadow DOM.
+
+<p class="loading-iframe">Loading example...</p>
+<iframe height="550" style="width: 100%;" scrolling="no" title="Customized built-in element with Shadow DOM - infuse.host" data-src="//codepen.io/serg-io/embed/wNYMMQ/?height=550&theme-id=light&default-tab=js,result" frameborder="no" allowtransparency="true" allowfullscreen="true"></iframe>
+
 The following is a more elaborate example that simulates a shopping cart.
 
 <p class="loading-iframe">Loading example...</p>
@@ -472,12 +481,25 @@ nested templates are also cloned and infused.
 
 ## Custom Elements ##
 
-The `Infuse.Host` class can be extended to define a class for a custom element. The only property
-that is required to be defined is a `template` getter.
+The `Infuse.Host` class can be extended to define a class for a custom element.
 
-Lets say you want to define a custom element for a login form and that you're using webpack and
-[infuse-loader](https://github.com/serg-io/infuse-loader) to parse and import your templates. The
-following code would define a custom element called `<login-form>`.
+Defining a `template` property is the only requirement when extending `Infuse.Host`. The purpose of
+the `template` property is to provide the template element that will be cloned and infused whenever
+the custom element is used.
+
+By default, the infused fragment will be appended to the custom element's [Light DOM](
+https://developers.google.com/web/fundamentals/web-components/shadowdom#lightdom). However, a
+[Shadow DOM](https://developers.google.com/web/fundamentals/web-components/shadowdom) can be used
+by setting the `shadowRootMode` property to either `'open'` or `'close'` (which are the two modes
+that the [`attachShadow`](https://developer.mozilla.org/en-US/docs/Web/API/element/attachShadow)
+method accepts).
+
+Both, the `template` and `shadowRootMode` properties, can be defined as getters or regular
+functions.
+
+Lets say you want to define a custom element for a login form, that uses a Shadow DOM, and that
+you're using webpack and [infuse-loader](https://github.com/serg-io/infuse-loader) to parse and
+import your templates. The following code would define a custom element called `<login-form>`.
 
 ```javascript
 import * as Infuse from 'path/to/infuse.host/src/infuse.js';
@@ -489,17 +511,22 @@ class LoginForm extends Infuse.Host {
 		// Return the parsed template.
 		return loginTemplate;
 	}
+
+	get shadowRootMode() {
+		// Use an "open" shadow root.
+		return 'open';
+	}
 }
 
 // Define the custom element.
 window.customElements.define('login-form', LoginForm);
 ```
 
-When the custom element is added to the DOM, `Infuse.Host` uses the `template` property to obtain
-the template that needs to be cloned and infused, the resulting fragment is added to the custom
-element. When the custom element is removed from the DOM, memory allocated (during the infusion
-process) for the element, and any of its descendants, is cleared automatically, there's no need to
-call the `clear` function.
+When the `<login-form>` custom element is used, `Infuse.Host` uses the `template` property to obtain
+the template that needs to be cloned and infused. And, since `shadowRootMode` is set to `'open'`,
+the resulting fragment is added to the custom element's Shadow DOM. When the element is removed from
+the DOM, memory allocated for the element, and any of its descendants, is cleared automatically,
+there's no need to call the `clear` function.
 
 <section>
 

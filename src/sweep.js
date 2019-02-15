@@ -64,10 +64,12 @@ export function sweepElement(element) {
  * @function sweep
  * @param {Element} element Descendants of this `element` that have the flag attribute will be
  *     "sweept". The `element` itself will also be sweept if it has the flag attribute.
+ * @param {(ShadowRoot|Element)} root The element's shadow root or the element itself (if it
+ *     doesn't use a Shadow DOM).
  */
-export default function sweep(element) {
+export default function sweep(element, root) {
 	const selector = `[${ configs.get('sweepFlag') }]`;
-	const elements = Array.from(element.querySelectorAll(selector));
+	const elements = Array.from(root.querySelectorAll(selector));
 
 	if (element.matches(selector)) {
 		elements.push(element);

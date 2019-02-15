@@ -25,3 +25,17 @@ export function camelCase(hyphenated) {
 		k === 0 ? str : `${ str.charAt(0).toUpperCase() }${ str.substr(1) }`
 	)).join('');
 }
+
+/**
+ * If the value of the named property is a function then invoke it with the object as context;
+ * otherwise, return it.
+ *
+ * @function result
+ * @param {Object} object The object.
+ * @param {string} property Name of the property.
+ */
+export function result(object, property) {
+	const value = object[property];
+
+	return typeof value === 'function' ? value.call(object) : value;
+}
