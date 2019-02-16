@@ -94,7 +94,7 @@ export default function createESModule(htmlDocument, options = {}) {
 	 * the browser.
 	 */
 	for (const [tid, fn] of contextFunctions) {
-		const fnSrc = fn.toString().replace('function anonymous(', 'function(');
+		const fnSrc = fn.toString().replace('function anonymous(\n', 'function(');
 		lines.push(`contextFunctions.set('${ tid }', ${ fnSrc });`);
 	}
 
