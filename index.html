@@ -8,7 +8,7 @@
 			<meta name="author" content="Sergio Alcantara (https://github.com/serg-io)" />
 	
 	
-			<meta name="keywords" content="infuse, HTML, template, templating, engine, template engine, template-engine, custom elements, custom-elements, customized built-in elements, custom tags, custom-tags, web components, web-components, shadow dom, shadow-dom, data binding, data-binding, framework, frontend, front-end, DOM, SPA, PWA, web apps, web-apps, web applications, web-applications, webpack" />
+			<meta name="keywords" content="infuse, HTML, template, templating, engine, template-engine, custom-elements, customized-built-in-elements, custom-tags, web-components, shadow-dom, data-binding, framework, frontend, front-end, DOM, SPA, PWA, webapp, web-apps, web-applications" />
 	
 	<title>infuse.host - Infuse your HTML with dynamic content.</title>
 
@@ -112,7 +112,9 @@ code span.wa { color: #bf0303; } /* Warning */
 <li><a href="#customized-built-in-elements">Customized Built-in Elements</a></li>
 </ul></li>
 <li><a href="#cleanup">Cleanup</a></li>
+<li><a href="#cli">Command Line Interface</a></li>
 <li><a href="#configuration-options">Configuration Options</a></li>
+<li><a href="#license">License</a></li>
 </ul>
 				<table>
 					<tr>
@@ -154,13 +156,13 @@ code span.wa { color: #bf0303; } /* Warning */
 <section>
 <h2 id="installation">Installation</h2>
 <p>You can install the <a href="https://www.npmjs.com/package/infuse.host">infuse.host NPM package</a> in your project by running the following command.</p>
-<div class="sourceCode" id="cb1"><pre class="sourceCode bash"><code class="sourceCode bash"><a class="sourceLine" id="cb1-1" title="1"><span class="ex">npm</span> install infuse.host</a></code></pre></div>
+<div class="sourceCode" id="cb1"><pre class="sourceCode bash"><code class="sourceCode bash"><a class="sourceLine" id="cb1-1" title="1">$ <span class="ex">npm</span> install infuse.host</a></code></pre></div>
 </section>
 <section>
 <h2 id="webpack">Webpack</h2>
 <p>In order to keep things simple, all the code examples shown below have templates that are parsed in the browser (using the <code>parseTemplate</code> function). However, parsing templates in the browser is a practice that is discouraged in a production environment. You can avoid parsing templates in the browser by parsing them as part of a build or back-end process.</p>
 <p>If you're using <a href="https://webpack.js.org/">webpack</a>, you can use <a href="https://github.com/serg-io/infuse-loader">infuse-loader</a> to parse templates in HTML files and generate <a href="https://developers.google.com/web/fundamentals/primers/modules#intro">ES modules</a>. These modules can then be imported into other modules. You can install the <a href="https://www.npmjs.com/package/infuse-loader">infuse-loader NPM package</a> in your project by running the following command.</p>
-<div class="sourceCode" id="cb2"><pre class="sourceCode bash"><code class="sourceCode bash"><a class="sourceLine" id="cb2-1" title="1"><span class="ex">npm</span> install --save-dev infuse-loader</a></code></pre></div>
+<div class="sourceCode" id="cb2"><pre class="sourceCode bash"><code class="sourceCode bash"><a class="sourceLine" id="cb2-1" title="1">$ <span class="ex">npm</span> install --save-dev infuse-loader</a></code></pre></div>
 <p>The site <a href="https://todo.infuse.host/">https://todo.infuse.host/</a> is an example of a web application built using infuse.host, in which all templates are parsed as part of a webpack build process using infuse-loader. The source code can be found at <a href="https://github.com/serg-io/todo.infuse.host">https://github.com/serg-io/todo.infuse.host</a>.</p>
 </section>
 <section>
@@ -181,7 +183,7 @@ Loading example...
 <p class="loading-iframe">
 Loading example...
 </p>
-<iframe height="550" style="width: 100%;" scrolling="no" title="Customized built-in element with Shadow DOM - infuse.host" data-src="//codepen.io/serg-io/embed/wNYMMQ/?height=550&amp;theme-id=light&amp;default-tab=js,result" frameborder="no" allowtransparency="true" allowfullscreen="true">
+<iframe height="550" style="width: 100%;" scrolling="no" title="Customized built-in element with Shadow DOM - infuse.host" data-src="https://codepen.io/serg-io/embed/wNYMMQ/?height=550&amp;theme-id=light&amp;default-tab=js,result" frameborder="no" allowtransparency="true" allowfullscreen="true">
 </iframe>
 <p>The following is a more elaborate example that simulates a shopping cart.</p>
 <p class="loading-iframe">
@@ -466,44 +468,51 @@ Loading example...
 <p><strong>Note:</strong> Custom elements defined using the <code>Infuse.Host</code> class or the <code>Infuse.CustomHost</code> function call the <code>clear</code> method when the custom element is removed from the DOM (when the <code>disconnectedCallback</code> method is called). Therefore, the <code>clear</code> function doesn't need to be called for custom elements defined using <code>Infuse.Host</code> or <code>Infuse.CustomHost</code>.</p>
 </section>
 <section>
+<h2 id="cli">Command Line Interface</h2>
+<p>The <a href="https://www.npmjs.com/package/infuse-cli">infuse-cli</a> package provides a command line interface (CLI) to convert HTML templates (files) to ES Modules which can be used with infuse.host. To install it execute the following command:</p>
+<div class="sourceCode" id="cb29"><pre class="sourceCode bash"><code class="sourceCode bash"><a class="sourceLine" id="cb29-1" title="1">$ <span class="ex">npm</span> install infuse-cli</a></code></pre></div>
+<p>Once installed you can use the <code>infuse</code> command in your <a href="https://docs.npmjs.com/misc/scripts">NPM scripts</a> or by using it with NPM's <code>npx</code> command. For instance, the following command will parse templates in the <em>src/template.html</em> file and will write the generated ES Module to <em>dist/template.js</em>.</p>
+<div class="sourceCode" id="cb30"><pre class="sourceCode bash"><code class="sourceCode bash"><a class="sourceLine" id="cb30-1" title="1">$ <span class="ex">npx</span> infuse src/template.html dist/template.js</a></code></pre></div>
+<p>Documentation and additional examples can be found in the <a href="https://www.npmjs.com/package/infuse-cli">infuse-cli</a> package web page. You can also use the CLI to access the documentation:</p>
+<div class="sourceCode" id="cb31"><pre class="sourceCode bash"><code class="sourceCode bash"><a class="sourceLine" id="cb31-1" title="1">$ <span class="ex">npx</span> infuse --help</a></code></pre></div>
 <h2 id="configuration-options">Configuration Options</h2>
 <p>The config ES module allows you to change configuration options.</p>
 <p>In the following example, the <code>setConfigs</code> function is used to change the configuration options <code>eventHandlerExp</code> and <code>eventName</code>:</p>
-<div class="sourceCode" id="cb29"><pre class="sourceCode javascript"><code class="sourceCode javascript"><a class="sourceLine" id="cb29-1" title="1"><span class="im">import</span> <span class="op">{</span> setConfigs <span class="op">}</span> <span class="im">from</span> <span class="st">&#39;path/to/infuse.host/src/configs.js&#39;</span><span class="op">;</span></a>
-<a class="sourceLine" id="cb29-2" title="2"></a>
-<a class="sourceLine" id="cb29-3" title="3"><span class="at">setConfigs</span>(<span class="op">{</span></a>
-<a class="sourceLine" id="cb29-4" title="4">    <span class="co">// Change the name of the &quot;event&quot; variable to just &quot;e&quot;.</span></a>
-<a class="sourceLine" id="cb29-5" title="5">    <span class="dt">eventName</span><span class="op">:</span> <span class="st">&#39;e&#39;</span><span class="op">,</span></a>
-<a class="sourceLine" id="cb29-6" title="6">    <span class="co">// Change the prefix of event handler attributes to &quot;on-&quot;.</span></a>
-<a class="sourceLine" id="cb29-7" title="7">    <span class="dt">eventHandlerExp</span><span class="op">:</span> <span class="st">&#39;on-&#39;</span></a>
-<a class="sourceLine" id="cb29-8" title="8"><span class="op">}</span>)<span class="op">;</span></a></code></pre></div>
+<div class="sourceCode" id="cb32"><pre class="sourceCode javascript"><code class="sourceCode javascript"><a class="sourceLine" id="cb32-1" title="1"><span class="im">import</span> <span class="op">{</span> setConfigs <span class="op">}</span> <span class="im">from</span> <span class="st">&#39;path/to/infuse.host/src/configs.js&#39;</span><span class="op">;</span></a>
+<a class="sourceLine" id="cb32-2" title="2"></a>
+<a class="sourceLine" id="cb32-3" title="3"><span class="at">setConfigs</span>(<span class="op">{</span></a>
+<a class="sourceLine" id="cb32-4" title="4">    <span class="co">// Change the name of the &quot;event&quot; variable to just &quot;e&quot;.</span></a>
+<a class="sourceLine" id="cb32-5" title="5">    <span class="dt">eventName</span><span class="op">:</span> <span class="st">&#39;e&#39;</span><span class="op">,</span></a>
+<a class="sourceLine" id="cb32-6" title="6">    <span class="co">// Change the prefix of event handler attributes to &quot;on-&quot;.</span></a>
+<a class="sourceLine" id="cb32-7" title="7">    <span class="dt">eventHandlerExp</span><span class="op">:</span> <span class="st">&#39;on-&#39;</span></a>
+<a class="sourceLine" id="cb32-8" title="8"><span class="op">}</span>)<span class="op">;</span></a></code></pre></div>
 <p>The following is a list of all the configuration options:</p>
 <ul>
 <li><p><strong><code>camelCaseEvents</code></strong>: Indicates whether or not event names in event handlers should be camel cased during the parsing process. This option is <code>false</code> by default.</p>
 <p>Consider the following element:</p>
-<div class="sourceCode" id="cb30"><pre class="sourceCode html"><code class="sourceCode html"><a class="sourceLine" id="cb30-1" title="1"><span class="kw">&lt;form</span><span class="ot"> on-client-side-validation=</span><span class="st">&quot;host.enableSubmitBtn(event)&quot;</span><span class="kw">&gt;</span></a>
-<a class="sourceLine" id="cb30-2" title="2">    <span class="co">&lt;!-- Form fields. --&gt;</span></a>
-<a class="sourceLine" id="cb30-3" title="3"><span class="kw">&lt;/form&gt;</span></a></code></pre></div>
+<div class="sourceCode" id="cb33"><pre class="sourceCode html"><code class="sourceCode html"><a class="sourceLine" id="cb33-1" title="1"><span class="kw">&lt;form</span><span class="ot"> on-client-side-validation=</span><span class="st">&quot;host.enableSubmitBtn(event)&quot;</span><span class="kw">&gt;</span></a>
+<a class="sourceLine" id="cb33-2" title="2">    <span class="co">&lt;!-- Form fields. --&gt;</span></a>
+<a class="sourceLine" id="cb33-3" title="3"><span class="kw">&lt;/form&gt;</span></a></code></pre></div>
 <p>By default, this event handler will be listening for <code>'client-side-validation'</code> events. However, if <code>camelCaseEvents</code> is set to <code>true</code>, the event handler would be listening for <code>'clientSideValidation'</code> events instead.</p></li>
 <li><p><strong><code>constantExp</code></strong>: The prefix (a string) or a regular expression used to determine if an attribute is a custom constant. This is <code>'const-'</code> by default which means that all attributes that start with <code>const-</code> are custom constant definitions.</p>
 <p>If <code>constantExp</code> is set to a regular expression, the regular expression is used to determine if attributes are custom constants. For instance, if you want custom constant attribute names to end with <code>-const</code> you would use the following regular expression:</p>
-<div class="sourceCode" id="cb31"><pre class="sourceCode javascript"><code class="sourceCode javascript"><a class="sourceLine" id="cb31-1" title="1"><span class="at">setConfigs</span>(<span class="op">{</span> <span class="dt">constantExp</span><span class="op">:</span> <span class="ss">/</span><span class="sc">^(\w+)</span><span class="ss">-const</span><span class="sc">$</span><span class="ss">/</span> <span class="op">}</span>)<span class="op">;</span></a></code></pre></div>
+<div class="sourceCode" id="cb34"><pre class="sourceCode javascript"><code class="sourceCode javascript"><a class="sourceLine" id="cb34-1" title="1"><span class="at">setConfigs</span>(<span class="op">{</span> <span class="dt">constantExp</span><span class="op">:</span> <span class="ss">/</span><span class="sc">^(\w+)</span><span class="ss">-const</span><span class="sc">$</span><span class="ss">/</span> <span class="op">}</span>)<span class="op">;</span></a></code></pre></div>
 <p>If you're using a regular expression, it must contain parenthesis, as shown above. The parenthesis indicate the location of the name of the variable.</p></li>
 <li><p><strong><code>contextFunctionId</code></strong>: When an element is parsed a context function is generated. An ID that uniquely identifies the context function is also created. This ID is added to the element as an attribute. The <code>contextFunctionId</code> option defines the name of that attribute. This is <code>'data-cid'</code> by default.</p></li>
 <li><p><strong><code>eventHandlerExp</code></strong>: The prefix (a string) or a regular expression used to determine if an attribute is an event handler. By default, event handler attributes start with <code>on</code> or <code>on-</code> and can contain alphanumeric characters, underscores, dashes, and colons. The following regular expression is used by default to identify event handler attributes:</p>
-<div class="sourceCode" id="cb32"><pre class="sourceCode javascript"><code class="sourceCode javascript"><a class="sourceLine" id="cb32-1" title="1"><span class="ss">/</span><span class="sc">^</span><span class="ss">on-</span><span class="sc">?(\w[\w:-]+)$</span><span class="ss">/</span></a></code></pre></div>
+<div class="sourceCode" id="cb35"><pre class="sourceCode javascript"><code class="sourceCode javascript"><a class="sourceLine" id="cb35-1" title="1"><span class="ss">/</span><span class="sc">^</span><span class="ss">on-</span><span class="sc">?(\w[\w:-]+)$</span><span class="ss">/</span></a></code></pre></div>
 <p>Parentheses are required when using a regular expression, they indicate the location of the event type. For instance, when using the following expression:</p>
-<div class="sourceCode" id="cb33"><pre class="sourceCode javascript"><code class="sourceCode javascript"><a class="sourceLine" id="cb33-1" title="1"><span class="at">setConfigs</span>(<span class="op">{</span> <span class="dt">eventHandlerExp</span><span class="op">:</span> <span class="ss">/</span><span class="sc">^</span><span class="ss">when-</span><span class="sc">(\w+)</span><span class="ss">-run</span><span class="sc">$</span><span class="ss">/</span> <span class="op">}</span>)<span class="op">;</span></a></code></pre></div>
+<div class="sourceCode" id="cb36"><pre class="sourceCode javascript"><code class="sourceCode javascript"><a class="sourceLine" id="cb36-1" title="1"><span class="at">setConfigs</span>(<span class="op">{</span> <span class="dt">eventHandlerExp</span><span class="op">:</span> <span class="ss">/</span><span class="sc">^</span><span class="ss">when-</span><span class="sc">(\w+)</span><span class="ss">-run</span><span class="sc">$</span><span class="ss">/</span> <span class="op">}</span>)<span class="op">;</span></a></code></pre></div>
 <p>you would write event handlers using the format <code>when-eventtype-run="expression"</code>, where <code>eventtype</code> is the type of event and <code>expression</code> is the expression to execute when the event occurs. For example, when using <code>when-submit-run="event.preventDefault()"</code> the event handler would listen for <code>submit</code> events.</p>
 <p>Alternatively, you can use a string to indicate the prefix of event handlers. For instance, when using <code>'on'</code>:</p>
-<div class="sourceCode" id="cb34"><pre class="sourceCode javascript"><code class="sourceCode javascript"><a class="sourceLine" id="cb34-1" title="1"><span class="at">setConfigs</span>(<span class="op">{</span> <span class="dt">eventHandlerExp</span><span class="op">:</span> <span class="st">&#39;on&#39;</span> <span class="op">}</span>)<span class="op">;</span></a></code></pre></div>
+<div class="sourceCode" id="cb37"><pre class="sourceCode javascript"><code class="sourceCode javascript"><a class="sourceLine" id="cb37-1" title="1"><span class="at">setConfigs</span>(<span class="op">{</span> <span class="dt">eventHandlerExp</span><span class="op">:</span> <span class="st">&#39;on&#39;</span> <span class="op">}</span>)<span class="op">;</span></a></code></pre></div>
 <p>all attributes that start with <code>on</code> will be treated as event handlers.</p></li>
 <li><p><strong><code>eventName</code></strong>: Name of the event variable available within expressions and event handlers. This is <code>'event'</code> by default. If you wanted event variables to be named <code>e</code> instead, you would have to change this configuration option:</p>
-<div class="sourceCode" id="cb35"><pre class="sourceCode javascript"><code class="sourceCode javascript"><a class="sourceLine" id="cb35-1" title="1"><span class="at">setConfigs</span>(<span class="op">{</span> <span class="dt">eventName</span><span class="op">:</span> <span class="st">&#39;e&#39;</span> <span class="op">}</span>)<span class="op">;</span></a></code></pre></div>
+<div class="sourceCode" id="cb38"><pre class="sourceCode javascript"><code class="sourceCode javascript"><a class="sourceLine" id="cb38-1" title="1"><span class="at">setConfigs</span>(<span class="op">{</span> <span class="dt">eventName</span><span class="op">:</span> <span class="st">&#39;e&#39;</span> <span class="op">}</span>)<span class="op">;</span></a></code></pre></div>
 <p>This would allow you to use <code>e</code> (instead of <code>event</code>) to access event variables within expressions and event handlers. For instance:</p>
-<div class="sourceCode" id="cb36"><pre class="sourceCode html"><code class="sourceCode html"><a class="sourceLine" id="cb36-1" title="1"><span class="kw">&lt;form</span><span class="ot"> onsubmit=</span><span class="st">&quot;e.preventDefault()&quot;</span><span class="kw">&gt;</span></a>
-<a class="sourceLine" id="cb36-2" title="2">    <span class="kw">&lt;button</span><span class="ot"> type=</span><span class="st">&quot;submit&quot;</span><span class="ot"> disabled</span><span class="er">?</span><span class="ot">=</span><span class="st">&quot;${ e !== undefined }&quot;</span><span class="kw">&gt;</span>Submit<span class="kw">&lt;/button&gt;</span></a>
-<a class="sourceLine" id="cb36-3" title="3"><span class="kw">&lt;/form&gt;</span></a></code></pre></div></li>
+<div class="sourceCode" id="cb39"><pre class="sourceCode html"><code class="sourceCode html"><a class="sourceLine" id="cb39-1" title="1"><span class="kw">&lt;form</span><span class="ot"> onsubmit=</span><span class="st">&quot;e.preventDefault()&quot;</span><span class="kw">&gt;</span></a>
+<a class="sourceLine" id="cb39-2" title="2">    <span class="kw">&lt;button</span><span class="ot"> type=</span><span class="st">&quot;submit&quot;</span><span class="ot"> disabled</span><span class="er">?</span><span class="ot">=</span><span class="st">&quot;${ e !== undefined }&quot;</span><span class="kw">&gt;</span>Submit<span class="kw">&lt;/button&gt;</span></a>
+<a class="sourceLine" id="cb39-3" title="3"><span class="kw">&lt;/form&gt;</span></a></code></pre></div></li>
 <li><p><strong><code>placeholderId</code></strong>: Nested templates are replaced with placeholder templates during the parsing process. Placeholder templates have an attribute that uniquely identifies the template that was replaced. The <code>placeholderId</code> defines the name of the attribute. This is <code>'data-pid'</code> by default.</p></li>
 <li><p><strong><code>sweepFlag</code></strong>: Name of the boolean attribute to use as an indicator that memory has been allocated for an element. Allocated memory must be cleared when the element is removed from the DOM. This is <code>'data-sweep'</code> by default.</p></li>
 <li><p><strong><code>tags</code></strong>: An object containing all possible tag functions to be used with template literals. During parsing (for instance, when using the <a href="https://github.com/serg-io/infuse-loader">infuse-loader</a>) this can be an array (of strings) of all possible tag function names. However, at run time, this must be an object where the keys are the names of the tag functions and the values are the tag functions.</p></li>
@@ -513,9 +522,13 @@ Loading example...
 <p>If you're already setting the <code>id</code> attribute on your templates, changing this configuration option to <code>id</code> would make it easier to access your templates (especially if you're using infuse-loader, see <a href="https://github.com/serg-io/infuse-loader">infuse-loader</a> for details).</p></li>
 <li><p><strong><code>watchExp</code></strong>: The prefix (a string) or a regular expression used to determine if an attribute is a watch. This is <code>'watch-'</code> by default which means that all attributes that start with <code>watch-</code> are treated as watches.</p>
 <p>If <code>watchExp</code> is set to a regular expression, the regular expression is used to determine if attributes are watches. For instance, if you want watch attribute names to end with <code>-watch</code> you would use the following regular expression:</p>
-<div class="sourceCode" id="cb37"><pre class="sourceCode javascript"><code class="sourceCode javascript"><a class="sourceLine" id="cb37-1" title="1"><span class="at">setConfigs</span>(<span class="op">{</span> <span class="dt">watchExp</span><span class="op">:</span> <span class="ss">/</span><span class="sc">^(\w+)</span><span class="ss">-watch</span><span class="sc">$</span><span class="ss">/</span> <span class="op">}</span>)<span class="op">;</span></a></code></pre></div>
+<div class="sourceCode" id="cb40"><pre class="sourceCode javascript"><code class="sourceCode javascript"><a class="sourceLine" id="cb40-1" title="1"><span class="at">setConfigs</span>(<span class="op">{</span> <span class="dt">watchExp</span><span class="op">:</span> <span class="ss">/</span><span class="sc">^(\w+)</span><span class="ss">-watch</span><span class="sc">$</span><span class="ss">/</span> <span class="op">}</span>)<span class="op">;</span></a></code></pre></div>
 <p>If you're using a regular expression, it must contain parenthesis, as shown above. The parenthesis indicate the location of the name of the variable/element to watch.</p></li>
 </ul>
+</section>
+<section>
+<h2 id="license">License</h2>
+<p><a href="https://github.com/serg-io/infuse.host/blob/master/LICENSE">MIT</a>.</p>
 </section>
 	</article>
 

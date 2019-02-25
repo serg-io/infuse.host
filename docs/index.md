@@ -3,16 +3,15 @@
 ## Introduction ##
 
 Infuse.host allows you to **infuse** HTML templates with dynamic content. The resulting infused
-HTML fragments can then be added to **host** elements. This is done by writing [template literals](
-#template-literals) or [expressions](#expressions) in your HTML templates. It also allows you to:
+HTML fragments can then be added to **host** elements. This is done by writing [template literals]
+or [expressions] in your HTML templates. It also allows you to:
 
-  * Write [event handlers](#event-handlers), the same way you would normally write them (using
-    [on-event attributes](https://developer.mozilla.org/en-US/docs/Web/Guide/Events/Event_handlers)),
-    but with access to the `host` and other variables.
-  * Write [watches](#watches) to automatically re-infuse an element when an event occurs on another
-    element.
-  * Write [iterating templates](#iterating-templates) to infuse a template iteratively, based on
-    values in a given iterable variable.
+  * Write [event handlers], the same way you would normally write them (using [on-event attributes](
+    https://developer.mozilla.org/en-US/docs/Web/Guide/Events/Event_handlers)), but with access to
+    the `host` and other variables.
+  * Write [watches] to automatically re-infuse an element when an event occurs on another element.
+  * Write [iterating templates] to infuse a template iteratively, based on values in a given
+    iterable variable.
 
 </section>
 <section>
@@ -77,7 +76,7 @@ example the `<button>` element is extended to define a [customized built-in elem
 #customized-built-in-elements) that uses a shadow DOM.
 
 <p class="loading-iframe">Loading example...</p>
-<iframe height="550" style="width: 100%;" scrolling="no" title="Customized built-in element with Shadow DOM - infuse.host" data-src="//codepen.io/serg-io/embed/wNYMMQ/?height=550&theme-id=light&default-tab=js,result" frameborder="no" allowtransparency="true" allowfullscreen="true"></iframe>
+<iframe height="550" style="width: 100%;" scrolling="no" title="Customized built-in element with Shadow DOM - infuse.host" data-src="https://codepen.io/serg-io/embed/wNYMMQ/?height=550&theme-id=light&default-tab=js,result" frameborder="no" allowtransparency="true" allowfullscreen="true"></iframe>
 
 The following is a more elaborate example that simulates a shopping cart.
 
@@ -145,8 +144,7 @@ The following variables are available within expressions:
     event that triggered the infusion. This variable is `undefined` the first time an element is
     infused.
   * Elements can define their own [custom constant](#custom-constants) variables.
-  * Additional **iteration constant** variables are available within [iterating templates](
-    #iterating-templates).
+  * Additional **iteration constant** variables are available within [iterating templates].
 
 Expressions and template literals can be used in combination with static strings. For instance:
 
@@ -622,6 +620,33 @@ for custom elements defined using `Infuse.Host` or `Infuse.CustomHost`.
 
 </section>
 <section>
+
+## Command Line Interface ## {#cli}
+
+The [infuse-cli](https://www.npmjs.com/package/infuse-cli) package provides a command line
+interface (CLI) to convert HTML templates (files) to ES Modules which can be used with
+infuse.host. To install it execute the following command:
+
+```bash
+$ npm install infuse-cli
+```
+
+Once installed you can use the `infuse` command in your [NPM scripts](
+https://docs.npmjs.com/misc/scripts) or by using it with NPM's `npx` command. For instance, the
+following command will parse templates in the _src/template.html_ file and will write the generated
+ES Module to _dist/template.js_.
+
+```bash
+$ npx infuse src/template.html dist/template.js
+```
+
+Documentation and additional examples can be found in the [infuse-cli](
+https://www.npmjs.com/package/infuse-cli) package web page. You can also use the CLI to access the
+documentation:
+
+```bash
+$ npx infuse --help
+```
 
 ## Configuration Options ##
 
