@@ -15,18 +15,12 @@
     "template",
     "templating",
     "engine",
-    "template engine",
     "template-engine",
-    "custom elements",
     "custom-elements",
-    "customized built-in elements",
-    "custom tags",
+    "customized-built-in-elements",
     "custom-tags",
-    "web components",
     "web-components",
-    "shadow dom",
     "shadow-dom",
-    "data binding",
     "data-binding",
     "framework",
     "frontend",
@@ -34,20 +28,17 @@
     "DOM",
     "SPA",
     "PWA",
-    "web apps",
+    "webapp",
     "web-apps",
-    "web applications",
-    "web-applications",
-    "webpack"
+    "web-applications"
   ],
   "bugs": {
     "url": "https://github.com/serg-io/infuse.host/issues"
   },
   "main": "src/infuse.js",
   "files": [
-    ".babelrc",
-    "/lib",
-    "/src"
+    "lib",
+    "src"
   ],
   "scripts": {
     "docs": "npm-run-all docs-*",
@@ -74,7 +65,7 @@
     "babel-preset-env": "^1.7.0",
     "bootstrap": "^4.3.1",
     "clean-css-cli": "^4.2.1",
-    "eslint": "^5.14.0",
+    "eslint": "^5.14.1",
     "eslint-config-airbnb-base": "^13.1.0",
     "eslint-plugin-import": "^2.16.0",
     "jest": "^24.1.0",

@@ -23,7 +23,7 @@ You can install the [infuse.host NPM package](https://www.npmjs.com/package/infu
 project by running the following command.
 
 ```bash
-npm install infuse.host
+$ npm install infuse.host
 ```
 
 </section>
@@ -44,7 +44,7 @@ package](https://www.npmjs.com/package/infuse-loader) in your project by running
 command.
 
 ```bash
-npm install --save-dev infuse-loader
+$ npm install --save-dev infuse-loader
 ```
 
 The site [https://todo.infuse.host/](https://todo.infuse.host/) is an example of a web application
@@ -768,5 +768,12 @@ The following is a list of all the configuration options:
 
     If you're using a regular expression, it must contain parenthesis, as shown above. The
     parenthesis indicate the location of the name of the variable/element to watch.
+
+</section>
+<section>
+
+## License ##
+
+[MIT](https://github.com/serg-io/infuse.host/blob/master/LICENSE).
 
 </section>
